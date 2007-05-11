@@ -38,51 +38,41 @@ variables:
 	pres:short_name = "Pressure";
 	pres:standard_name = "sea_water_pressure";
 	pres:units = "dbar";
-	pres:valid_min = 0;
-	pres:valid_max = 15000;
+	pres:valid_min = 0.;
+	pres:valid_max = 15000.;
     float speed(time,n_levels);
 	speed:long_name = "Sea Water Speed";
 	speed:short_name = "speed";
 	speed:standard_name = "sea_water_speed";
 	speed:units = "m s-1";
-	speed:valid_min = 0;
-	speed:valid_max = 15000;
     float direction(time,n_levels);
 	direction:long_name = "Direction of current";
 	direction:short_name = "direction";
 	direction:standard_name = "direction_of_sea_water_velocity";
 	direction:units = "degree";
-	direction:valid_min = 0;
-	direction:valid_max = 360;
+	direction:valid_min = 0.;
+	direction:valid_max = 360.;
     float ucomp(time,n_levels);
 	ucomp:long_name = "Eastwards velocity component of water";
 	ucomp:short_name = "eastwards_veolcity";
 	ucomp:standard_name = "eastward_sea_water_velocity";
 	ucomp:units = "m s-1";
-	ucomp:valid_min = 0;
-	ucomp:valid_max = 15000;
     float vcomp(time,n_levels);
 	vcomp:long_name = "Northwards velocity component of water";
 	vcomp:short_name = "northwards_velocity";
 	vcomp:standard_name = "northward_sea_water_velocity";
 	vcomp:units = "m s-1";
-	vcomp:valid_min = 0;
-	vcomp:valid_max = 15000;
     float temp(time,n_levels);
 	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
 	temp:short_name = "temperature";
 	temp:_FillValue = 9999.f;
 	temp:units = "degrees Celsius";
-	temp:valid_min = -3;
-	temp:valid_max = 40;
     float psal(time,n_levels);
 	psal:long_name = "Practical salinity (PSU/sal00)";
 	psal:short_name = "salinity";
 	psal:standard_name = "sea_water_salinity";
 	psal:_FillValue = 9999.f;
 	psal:units = "";
-	psal:valid_min = 0;
-	psal:valid_max = 60;
 
 // global attributes
 	:Conventions = "CF-1.0";
@@ -105,6 +95,7 @@ variables:
 	:northernmost_latitude = +lat;
 	:westernmost_longitude = +lon;
 	:easternmost_longitude = +lon;
+	:quality_statement = "+qual";
 
 data:
     time =  +time;

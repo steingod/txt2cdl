@@ -30,18 +30,14 @@
 # Directory handling and multiple CTD profiles and levels in moorings are
 # yet not implemented. 
 #
-# NB!! Still missing information from GFI concerning geographical position
-# formatn - current implementation assumes decimal minutes, but I believe
-# it is seconds...
-#
 # AUTHOR:
 # Øystein Godøy, METNO/FOU, 09.05.2007 
 #
 # MODIFIED:
-# NA
+# Øystein Godøy, METNO/FOU, 11.05.2007
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.2 2007-05-11 10:14:06 steingod Exp $
+# $Id: txt2cdl,v 1.3 2007-05-11 12:02:58 steingod Exp $
 #  
 
 ########################################################### 
@@ -52,7 +48,7 @@ use Time::Local;
 use Text::Wrap;
 use Date::Parse;
 use POSIX qw(strftime);
-use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n);
+use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q);
 
 ########################################################### 
 # Prototypes
@@ -65,11 +61,11 @@ sub write_file;
 my($ifn,$ofn,@text,$fileformat);
 my($template_file, @template, $line, @cdloutput);
 my($piname,$title,$topic,$keyw,$email,$area,$inst,$vessel);
-my($distribution,$abstract,$history,$url,$pname);
+my($distribution,$abstract,$history,$url,$pname,$qual);
 
 ########################################################### 
 # Option decoding
-usage if !getopts('i:o:a:m:t:e:k:r:g:v:c:g:p:b:h:u:f:n:');
+usage if !getopts('i:o:a:m:t:e:k:r:g:v:c:g:p:b:h:u:f:n:q:');
 usage if ((! $opt_i) || (!$opt_o) || (!$opt_f) || (!$opt_m));
 $ifn = $opt_i;
 $ofn = $opt_o;
@@ -148,6 +144,11 @@ if ($opt_m) {
 } else {
     $template_file = "";
 }
+if ($opt_q) {
+    $qual = $opt_q;
+} else {
+    $qual = "Unknown quality";
+}
 
 ###########################################################
 # Read template file
@@ -188,6 +189,7 @@ s/\+vessel/$vessel/ for (@cdloutput);
 s/\+pname/$pname/ for (@cdloutput);
 s/\+history/$history/ for (@cdloutput);
 s/\+url/$url/ for (@cdloutput);
+s/\+qual/$qual/ for (@cdloutput);
 
 ########################################################### 
 # Create output file
@@ -216,7 +218,7 @@ sub usage() {
     my $author = "Øystein Godøy, METNO/FOU, 10.05.2007";
 
     print "\n";
-    print "seabirdsde92cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history>]\n";
+    print "seabirdsde92cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n";
     print "\n";
     print "\t<infile>: Some supported ASCII file,\n".
 	"\t\tif a directory it tries to process contents\n";
@@ -237,6 +239,7 @@ sub usage() {
     print "\t<area_covered>: Area of observation (predefined list)\n";
     print "\t<distribution>: Data distribution statement (free, restricted)\n";
     print "\t<history>: Short description of data history\n";
+    print "\t<quality>: \"Unknown quality\", \"Excellent\",\"Fair\",\"Questionable\"\n";
     print "\n";
     print wrap("\t", "\t", $text);
     print "\n\n";
@@ -423,12 +426,13 @@ sub create_mooring_cdl_mooringgfi {
 
     # Latitude
     $tmpstr = $tmparr[5];
-    $lat = substr($tmpstr,1,2)+(substr($tmpstr,3,2))/60.;
+    $lat = substr($tmpstr,1,2)+
+	(substr($tmpstr,3,2)+(substr($tmpstr,5,2)/100.))/60.;
     $lat *= -1. if ($tmpstr =~ /S/);
 
     # Longitude
-    $lon = $tmparr[1]; 
-    $lon= substr($tmpstr,8,3)+(substr($tmpstr,11,2))/60.;
+    $lon= substr($tmpstr,8,3)+
+	(substr($tmpstr,11,2)+(substr($tmpstr,13,2)/100.))/60.;
     $lon *= -1. if ($tmpstr =~ /W/);
 
     # Data records

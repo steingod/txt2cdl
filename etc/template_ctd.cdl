@@ -16,29 +16,27 @@ variables:
 	latitude:short_name = "latitude";
 	latitude:standard_name = "latitude";
 	latitude:units = "degree_north";
-	latitude:valid_min = -90.f;
-	latitude:valid_max = 90.f;
+	latitude:valid_min = -90.;
+	latitude:valid_max = 90.;
     float longitude;
 	longitude:long_name = "longitude";
 	longitude:short_name = "longitude";
 	longitude:standard_name = "longitude";
 	longitude:units = "degree_east";
-	longitude:valid_min = -180.f;
-	longitude:valid_max = 180.f;
+	longitude:valid_min = -180.;
+	longitude:valid_max = 180.;
     float pres(n_levels);
 	pres:long_name = "Sea Water Pressure";
 	pres:short_name = "Pressure";
 	pres:standard_name = "sea_water_pressure";
 	pres:units = "dbar";
-	pres:valid_min = 0;
-	pres:valid_max = 15000;
+	pres:valid_min = 0.;
+	pres:valid_max = 15000.;
     float temp(n_levels);
 	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
 	temp:short_name = "temperature";
 	temp:_FillValue = 9999.f;
 	temp:units = "degrees Celsius";
-	temp:valid_min = -3;
-	temp:valid_max = 40;
 //    char qc_temp(n_levels);
 //	qc_temp:long_name = "Quality flag temperature";
 //	qc_temp:short_name = "qflgtemp";
@@ -49,8 +47,6 @@ variables:
 	cond:standard_name = "sea_water_electrical_conductivity";
 	cond:_FillValue = 9999.f;
 	cond:units = "S/m";
-	cond:valid_min = -3;
-	cond:valid_max = 40;
 //    char qc_cond(n_levels);
 //	qc_cond:long_name = "Quality flag conductivity";
 //	qc_cond:short_name = "qflgcond";
@@ -61,8 +57,6 @@ variables:
 	psal:standard_name = "sea_water_salinity";
 	psal:_FillValue = 9999.f;
 	psal:units = "";
-	psal:valid_min = 0;
-	psal:valid_max = 60;
 //    char qc_psal(n_levels);
 //	qc_psal:long_name = "Quality flag salinity";
 //	qc_psal:short_name = "qflgsal";
@@ -89,6 +83,7 @@ variables:
 	:northernmost_latitude = +lat;
 	:westernmost_longitude = +lon;
 	:easternmost_longitude = +lon;
+	:quality_statement = "+qual";
 
 data:
     time =  +time;
