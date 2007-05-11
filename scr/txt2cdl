@@ -1,0 +1,540 @@
+#!/usr/bin/perl -w
+#
+# NAME:
+# damascii2cdl
+#
+# PURPOSE:
+# To convert various ASCII files to CDL format for subsequent conversion
+# to netCDF. See function usage for details on supported file formats.
+#
+# REQUIREMENTS:
+# o Getopt::Std;
+# o Time::Local;
+# o Date::Parse; 
+# o POSIX qw(strftime);
+# o Text::Wrap;
+#
+# INPUT:
+# NA
+#
+# OUTPUT:
+# NA
+#
+# NOTES:
+# NA
+#
+# BUGS:
+# Directory handling is yet not handled.
+#
+# AUTHOR:
+# Øystein Godøy, METNO/FOU, 09.05.2007 
+#
+# MODIFIED:
+# NA
+#
+# CVS_ID:
+# $Id: txt2cdl,v 1.1 2007-05-11 09:30:08 steingod Exp $
+#  
+
+########################################################### 
+# Requirements
+use strict;
+use Getopt::Std;
+use Time::Local;
+use Text::Wrap;
+use Date::Parse;
+use POSIX qw(strftime);
+use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n);
+
+########################################################### 
+# Prototypes
+sub usage;
+sub read_file;
+sub create_ctd_cdl_seabirdnfh;
+sub create_mooring_cdl_mooringgfi;
+sub write_file;
+
+my($ifn,$ofn,@text,$fileformat);
+my($template_file, @template, $line, @cdloutput);
+my($piname,$title,$topic,$keyw,$email,$area,$inst,$vessel);
+my($distribution,$abstract,$history,$url,$pname);
+
+########################################################### 
+# Option decoding
+usage if !getopts('i:o:a:m:t:e:k:r:g:v:c:g:p:b:h:u:f:n:');
+usage if ((! $opt_i) || (!$opt_o) || (!$opt_f) || (!$opt_m));
+$ifn = $opt_i;
+$ofn = $opt_o;
+if ($opt_f) {
+    $fileformat = $opt_f;
+} else {
+    $fileformat = "";
+}
+if ($opt_g) {
+    $inst = $opt_g;
+} else {
+    $inst = "";
+}
+if ($opt_a) {
+    $piname = $opt_a;
+} else {
+    $piname = "";
+}
+if ($opt_t) {
+    $title = $opt_t;
+} else {
+    $title = "";
+}
+if ($opt_p) {
+    $topic = $opt_p;
+} else {
+    $topic = "";
+}
+if ($opt_k) {
+    $keyw = $opt_k;
+} else {
+    $keyw = "";
+}
+if ($opt_e) {
+    $email = $opt_e;
+} else {
+    $email = "";
+}
+if ($opt_r) {
+    $area = $opt_r;
+} else {
+    $area = "";
+}
+if ($opt_b) {
+    $abstract = $opt_b;
+} else {
+    $abstract = "";
+}
+if ($opt_n) {
+    $pname = $opt_n;
+} else {
+    $pname = "";
+}
+if ($opt_v) {
+    $vessel = $opt_v;
+} else {
+    $vessel = "";
+}
+if ($opt_c) {
+    $distribution = $opt_c;
+} else {
+    $distribution = "Free";
+}
+if ($opt_u) {
+    $url = $opt_u;
+} else {
+    $url = "";
+}
+if ($opt_h) {
+    $history = $opt_h;
+} else {
+    $history = strftime("%F",gmtime(time))." Created";
+}
+if ($opt_m) {
+    $template_file = $opt_m;
+} else {
+    $template_file = "";
+}
+
+###########################################################
+# Read template file
+print "\n";
+print " Reading file: $template_file\n";
+@template = read_file($template_file);
+
+########################################################### 
+# Read input data
+print "\n";
+print " Reading file: $ifn\n";
+@text = read_file($ifn);
+
+###########################################################
+# Extract information from input file and create CDL structure
+print "\n";
+print " Converting data to CDL\n";
+if ($fileformat eq "seabirdnfh") {
+    @cdloutput = create_ctd_cdl_seabirdnfh(\@template,\@text);
+} elsif ($fileformat eq "mooringgfi") {
+    @cdloutput = create_mooring_cdl_mooringgfi(\@template,\@text);
+} else {
+    die "Fileformat ($fileformat) is not supported\n";
+}
+
+########################################################### 
+# Add header information
+s/\+title/$title/ for (@cdloutput);
+s/\+abstract/$abstract/ for (@cdloutput);
+s/\+topic/$topic/ for (@cdloutput);
+s/\+keyw/$keyw/ for (@cdloutput);
+s/\+area/$area/ for (@cdloutput);
+s/\+inst/$inst/ for (@cdloutput);
+s/\+piname/$piname/ for (@cdloutput);
+s/\+email/$email/ for (@cdloutput);
+s/\+distribution/$distribution/ for (@cdloutput);
+s/\+vessel/$vessel/ for (@cdloutput);
+s/\+pname/$pname/ for (@cdloutput);
+s/\+history/$history/ for (@cdloutput);
+s/\+url/$url/ for (@cdloutput);
+
+########################################################### 
+# Create output file
+print "\n";
+print " Writing file: $ofn\n";
+die " Could not write output file\n" if (! write_file($ofn, @cdloutput));
+print "\n";
+
+exit;
+
+########################################################### 
+#
+#
+########################################################### 
+# Function definitions
+########################################################### 
+#
+#
+########################################################### 
+
+sub usage() {
+    $Text::Wrap::columns = 74;
+
+    my $text = "This software transforms various ASCII formats into CDL files which can be converted to netCDF by ncgen. The file formats supported may change.";
+    my $formats = "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\no Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)";
+    my $author = "Øystein Godøy, METNO/FOU, 10.05.2007";
+
+    print "\n";
+    print "seabirdsde92cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history>]\n";
+    print "\n";
+    print "\t<infile>: Some supported ASCII file,\n".
+	"\t\tif a directory it tries to process contents\n";
+    print "\t<outfile>: CDL file according to CF standard,\n".
+	"\t\tif infile is a directory this should be a directory\n";
+    print "\t<format>: Input file format, se below\n";
+    print "\t<template>: CDL template file according to CF standard, usually in etc\n";
+    print "\t<author>: PI name\n";
+    print "\t<email>: PI or responsible person email address\n";
+    print "\t<institution>: Name of institution\n";
+    print "\t<url>: URL of institution/PI\n";
+    print "\t<title>: Title of dataset\n";
+    print "\t<abstract>: Short description of data\n";
+    print "\t<platform>: E.g. name of the research vessel used\n";
+    print "\t<product_name>: Product name\n";
+    print "\t<topic>: Topic category of dataset (predefined list)\n";
+    print "\t<keywords>: Keywords of dataset (predefined list)\n";
+    print "\t<area_covered>: Area of observation (predefined list)\n";
+    print "\t<distribution>: Data distribution statement (free, restricted)\n";
+    print "\t<history>: Short description of data history\n";
+    print "\n";
+    print wrap("\t", "\t", $text);
+    print "\n\n";
+    print wrap("\t", "\t", $formats);
+    print "\n\n";
+    print "\t$author\n";
+    print "\n";
+    exit;
+}
+
+sub read_file($) {
+
+    my($filename) = @_;
+    my(@text);
+
+    open FH, "<$filename" or die " Could not open file $filename\n";
+    @text = <FH>;
+    close FH;
+
+    return(@text);
+}
+
+sub create_ctd_cdl_seabirdnfh {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my(@timearr,$timeunix,$timestr);
+    my(@mytmp,$pname,$vessel,$lat,$lon,$nvalues);
+    my($pres,$temp,$cond,$psal);
+    my($line,$norec);
+
+    ###########################################################
+    # Copy the template
+    @cdlout = @$tempref;
+
+    ########################################################### 
+    # First the necessary information is extracted from the input data
+    # stream
+
+    # Sensor name
+    $pname = $txtref->[0];
+    $pname =~ s/(^(\* ))|://g;
+    $pname =~ s/[\n\r]//g;
+
+    # Time
+    @mytmp = grep /^\* NMEA UTC \(Time\) = /,@$txtref;
+    $timestr = (split /=/,$mytmp[0])[1];
+    $timestr =~ s/[\n\r]//g;
+    $timestr =~ s/\s+/ /g;
+    $timeunix = str2time($timestr);
+    @timearr = gmtime($timeunix);
+    $timestr = strftime("%F %T UTC",@timearr);
+
+    # Vessel
+    @mytmp = grep /^\*\* Ship: /,@$txtref;
+    $vessel = (split /:/,$mytmp[0])[1];
+    $vessel =~ s/^(\s+)//;
+    $vessel =~ s/[\n\r]//g;
+
+    # Latitude
+    @mytmp = grep /^\* NMEA Latitude = /,@$txtref;
+    $lat = (split /=/,$mytmp[0])[1];
+    $lat =~ s/^ //;
+    @mytmp = split / /,$lat,3;
+    $lat = $mytmp[0]+($mytmp[1]/60.);
+    $mytmp[2] =~ s/[\n\r]//g;
+    $lat *= (-1.) if ($mytmp[2] eq "S");
+
+    # Longitude
+    @mytmp = grep /^\* NMEA Longitude = /,@$txtref;
+    $lon = (split /=/,$mytmp[0])[1];
+    $lon =~ s/^ //;
+    @mytmp = split / /,$lon,3;
+    $lon = $mytmp[0]+($mytmp[1]/60.);
+    $mytmp[2] =~ s/[\n\r]//g;
+    $lon *= (-1.) if ($mytmp[2] eq "W");
+
+    # Nvalues
+    @mytmp = grep /^\# nvalues = /,@$txtref;
+    $nvalues = (split /=/,$mytmp[0])[1];
+    $nvalues =~ s/[\s\n\r]//g;
+
+    # Data records
+    @mytmp = grep /^\s/,@$txtref;
+    s/^(\s+)// for (@mytmp);
+    s/\s+/ /g for (@mytmp);
+    s/[\n\r]//g for (@mytmp);
+    $norec = 0;
+    foreach $line (@mytmp) {
+	@tmparr = split / /,$line;
+	$pres .= "$tmparr[1],";
+	$temp .= "$tmparr[2],";
+	$cond .= "$tmparr[3],";
+	$psal .= "$tmparr[4],";
+	$norec++;
+    }
+    warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
+    $pres =~s/,$//;
+    $temp =~s/,$//;
+    $cond =~s/,$//;
+    $psal =~s/,$//;
+
+    ########################################################### 
+    # Then this information is substituted into the CDL template
+
+    s/\+nvalues/$nvalues/ for (@cdlout);
+    s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
+    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+time/$timeunix/ for (@cdlout);
+    s/\+YYYY\-MM\-DD HH\:MM\:SS UTC/$timestr/ for (@cdlout);
+    s/\+pres/$pres/ for (@cdlout);
+    s/\+temp/$temp/ for (@cdlout);
+    s/\+cond/$cond/ for (@cdlout);
+    s/\+psal/$psal/ for (@cdlout);
+
+    return(@cdlout);
+}
+
+sub create_mooring_cdl_mooringgfi {
+
+    my(@cdlout,@tmparr,$tmpstr);
+    my($tempref,$txtref) = @_;
+    my(@timearr,$timeunix,$timestr,$timeline);
+    my(@mytmp,$pname,$vessel,$lat,$lon,$nvalues);
+    my($speed,$directiontemp,$ucomp,$vcomp,$temp,$psal,$pres);
+    my($line,$norec,$depth,$instrid,$u,$v,$nlevels,$direction);
+    my($start_date,$stop_date,$nparam,$params);
+    my($sflg,$dflg,$uflg,$vflg,$tflg,$pflg,$aflg);
+
+    ###########################################################
+    # Copy the template
+    @cdlout = @$tempref;
+
+    ########################################################### 
+    # First the necessary information is extracted from the input data
+    # stream
+
+    # Header begins with %
+    @mytmp = grep /^\%/,@$txtref;
+
+    s/\%// for (@mytmp);
+    @tmparr = split /=/,$mytmp[0];
+
+    # Instrument identification
+    $instrid = $tmparr[0]; 
+    $instrid =~ s/ N.*$//;
+
+    # Parameters in the file, code is as following
+    # F - speed, A - direction, U - u component, V - v component,
+    # T - temperature, P - pressure, S - salinity
+    $params = $tmparr[1];
+    $params =~s/^(\s+[0-9]+\s)//g;
+    $tmpstr = (split / +/,$params)[0];
+    $params = $tmpstr;
+    $sflg = ($params =~ /F/)?1:0;
+    $dflg = ($params =~ /A/)?1:0;
+    $uflg = ($params =~ /U/)?1:0;
+    $vflg = ($params =~ /V/)?1:0;
+    $tflg = ($params =~ /T/)?1:0;
+    $pflg = ($params =~ /P/)?1:0;
+    $aflg = ($params =~ /S/)?1:0;
+
+    # Number of datarecords
+    $nvalues = $tmparr[1]; 
+    $nvalues =~ s/\s|[a-zA-Z]//g;
+
+    # Number of levels
+    $nlevels = 1;
+
+    # Date of deployment
+    $timestr = sprintf("%4d-%02d-%02d %02d:%02d:%02d UTC",
+	    (2000+substr($tmparr[3],0,2)),
+	    substr($tmparr[3],2,2),
+	    substr($tmparr[3],4,2),
+	    substr($tmparr[3],7,2),
+	    substr($tmparr[3],9,2),
+	    0);
+    $start_date = $timestr;
+
+    # Depth
+    $depth = $tmparr[4]; 
+    $depth =~ s/\s|[a-zA-Z]//g;
+
+    # Latitude
+    $tmpstr = $tmparr[5];
+    $lat = substr($tmpstr,1,2)+(substr($tmpstr,3,2))/60.;
+    $lat *= -1. if ($tmpstr =~ /S/);
+
+    # Longitude
+    $lon = $tmparr[1]; 
+    $lon= substr($tmpstr,8,3)+(substr($tmpstr,11,2))/60.;
+    $lon *= -1. if ($tmpstr =~ /W/);
+
+    # Data records
+    @mytmp = grep !/(^\%)/,@$txtref;
+    s/^(\s+)// for (@mytmp);
+    s/\s+/ /g for (@mytmp);
+    s/[\n\r]//g for (@mytmp);
+    $norec = 0;
+    foreach $line (@mytmp) {
+	@tmparr = split / /,$line;
+	$timearr[0] = 0;
+	$timearr[1] = $tmparr[4];
+	$timearr[2] = $tmparr[3];
+	$timearr[3] = $tmparr[2];
+	$timearr[4] = $tmparr[1]-1;
+	$timearr[5] = $tmparr[0]+100;
+	$timestr = strftime("%F %T UTC",@timearr);
+	$timeunix = timegm(@timearr);
+	$timeline .= "$timeunix,";
+	$speed .= "$tmparr[5]," if ($sflg);
+	$direction .= "$tmparr[6]," if ($dflg);
+	$u .= "$tmparr[7]," if ($uflg);
+	$v .= "$tmparr[8]," if ($vflg);
+	$temp .= "$tmparr[9]," if ($tflg);
+	$psal .= "$tmparr[10]," if ($aflg);
+	$pres .= "$tmparr[11]," if ($pflg);
+	$norec++;
+    }
+    $stop_date = $timestr;
+    $timeline =~s/,$//;
+    $speed =~s/,$// if ($sflg);
+    $direction =~s/,$// if ($dflg);
+    $u =~s/,$// if ($uflg);
+    $v =~s/,$// if ($vflg);
+    $pres =~s/,$// if ($pflg);
+    $temp =~s/,$// if ($tflg);
+    $psal =~s/,$// if ($aflg);
+
+    ########################################################### 
+    # Then this information is substituted into the CDL template
+
+    # First remove variables not supported
+    if ($sflg == 0) {
+	@tmparr = grep(!/speed/,@cdlout);
+	@cdlout = @tmparr;
+    }
+    unless ($dflg) {
+	@tmparr = grep !/direction/,@cdlout;
+	@cdlout = @tmparr;
+    }
+    unless ($uflg) {
+	@tmparr = grep !/ucomp/,@cdlout;
+	@cdlout = @tmparr;
+    }
+    unless ($vflg) {
+	@tmparr = grep !/vcomp/,@cdlout;
+	@cdlout = @tmparr;
+    }
+    unless ($tflg) {
+	@tmparr = grep !/temp/,@cdlout;
+	@cdlout = @tmparr;
+    }
+    unless ($pflg) {
+	@tmparr = grep !/pres/,@cdlout;
+	@cdlout = @tmparr;
+    }
+    unless ($aflg) {
+	@tmparr = grep !/psal/,@cdlout;
+	@cdlout = @tmparr;
+    }
+
+    s/\+nlevels/$nlevels/ for (@cdlout);
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+start_date/$start_date/ for (@cdlout);
+    s/\+stop_date/$stop_date/ for (@cdlout);
+    s/\+depth/$depth/ for (@cdlout);
+    s/\+time/$timeline/ for (@cdlout);
+    if ($pflg) {
+	s/\+pres/$pres/ for (@cdlout);
+    }
+    if ($sflg) {
+	s/\+speed/$speed/ for (@cdlout);
+    }
+    if ($dflg) { 
+	s/\+direction/$direction/ for (@cdlout);
+    }
+    if ($uflg) { 
+	s/\+ucomp/$u/ for (@cdlout);
+    }
+    if ($vflg) { 
+	s/\+vcomp/$v/ for (@cdlout);
+    }
+    if ($tflg) {
+	s/\+temp/$temp/ for (@cdlout);
+    }
+    if ($aflg) { 
+	s/\+psal/$psal/ for (@cdlout);
+    }
+
+    return(@cdlout);
+}
+
+sub write_file($@) {
+
+    my($filename,@text) = @_;
+    my($line);
+
+    open FH, ">$filename" or die " Could not open file $filename\n";
+    foreach $line (@text) {
+	print FH "$line";
+    }
+    close FH;
+
+    return(1);
+}
+
