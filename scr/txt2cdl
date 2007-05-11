@@ -24,7 +24,15 @@
 # NA
 #
 # BUGS:
-# Directory handling is yet not handled.
+# Input checking is yet not properly imeplemented, but baseline
+# functionality for the formats supported are implemented.
+#
+# Directory handling and multiple CTD profiles and levels in moorings are
+# yet not implemented. 
+#
+# NB!! Still missing information from GFI concerning geographical position
+# formatn - current implementation assumes decimal minutes, but I believe
+# it is seconds...
 #
 # AUTHOR:
 # Øystein Godøy, METNO/FOU, 09.05.2007 
@@ -33,7 +41,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.1 2007-05-11 09:30:08 steingod Exp $
+# $Id: txt2cdl,v 1.2 2007-05-11 10:14:06 steingod Exp $
 #  
 
 ########################################################### 
