@@ -1,6 +1,7 @@
 netcdf template_mooring {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_mooring.cdl,v 1.3 2007-05-14 07:20:34 steingod Exp $
 
 dimensions:
     time = unlimited;
