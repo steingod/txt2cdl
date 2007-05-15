@@ -1,0 +1,161 @@
+netcdf template_metstation {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_metstation.cdl,v 1.1 2007-05-15 11:20:10 steingod Exp $
+
+dimensions:
+    time = unlimited;
+
+variables:
+    double time(time);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+    char stationid;
+	stationd:long_name = "Station name";
+    float latitude;
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.f;
+	latitude:valid_max = 90.f;
+    float longitude;
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.f;
+	longitude:valid_max = 180.f;
+    float air_temperature(time);
+	air_temperature:long_name = "Air temperature";
+	air_temperature:short_name = "temperature";
+	air_temperature:standard_name = "air temperature";
+	air_temperature:_FillValue = 9999.f;
+	air_temperature:units = "degrees Celsius";
+    float dew_point_temperature(time);
+	dew_point_temperature:long_name = "Dew Point Air Temperature";
+	dew_point_temperature:short_name = "dew point temperature";
+	dew_point_temperature:standard_name = "dew point temperature";
+	dew_point_temperature:_FillValue = 9999.f;
+	dew_point_temperature:units = "degrees Celsius";
+    float sea_surface_temperature(time);
+	sea_surface_temperature:long_name = "Sea Surface Temperature";
+	sea_surface_temperature:short_name = "sea temperature";
+	sea_surface_temperature:standard_name = "sea surface temperature";
+	sea_surface_temperature:_FillValue = 9999.f;
+	sea_surface_temperature:units = "degrees Celsius";
+    float air_pressure(time);
+	air_pressure:long_name = "Surface Air Pressure";
+	air_pressure:short_name = "Pressure";
+	air_pressure:standard_name = "surface air pressure";
+	air_pressure:units = "hpa";
+    float wind_speed(time);
+	wind_speed:long_name = "Wind Speed";
+	wind_speed:short_name = "speed";
+	wind_speed:standard_name = "wind speed";
+	wind_speed:units = "m s-1";
+    float wind_direction(time);
+	wind_direction:long_name = "Wind from Direction";
+	wind_direction:short_name = "direction";
+	wind_direction:standard_name = "wind from direction";
+	wind_direction:units = "degree";
+	wind_direction:valid_min = 0.;
+	wind_direction:valid_max = 360.;
+    float precipitation(time);
+	precipitation:long_name = "Precipitation in millimeter";
+	precipitation:short_name = "precipitation";
+	precipitation:units = "mm";
+    short snow_cover(time);
+	snow_cover:long_name = "WMO Snow cover code";
+	snow_cover:short_name = "snow cover";
+	snow_cover:units = "";
+    short snow_depth(time);
+	snow_depth:long_name = "WMO Snow depth code";
+	snow_depth:short_name = "snow depth";
+	snow_depth:units = "";
+    short cloud_cover(time);
+	cloud_cover:long_name = "WMO Cloud Cover Code";
+	cloud_cover:short_name = "cloud cover";
+	cloud_cover:units = "";
+    short cloud_cover_lowest_level(time);
+	cloud_cover:long_name = "WMO Cloud Cover Code in lowest level";
+	cloud_cover:short_name = "cloud cover lowest level";
+	cloud_cover:units = "";
+    short cloud_type_low(time);
+	cloud_cover:long_name = "WMO Cloud Type Code in lowest level";
+	cloud_cover:short_name = "low cloud";
+	cloud_cover:units = "";
+    short cloud_type_medium(time);
+	cloud_cover:long_name = "WMO Cloud Type Code in medium level";
+	cloud_cover:short_name = "medium cloud";
+	cloud_cover:units = "";
+    short cloud_type_high(time);
+	cloud_cover:long_name = "WMO Cloud Type Code in highest level";
+	cloud_cover:short_name = "high cloud";
+	cloud_cover:units = "";
+    short visibility(time);
+	cloud_cover:long_name = "WMO Code for visibility";
+	cloud_cover:short_name = "visibility";
+	cloud_cover:units = "";
+    short weather(time);
+	cloud_cover:long_name = "WMO Code for weather at station";
+	cloud_cover:short_name = "weather";
+	cloud_cover:units = "";
+    short weather1(time);
+	cloud_cover:long_name = "WMO Code for weather since last observation 1";
+	cloud_cover:short_name = "weather1";
+	cloud_cover:units = "";
+    short weather2(time);
+	cloud_cover:long_name = "WMO Code for weather since last observation 2";
+	cloud_cover:short_name = "weather2";
+	cloud_cover:units = "";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; // Add text if wanted
+	:topicCategory = "+topic"; // Blank separated list
+	:keywords = "+keyw"; // Blank separated list
+	:Area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:Product_name = "+pname";
+	:Platform_name = "+stationid";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +lat;
+	:northernmost_latitude = +lat;
+	:westernmost_longitude = +lon;
+	:easternmost_longitude = +lon;
+	:quality_statement = "+qual";
+
+data:
+    time =  +time;
+    stationid = +stationid;
+    latitude = +lat;
+    longitude = +lon;
+    air_temperature = +air_temperature;
+    dew_point_temperature = +dew_point_temperature;
+    sea_surface_temperature = +sea_surface_temperature;
+    air_pressure = +air_pressure;
+    wind_speed = +wind_speed;
+    wind_direction = +wind_direction;
+    precipitation = +precipitation;
+    snow_cover = +snow_cover;
+    snow_depth = +snow_depth;
+    cloud_cover = +cloud_cover;
+    cloud_cover_lowest_level = +cloud_cover_lowest_level;
+    cloud_type_low = +cloud_type_low;
+    cloud_type_medium = +cloud_type_medium;
+    cloud_type_high = +cloud_type_high;
+    visibility = +visibility;
+    weather = +weather;
+    weather1 = +weather1;
+    weather2 = +weather2;
+}
