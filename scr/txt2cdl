@@ -37,7 +37,7 @@
 # Øystein Godøy, METNO/FOU, 11.05.2007
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.3 2007-05-11 12:02:58 steingod Exp $
+# $Id: txt2cdl,v 1.4 2007-08-21 09:07:37 steingod Exp $
 #  
 
 ########################################################### 
@@ -218,7 +218,7 @@ sub usage() {
     my $author = "Øystein Godøy, METNO/FOU, 10.05.2007";
 
     print "\n";
-    print "seabirdsde92cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n";
+    print "damascii2cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n";
     print "\n";
     print "\t<infile>: Some supported ASCII file,\n".
 	"\t\tif a directory it tries to process contents\n";
