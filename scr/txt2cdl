@@ -35,9 +35,10 @@
 #
 # MODIFIED:
 # Øystein Godøy, METNO/FOU, 11.05.2007
+# Øystein Godøy, METNO/FOU, 11.03.2008: Added support for WOCE CTD-format.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.4 2007-08-21 09:07:37 steingod Exp $
+# $Id: txt2cdl,v 1.5 2008-03-11 21:40:07 steingod Exp $
 #  
 
 ########################################################### 
@@ -54,6 +55,7 @@ use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_
 # Prototypes
 sub usage;
 sub read_file;
+sub create_ctd_cdl_woce;
 sub create_ctd_cdl_seabirdnfh;
 sub create_mooring_cdl_mooringgfi;
 sub write_file;
@@ -168,6 +170,8 @@ print "\n";
 print " Converting data to CDL\n";
 if ($fileformat eq "seabirdnfh") {
     @cdloutput = create_ctd_cdl_seabirdnfh(\@template,\@text);
+} elsif ($fileformat eq "wocectd") {
+    @cdloutput = create_ctd_cdl_woce(\@template,\@text);
 } elsif ($fileformat eq "mooringgfi") {
     @cdloutput = create_mooring_cdl_mooringgfi(\@template,\@text);
 } else {
@@ -214,11 +218,14 @@ sub usage() {
     $Text::Wrap::columns = 74;
 
     my $text = "This software transforms various ASCII formats into CDL files which can be converted to netCDF by ncgen. The file formats supported may change.";
-    my $formats = "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\no Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)";
-    my $author = "Øystein Godøy, METNO/FOU, 10.05.2007";
+    my $formats = 
+    "o WOCE CTD ASCII format - (format=wocectd)\n".
+    "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\n".
+    "o Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)";
+    my $author = "Øystein Godøy, METNO/FOU, 11.03.2008";
 
     print "\n";
-    print "damascii2cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n";
+    print wrap("","\t","damascii2cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n");
     print "\n";
     print "\t<infile>: Some supported ASCII file,\n".
 	"\t\tif a directory it tries to process contents\n";
@@ -262,6 +269,102 @@ sub read_file($) {
     return(@text);
 }
 
+#
+# Read and convert WOCE ASCII CTD files
+#
+sub create_ctd_cdl_woce {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my($tmpstr, $yy, $mm, $dd, $hh, $ii);
+    my(@timearr,$timeunix, $timestr);
+    my(@mytmp,$pname,$vessel,$lat,$lon,$nvalues);
+    my($pres,$temp,$psal);
+    my($pres_flg,$temp_flg,$psal_flg);
+    my($line,$norec);
+
+    ###########################################################
+    # Copy the template
+    @cdlout = @$tempref;
+
+    ########################################################### 
+    # First the necessary information is extracted from the input data
+
+    # Sensor name
+    $pname = $txtref->[0];
+
+    # Time
+    @mytmp = grep /^DATE = /,@$txtref;
+    chop($mytmp[0]);
+    $mytmp[0] =~ s/DATE = //g;
+    $yy = substr $mytmp[0],0,4;
+    $mm = substr $mytmp[0],4,2;
+    $dd = substr $mytmp[0],6,2;
+    @mytmp = grep /^TIME = /,@$txtref;
+    chop($mytmp[0]);
+    $mytmp[0] =~ s/TIME = //g;
+    $hh = substr $mytmp[0],0,2;
+    $ii = substr $mytmp[0],2,2;
+    $timestr = sprintf("%4d-%02d-%02d %02d:%02d:%02d UTC", 
+	    $yy, $mm, $dd, $hh, $ii, 0);
+    $timeunix = str2time($timestr);
+
+    # Vessel
+##    @mytmp = grep /^\*\* Ship: /,@$txtref;
+##    $vessel = (split /:/,$mytmp[0])[1];
+##    $vessel =~ s/^(\s+)//;
+##    $vessel =~ s/[\n\r]//g;
+
+    # Latitude
+    @mytmp = grep /^LATITUDE = /,@$txtref;
+    $lat = substr((split /=/,$mytmp[0])[1],0,-1);
+
+    # Longitude
+    @mytmp = grep /^LONGITUDE = /,@$txtref;
+    $lon = substr((split /=/,$mytmp[0])[1],0,-1);
+
+    # Data records
+    @mytmp = grep /^\ |^[0-9]/,@$txtref;
+    s/^(\s+)// for (@mytmp);
+    s/\s+/ /g for (@mytmp);
+    s/[\n\r]//g for (@mytmp);
+    $norec = 0;
+    foreach $line (@mytmp) {
+	@tmparr = split /,/,$line;
+	$pres .= "$tmparr[0],";
+	$pres_flg .= "$tmparr[1],";
+	$temp .= "$tmparr[2],";
+	$temp_flg .= "$tmparr[3],";
+	$psal .= "$tmparr[4],";
+	$psal_flg .= "$tmparr[5],";
+	$norec++;
+    }
+    print "$norec pressure levels found in file, abort if incorrect...\n";
+    $nvalues = $norec;
+    $pres =~s/,$//;
+    $temp =~s/,$//;
+    $psal =~s/,$//;
+
+    ########################################################### 
+    # Then this information is substituted into the CDL template
+
+    s/\+nvalues/$nvalues/ for (@cdlout);
+    s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
+    #s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+time/$timeunix/ for (@cdlout);
+    s/\+YYYY\-MM\-DD HH\:MM\:SS UTC/$timestr/ for (@cdlout);
+    s/\+pres/$pres/ for (@cdlout);
+    s/\+temp/$temp/ for (@cdlout);
+    ##s/\+cond/$cond/ for (@cdlout);
+    s/\+psal/$psal/ for (@cdlout);
+
+    return(@cdlout);
+}
+
+#
+# Read and convert a specific SEABIRD format used by NFH/Tromsø
+#
 sub create_ctd_cdl_seabirdnfh {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
@@ -359,6 +462,9 @@ sub create_ctd_cdl_seabirdnfh {
     return(@cdlout);
 }
 
+#
+# Read and convert the mooring format of GFI/UiB
+#
 sub create_mooring_cdl_mooringgfi {
 
     my(@cdlout,@tmparr,$tmpstr);
