@@ -1,10 +1,10 @@
-netcdf template_ctd {
+netcdf template_itp {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_ctd.cdl,v 1.4 2008-10-18 21:26:50 steingod Exp $
+// $Id: template_itp.cdl,v 1.1 2008-10-18 21:26:50 steingod Exp $
 
 dimensions:
-    time = unlimited; //
+    time = UNLIMITED; //
     n_levels = +nvalues; // maximum number of levels (depth)
 
 variables:

@@ -1,0 +1,75 @@
+netcdf template_awiem {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_awiem.cdl,v 1.1 2008-10-18 21:26:50 steingod Exp $
+
+dimensions:
+    time = unlimited; 
+
+variables:
+    double time(time);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+	//time:axis = "T";
+    float latitude(time);
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.;
+	latitude:valid_max = 90.;
+    float longitude(time);
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.;
+	longitude:valid_max = 180.;
+    float altitude(time);
+	altitude:long_name = "flying altitude as meter above sea level";
+	altitude:short_name = "altitude";
+	altitude:standard_name = "altitude";
+	altitude:units = "meter";
+	altitude:positive = "up";
+	altitude:_FillValue = -999.f;
+    float thickness(time);
+	thickness:long_name = "sea ice thickness measured using electromagnetic measurement";
+	thickness:short_name = "thickness";
+	thickness:standard_name = "sea_ice_thickness";
+	thickness:units = "meter";
+	thickness:_FillValue = -999.f;
+	thickness:coordinates = "latitude longitude altitude time";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:title = "+title";
+	:abstract = "+abstract"; 
+	:topicCategory = "+topic"; 
+	:keywords = "+keyw"; 
+	:gcmd_keywords = "+keyw"; 
+	:Area = "+area";
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:Product_name = "+pname";
+	:activity_type = "+activity";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:history = "+history";
+	:distribution_statement = "+distribution_statement"; 
+	:southernmost_latitude = +slat;
+	:northernmost_latitude = +nlat;
+	:westernmost_longitude = +wlon;
+	:easternmost_longitude = +elon;
+	//:quality_statement = "+quality";
+
+data:
+    time =  +time;
+    latitude = +lat;
+    longitude = +lon;
+    altitude = +altitude;
+    thickness = +thickness;
+}
