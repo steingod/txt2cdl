@@ -38,9 +38,10 @@
 # Øystein Godøy, METNO/FOU, 11.03.2008: Added support for WOCE CTD-format.
 # Øystein Godøy, METNO/FOU, 17.10.2008: Added support for AWI Helicopter
 # Ice Thickness measurements.
+# Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.6 2008-10-18 21:33:36 steingod Exp $
+# $Id: txt2cdl,v 1.7 2008-10-19 20:10:49 steingod Exp $
 #  
 
 ########################################################### 
@@ -50,15 +51,18 @@ use Getopt::Std;
 use Time::Local;
 use Text::Wrap;
 use Date::Parse;
+#use Date::Format;
 use POSIX qw(strftime);
 use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q);
 
 ########################################################### 
 # Prototypes
 sub usage;
+sub year_and_day2epoch;
 sub read_file;
 sub create_ctd_cdl_woce;
 sub create_ctd_cdl_seabirdnfh;
+sub create_itp_cdl;
 sub create_mooring_cdl_mooringgfi;
 sub create_trajectory_cdl_awiem;
 sub write_file;
@@ -175,6 +179,8 @@ if ($fileformat eq "seabirdnfh") {
     @cdloutput = create_ctd_cdl_seabirdnfh(\@template,\@text);
 } elsif ($fileformat eq "wocectd") {
     @cdloutput = create_ctd_cdl_woce(\@template,\@text);
+} elsif ($fileformat eq "itp") {
+    @cdloutput = create_itp_cdl(\@template,\@text);
 } elsif ($fileformat eq "mooringgfi") {
     @cdloutput = create_mooring_cdl_mooringgfi(\@template,\@text);
 } elsif ($fileformat eq "awiem") {
@@ -229,8 +235,9 @@ sub usage() {
     "o WOCE CTD ASCII format - (format=wocectd)\n".
     "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\n".
     "o Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)\n".
-    "o Helicopter trajectory of ice thickness by AWI, Germany - (format=awiem)";
-    my $author = "Øystein Godøy, METNO/FOU, 11.03.2008";
+    "o Helicopter trajectory of ice thickness by AWI, Germany - (format=awiem)\n".
+    "o ITP-data from Woods Hole, daily updates - (format=itp)\n";
+    my $author = "Øystein Godøy, METNO/FOU, 19.10.2008";
 
     print "\n";
     print wrap("","\t","damascii2cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n");
@@ -263,6 +270,21 @@ sub usage() {
     print "\t$author\n";
     print "\n";
     exit;
+}
+
+# Convert year and decimal days to epoch time
+sub year_and_day2epoch($$) {
+    my($myyear,$myday) = @_;
+    my($timeepoch,$timestr);
+
+    $timestr = sprintf "%4d-01-01 00:00 GMT", $myyear;
+
+    $timeepoch = str2time($timestr);
+    $myday *= (60*60);
+
+    $timeepoch += int($myday);
+
+    return($timeepoch);
 }
 
 sub read_file($) {
@@ -651,7 +673,147 @@ sub create_mooring_cdl_mooringgfi {
 }
 
 #
-# Read and convert a specific SEABIRD format used by NFH/Tromsø
+# Read and convert the level2 ITP-format used by Woods Hole Institute for ice
+# tethered platforms.
+#
+sub create_itp_cdl {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my(@timearr,$timeunix,$timestr,$timeunixref);
+    my(@mytmp,$pname,$hours,$hourref,$timeofdata,$lat,$lon,$nvalues);
+    my($nlat,$slat,$wlon,$elon);
+    my($myvariables,$myunits,$thickness,$altitude,$myurl);
+    my($myhistory,$start_date,$stop_date,$institution,$contact,$myarea);
+    my($conventions,$distribution_statement,$project_name,$productname);
+    my($topiccategory,$mykeywords,$mygcmdkeywords,$activity_type,$PI_name);
+    my($line,$norec,$misvalin,$misvalout);
+    my($itpid,$profileid,$vessel);
+    my($myyear,$myday,$pressure,$temperature,$salinity);
+
+    ###########################################################
+    # Do some initialization
+    $misvalin = "Nan";
+    $misvalout = -999.;
+    $title = "";
+    $abstract = "The Ice-Tethered Profiler data were collected and made available by the Ice-Tethered Profiler Program based at the Woods Hole Oceanographic Institution (http://www.whoi.edu/itp). ITP data are similar to CTD data, but are collected from buoys frozen in the sea ice.";
+    $productname = "ITP profile";
+    $myarea = "Arctic Ocean";
+    $topiccategory = "oceans";
+    $mykeywords = "pressure,temperature,salinity";
+    $mygcmdkeywords = "";
+    $activity_type = "Ice station";
+    $vessel = "";
+    $myhistory = "";
+    $distribution_statement = "Free";
+    $conventions = "CF-1.0";
+    $PI_name = "";
+    $institution = "Woods Hole Oceanographic Institute";
+    $contact = "itp\@whoi.edu";
+    $myurl = "http://www.whoi.edu/itp/";
+    $project_name = "Damocles";
+    $start_date = "";
+    $stop_date = "";
+
+
+    ###########################################################
+    # Copy the template
+    @cdlout = @$tempref;
+
+    # File records
+    @mytmp = @$txtref;
+    s/\ +/ /g for (@mytmp);
+    s/^\ |\ $// for (@mytmp);
+    s/[\n\r]//g for (@mytmp);
+    $norec = 0;
+    foreach $line (@mytmp) {
+	if ($norec == 0){
+	    $line =~ s/^\%//;
+	    @tmparr = (split /,/,$line);
+	    $itpid = $tmparr[0];
+	    $itpid =~ s/\D*//;
+	    $profileid = (split /:/,$tmparr[1])[0];
+	    $profileid =~ s/\D*//;
+	    $norec++;
+	    next;
+	}
+	if ($norec == 1) {
+	    $line =~ s/^\ +/ /g;
+	    @tmparr = (split / /,$line);
+	    $myyear = $tmparr[0];
+	    $myday = $tmparr[1];
+	    $timeunix = year_and_day2epoch($myyear,$myday);
+	    @timearr = gmtime($timeunix);
+	    $timestr= strftime("%F %T UTC",@timearr);
+	    $lon = $tmparr[2];
+	    $lat = $tmparr[3];
+	    $nvalues = $tmparr[4];
+	    $norec++;
+	    next;
+	}
+	if ($line =~ m/^\%/){
+	    $norec++;
+	    next;
+	}
+	@tmparr = split / /,$line;
+	$myyear = $tmparr[0];
+	$myday = $tmparr[1];
+	$timeofdata .= year_and_day2epoch($myyear,$myday).",";
+	$pressure .= $tmparr[2].",";
+	$temperature .= $tmparr[3].",";
+	$salinity .= $tmparr[4].",";
+	$norec++;
+    }
+    warn "Data records: nvalues ($nvalues) and norec ($norec-4) differ\n" if ($nvalues != $norec-4);
+    $timeofdata =~ s/,$//;
+    $lat =~ s/,$//;
+    $lon =~ s/,$//;
+    $pressure =~ s/,$//;
+    $salinity =~ s/,$//;
+    $temperature =~ s/,$//;
+
+    $title .= sprintf "ITP %02d Profile %06d",$itpid,$profileid;
+    $vessel = sprintf "ITP %02d",$itpid;
+    $myhistory = sprintf "%s creation",strftime("%F",gmtime(time));
+
+    ########################################################### 
+    # Then this information is substituted into the CDL template
+
+    s/\+title/$title/ for (@cdlout);
+    s/\+abstract/$abstract/ for (@cdlout);
+    s/\+topic/$topiccategory/ for (@cdlout);
+    s/\+keyw/$mykeywords/ for (@cdlout);
+    s/\+gcmdkeyw/$mygcmdkeywords/ for (@cdlout);
+    s/\+area/$myarea/ for (@cdlout);
+    s/\+inst/$institution/ for (@cdlout);
+    s/\+url/$myurl/ for (@cdlout);
+    s/\+piname/$PI_name/ for (@cdlout);
+    s/\+email/$contact/ for (@cdlout);
+    s/\+distribution/$distribution_statement/ for (@cdlout);
+    s/\+pname/$productname/ for (@cdlout);
+    s/\+projectname/$project_name/ for (@cdlout);
+    s/\+activity/$activity_type/ for (@cdlout);
+    s/\+history/$myhistory/ for (@cdlout);
+    s/\+vessel/$vessel/ for (@cdlout);
+    s/\+nlat/$lat/ for (@cdlout);
+    s/\+slat/$lat/ for (@cdlout);
+    s/\+wlon/$lon/ for (@cdlout);
+    s/\+elon/$lon/ for (@cdlout);
+    s/\+start_date/$timestr/ for (@cdlout);
+    s/\+stop_date/$timestr/ for (@cdlout);
+    s/\+nvalues/$nvalues/ for (@cdlout);
+    s/\+time/$timeofdata/ for (@cdlout);
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+temperature/$temperature/ for (@cdlout);
+    s/\+salinity/$salinity/ for (@cdlout);
+    s/\+pressure/$pressure/ for (@cdlout);
+
+    return(@cdlout);
+}
+
+#
+# Read and convert a specific trajectory format used by AWI for ice
+# thickness measurements from helicopter.
 #
 sub create_trajectory_cdl_awiem {
     my(@cdlout,@tmparr);
