@@ -41,7 +41,7 @@
 # Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.7 2008-10-19 20:10:49 steingod Exp $
+# $Id: txt2cdl,v 1.8 2008-10-19 20:15:51 steingod Exp $
 #  
 
 ########################################################### 
@@ -210,6 +210,7 @@ unless ($fileformat eq "awiem") {
 
 ########################################################### 
 # Create output file
+$cdloutput[0] =~ s/template_\w+ /$ofn /;
 print "\n";
 print " Writing file: $ofn\n";
 die " Could not write output file\n" if (! write_file($ofn, @cdloutput));
