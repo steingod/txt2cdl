@@ -41,7 +41,7 @@
 # Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.8 2008-10-19 20:15:51 steingod Exp $
+# $Id: txt2cdl,v 1.9 2008-10-20 23:00:38 steingod Exp $
 #  
 
 ########################################################### 
@@ -322,6 +322,7 @@ sub create_ctd_cdl_woce {
 
     # Sensor name
     $pname = $txtref->[0];
+    $pname =~ s/[\n\r]//;
 
     # Time
     @mytmp = grep /^DATE = /,@$txtref;
@@ -380,14 +381,12 @@ sub create_ctd_cdl_woce {
 
     s/\+nvalues/$nvalues/ for (@cdlout);
     s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
-    #s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
     s/\+time/$timeunix/ for (@cdlout);
     s/\+YYYY\-MM\-DD HH\:MM\:SS UTC/$timestr/ for (@cdlout);
     s/\+pres/$pres/ for (@cdlout);
     s/\+temp/$temp/ for (@cdlout);
-    ##s/\+cond/$cond/ for (@cdlout);
     s/\+psal/$psal/ for (@cdlout);
 
     return(@cdlout);
