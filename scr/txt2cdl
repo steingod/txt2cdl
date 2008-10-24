@@ -40,9 +40,11 @@
 # Øystein Godøy, METNO/FOU, 17.10.2008: Added support for AWI Helicopter
 # Ice Thickness measurements.
 # Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
+# Øystein Godøy, METNO/FOU, 24.10.2008: Adding conversion of radiation
+# flux data from Bear Island.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.10 2008-10-24 09:17:14 steingod Exp $
+# $Id: txt2cdl,v 1.11 2008-10-24 16:14:05 steingod Exp $
 #  
 
 ########################################################### 
@@ -66,6 +68,7 @@ sub create_ctd_cdl_seabirdnfh;
 sub create_itp_cdl;
 sub create_mooring_cdl_mooringgfi;
 sub create_trajectory_cdl_awiem;
+sub create_timeseries_cdl_radflux;
 sub write_file;
 
 my($ifn,$ofn,@text,$fileformat);
@@ -186,13 +189,15 @@ if ($fileformat eq "seabirdnfh") {
     @cdloutput = create_mooring_cdl_mooringgfi(\@template,\@text);
 } elsif ($fileformat eq "awiem") {
     @cdloutput = create_trajectory_cdl_awiem(\@template,\@text);
+} elsif ($fileformat eq "metnoradflux") {
+    @cdloutput = create_timeseries_cdl_radflux(\@template,\@text);
 } else {
     die "Fileformat ($fileformat) is not supported\n";
 }
 
 ########################################################### 
 # Add header information
-unless ($fileformat eq "awiem") {
+unless ($fileformat eq "awiem" or $fileformat eq "metnoradflux") {
     s/\+title/$title/ for (@cdloutput);
     s/\+abstract/$abstract/ for (@cdloutput);
     s/\+topic/$topic/ for (@cdloutput);
@@ -229,6 +234,9 @@ exit;
 #
 ########################################################### 
 
+#
+# Usage description
+#
 sub usage() {
     $Text::Wrap::columns = 74;
 
@@ -238,11 +246,12 @@ sub usage() {
     "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\n".
     "o Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)\n".
     "o Helicopter trajectory of ice thickness by AWI, Germany - (format=awiem)\n".
-    "o ITP-data from Woods Hole, daily updates - (format=itp)\n";
-    my $author = "Øystein Godøy, METNO/FOU, 19.10.2008";
+    "o ITP-data from Woods Hole, daily updates - (format=itp)\n".
+    "o METNO radiative flux measurements, continous stream - (format=metnoradflux)";
+    my $author = "Øystein Godøy, METNO/FOU, 24.10.2008";
 
     print "\n";
-    print wrap("","\t","damascii2cdl -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n");
+    print wrap("","\t","$0 -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n");
     print "\n";
     print "\t<infile>: Some supported ASCII file,\n".
 	"\t\tif a directory it tries to process contents\n";
@@ -274,7 +283,9 @@ sub usage() {
     exit;
 }
 
+#
 # Convert year and decimal days to epoch time
+#
 sub year_and_day2epoch($$) {
     my($myyear,$myday) = @_;
     my($timeepoch,$timestr);
@@ -289,6 +300,9 @@ sub year_and_day2epoch($$) {
     return($timeepoch);
 }
 
+#
+# Read a file
+#
 sub read_file($) {
 
     my($filename) = @_;
@@ -302,7 +316,24 @@ sub read_file($) {
 }
 
 #
-# Read and convert WOCE ASCII CTD files
+# Dump CDL code
+#
+sub write_file($@) {
+
+    my($filename,@text) = @_;
+    my($line);
+
+    open FH, ">$filename" or die " Could not open file $filename\n";
+    foreach $line (@text) {
+	print FH "$line";
+    }
+    close FH;
+
+    return(1);
+}
+
+#
+# Decode and convert WOCE ASCII CTD files
 #
 sub create_ctd_cdl_woce {
     my(@cdlout,@tmparr);
@@ -340,12 +371,6 @@ sub create_ctd_cdl_woce {
     $timestr = sprintf("%4d-%02d-%02d %02d:%02d:%02d UTC", 
 	    $yy, $mm, $dd, $hh, $ii, 0);
     $timeunix = str2time($timestr);
-
-    # Vessel
-##    @mytmp = grep /^\*\* Ship: /,@$txtref;
-##    $vessel = (split /:/,$mytmp[0])[1];
-##    $vessel =~ s/^(\s+)//;
-##    $vessel =~ s/[\n\r]//g;
 
     # Latitude
     @mytmp = grep /^LATITUDE = /,@$txtref;
@@ -394,7 +419,7 @@ sub create_ctd_cdl_woce {
 }
 
 #
-# Read and convert a specific SEABIRD format used by NFH/Tromsø
+# Decode and convert a specific SEABIRD format used by NFH/Tromsø
 #
 sub create_ctd_cdl_seabirdnfh {
     my(@cdlout,@tmparr);
@@ -494,7 +519,7 @@ sub create_ctd_cdl_seabirdnfh {
 }
 
 #
-# Read and convert the mooring format of GFI/UiB
+# Decode and convert the mooring format of GFI/UiB
 #
 sub create_mooring_cdl_mooringgfi {
 
@@ -674,8 +699,8 @@ sub create_mooring_cdl_mooringgfi {
 }
 
 #
-# Read and convert the level2 ITP-format used by Woods Hole Institute for ice
-# tethered platforms.
+# Decode and convert the ITP level2 format used by Woods Hole Institute
+# for Ice Tethered Platforms.
 #
 sub create_itp_cdl {
     my(@cdlout,@tmparr);
@@ -813,7 +838,7 @@ sub create_itp_cdl {
 }
 
 #
-# Read and convert a specific trajectory format used by AWI for ice
+# Decode and convert a specific trajectory format used by AWI for ice
 # thickness measurements from helicopter.
 #
 sub create_trajectory_cdl_awiem {
@@ -1115,18 +1140,94 @@ sub create_trajectory_cdl_awiem {
     return(@cdlout);
 }
 
-# Dump data to CDL
-sub write_file($@) {
+#
+# Decode and convert to CDL the METNO radiative flux file format
+#
+sub create_timeseries_cdl_radflux {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my($norec);
+    my($stationname,$variables,$datalogger,$procmeth);
+    my $varnames = "TIMESTAMP,RECORD,P_Wpm2_Avg,T_gr_C_Avg,P_L_Wpm2_Avg,T_L_gr_C_Avg,Batt_V_Min";
+    my $varmeth = ",,Avg,Avg,Avg,Avg,Min";
+    my($timestr,$timestr_start,$timestr_end,$obstime);
+    my($ssi,$dli,$ssitemp,$dlitemp,$battmin,$nvalues);
+    my($misvalin,$misvalout);
 
-    my($filename,@text) = @_;
-    my($line);
+    $misvalin = "NAN";
+    $misvalout = -999.;
 
-    open FH, ">$filename" or die " Could not open file $filename\n";
-    foreach $line (@text) {
-	print FH "$line";
+    ########################################################### 
+    # Decode header - 4 records
+    #
+    $norec = 0;
+    foreach $line (@$txtref) {
+	$line =~ s/["\n\r]//g;
+	if ($norec == 0) {
+	    @tmparr = split /,/,$line;
+	    $stationname = $tmparr[1];
+	    $datalogger = $tmparr[2];
+	}
+	if ($norec==1) {
+	    $variables = $line; 
+	    die "Variable names do not match" if ($variables ne $varnames);
+	}
+	if ($norec==3) {
+	    $procmeth = $line; 
+	    die "Variable processing do not match" if ($procmeth ne $varmeth);
+	}
+	$norec++;
+	last if ($norec == 4);
     }
-    close FH;
 
-    return(1);
+    ########################################################### 
+    # Decode data records - 7 variables
+    #
+    $norec = 0;
+    foreach $line (@$txtref) {
+	next if ($norec < 4);
+	$line =~ s/["\n\r]//g;
+	@tmparr = split /,/,$line;
+	$timestr = $tmparr[0];
+	$obstime .= str2time($timestr,"UTC").",";
+	$timestr_start = strftime("%4d-%02d-%02d %02d:%02d UTC",gmtime($obstime)) if ($norec==4);
+	$nvalues = $tmparr[1];
+	$ssi .= $tmparr[2].",";
+	$ssitemp .= $tmparr[3].",";
+	$dli .= $tmparr[4].",";
+	$dlitemp .= $tmparr[5].",";
+	$battmin .= $tmparr[6].",";
+
+	$norec++;
+    }
+    warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec-4);
+
+    ###########################################################
+    # Clean records
+    #
+    $obstime =~ s/,$//;
+    $ssi =~ s/,$//;
+    $ssi =~ s/$misvalin/$misvalout/g;
+    $ssitemp =~ s/,$//;
+    $ssitemp =~ s/$misvalin/$misvalout/g;
+    $dli =~ s/,$//;
+    $dli =~ s/$misvalin/$misvalout/g;
+    $dlitemp =~ s/,$//;
+    $dlitemp =~ s/$misvalin/$misvalout/g;
+    $battmin =~ s/,$//;
+    $battmin =~ s/$misvalin/$misvalout/g;
+
+    ###########################################################
+    # Enter values into the CDL template
+    #
+    s/\+ssi/$ssi/ for (@cdlout);
+    s/\+ssitemp/$ssitemp/ for (@cdlout);
+    s/\+dli/$dli/ for (@cdlout);
+    s/\+dlitemp/$dlitemp/ for (@cdlout);
+    s/\+battmin/$battmin/ for (@cdlout);
+
+    print "@cdlout\n";
+    exit;
+
+    return(@cdlout);
 }
-
