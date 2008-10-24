@@ -1,11 +1,12 @@
 #!/usr/bin/perl -w
 #
 # NAME:
-# damascii2cdl
+# txt2cdl
 #
 # PURPOSE:
 # To convert various ASCII files to CDL format for subsequent conversion
-# to netCDF. See function usage for details on supported file formats.
+# to netCDF using ncgen. See function usage for details on supported file
+# formats.
 #
 # REQUIREMENTS:
 # o Getopt::Std;
@@ -15,10 +16,10 @@
 # o Text::Wrap;
 #
 # INPUT:
-# NA
+# See function usage 
 #
 # OUTPUT:
-# NA
+# See function usage 
 #
 # NOTES:
 # NA
@@ -41,7 +42,7 @@
 # Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.9 2008-10-20 23:00:38 steingod Exp $
+# $Id: txt2cdl,v 1.10 2008-10-24 09:17:14 steingod Exp $
 #  
 
 ########################################################### 
