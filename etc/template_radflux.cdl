@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.1 2008-10-24 16:07:40 steingod Exp $
+// $Id: template_radflux.cdl,v 1.2 2008-10-24 16:12:32 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -86,8 +86,8 @@ data:
     latitude = +lat;
     longitude = +lon;
     ssi = +ssi;
-    ssitemp = +ssitemp;
+    ssisenstemp = +ssitemp;
     dli = +dli;
-    dlitemp = +dlitemp;
-    battmin = +battmin;
+    dlisenstemp = +dlitemp;
+    battery = +battmin;
 }

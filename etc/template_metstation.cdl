@@ -1,10 +1,11 @@
 netcdf template_metstation {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_metstation.cdl,v 1.1 2007-05-15 11:20:10 steingod Exp $
+// $Id: template_metstation.cdl,v 1.2 2008-10-24 16:07:40 steingod Exp $
 
 dimensions:
     time = unlimited;
+    stations = 1;
 
 variables:
     double time(time);
@@ -12,16 +13,16 @@ variables:
 	time:short_name = "time" ;
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
-    char stationid;
+    char stationid(stations);
 	stationd:long_name = "Station name";
-    float latitude;
+    float latitude(stations);
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
 	latitude:standard_name = "latitude";
 	latitude:units = "degree_north";
 	latitude:valid_min = -90.f;
 	latitude:valid_max = 90.f;
-    float longitude;
+    float longitude(stations);
 	longitude:long_name = "longitude";
 	longitude:short_name = "longitude";
 	longitude:standard_name = "longitude";
