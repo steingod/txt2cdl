@@ -1,0 +1,93 @@
+netcdf template_radflux {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_radflux.cdl,v 1.1 2008-10-24 16:07:40 steingod Exp $
+
+dimensions:
+    time = unlimited;
+    stations = 1;
+
+variables:
+    double time(time);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+    char stationid(stations);
+	stationd:long_name = "Station name";
+    float latitude(stations);
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.f;
+	latitude:valid_max = 90.f;
+    float longitude(stations);
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.f;
+	longitude:valid_max = 180.f;
+    float ssi(time);
+	ssi:long_name = "shortwave irradiation at the surface";
+	ssi:short_name = "ssi";
+	ssi:standard_name = "surface_downwelling_shortwave_flux";
+	ssi:_FillValue = -999.f;
+	ssi:units = "watts/meter2";
+    float ssisenstemp(time);
+	ssisenstemp:long_name = "temperature of the surface shortwave irradiation sensor";
+	ssisenstemp:short_name = "ssisenstemp";
+	ssisenstemp:_FillValue = -999.f;
+	ssisenstemp:units = "degC";
+    float dli(time);
+	ssi:long_name = "longwave irradiation at the surface";
+	ssi:short_name = "dli";
+	ssi:standard_name = "longwave_downwelling_shortwave_flux";
+	ssi:_FillValue = -999.f;
+	ssi:units = "watts/meter2";
+    float dlisenstemp(time);
+	dlisenstemp:long_name = "temperature of the surface longwave irradiation sensor";
+	dlisenstemp:short_name = "dlisenstemp";
+	dlisenstemp:_FillValue = -999.f;
+	dlisenstemp:units = "degC";
+    float battery(time);
+	battery:long_name = "minimum battery voltage";
+	battery:short_name = "battery";
+	battery:_FillValue = -999.f;
+	battery:units = "V";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; // Add text if wanted
+	:topicCategory = "+topic"; // Blank separated list
+	:keywords = "+keyw"; // Blank separated list
+	:Area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:Product_name = "+pname";
+	:Platform_name = "+stationid";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +lat;
+	:northernmost_latitude = +lat;
+	:westernmost_longitude = +lon;
+	:easternmost_longitude = +lon;
+	:quality_statement = "+qual";
+
+data:
+    time =  +time;
+    stationid = +stationid;
+    latitude = +lat;
+    longitude = +lon;
+    ssi = +ssi;
+    ssitemp = +ssitemp;
+    dli = +dli;
+    dlitemp = +dlitemp;
+    battmin = +battmin;
+}
