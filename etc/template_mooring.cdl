@@ -1,11 +1,12 @@
 netcdf template_mooring {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_mooring.cdl,v 1.3 2007-05-14 07:20:34 steingod Exp $
+// $Id: template_mooring.cdl,v 1.4 2008-10-24 17:22:24 steingod Exp $
 
 dimensions:
     time = unlimited;
     n_levels = +nlevels; // maximum number of levels (depth)
+    stations = 1;
 
 variables:
     double time(time);
@@ -20,14 +21,14 @@ variables:
 	depth:units = "meter";
 	depth:valid_min = 0;
 	depth:valid_max = 15000;
-    float latitude;
+    float latitude(stations);
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
 	latitude:standard_name = "latitude";
 	latitude:units = "degree_north";
 	latitude:valid_min = -90.f;
 	latitude:valid_max = 90.f;
-    float longitude;
+    float longitude(stations);
 	longitude:long_name = "longitude";
 	longitude:short_name = "longitude";
 	longitude:standard_name = "longitude";
