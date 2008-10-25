@@ -44,7 +44,7 @@
 # flux data from Bear Island.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.12 2008-10-24 22:11:45 steingod Exp $
+# $Id: txt2cdl,v 1.13 2008-10-25 08:17:06 steingod Exp $
 #  
 
 ########################################################### 
@@ -1153,13 +1153,14 @@ sub create_timeseries_cdl_radflux {
     my($timestr,$timestr_start,$timestr_end,$obstime,$unixtime);
     my($ssi,$dli,$ssitemp,$dlitemp,$battmin,$nvalues);
     my($misvalin,$misvalout);
-    my($topiccategory,$keywords,$gcmdkeywords,$conventions);
+    my($topiccategory,$keywords,$gcmdkeywords,$conventions,$history);
     my %stationinfo = 
     (
 	"Bjørnøya" => {
 	    "title" => "Downwelling surface radiative fluxes at Bear Island",
 	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CM21 and CG4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the stations.", 
 	    "product_name" => "radflux",
+	    "history" => "2008-10-25 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
 	    "area" => "Barents Sea",
 	    "lat" => 74.5166667,
@@ -1172,34 +1173,36 @@ sub create_timeseries_cdl_radflux {
 	    "quality_statement" => "None",
 	},
 	"Jan Mayen" => {
-	    "title" => " ",
-	    "abstract" => " ",
-	    "product_name" => " ",
-	    "project_name" => " ",
-	    "area" => " ",
+	    "title" => "",
+	    "abstract" => "",
+	    "product_name" => "",
+	    "history" => "2008-10-25 creation",
+	    "project_name" => "",
+	    "area" => "",
 	    "lat" => -999.,
 	    "lon" => -999.,
-	    "institution" => " ",
-	    "PI_name" => " ",
-	    "url" => " ",
-	    "contact" => " ",
-	    "distribution_statement" => " ",
-	    "quality_statement" => " ",
+	    "institution" => "",
+	    "PI_name" => "",
+	    "url" => "",
+	    "contact" => "",
+	    "distribution_statement" => "",
+	    "quality_statement" => "",
 	},
 	"unknown" => {
-	    "title" => " ",
-	    "abstract" => " ",
-	    "product_name" => " ",
-	    "project_name" => " ",
-	    "area" => " ",
+	    "title" => "",
+	    "abstract" => "",
+	    "product_name" => "",
+	    "history" => "2008-10-25 creation",
+	    "project_name" => "",
+	    "area" => "",
 	    "lat" => -999.,
 	    "lon" => -999.,
-	    "institution" => " ",
-	    "PI_name" => " ",
-	    "url" => " ",
-	    "contact" => " ",
-	    "distribution_statement" => " ",
-	    "quality_statement" => " ",
+	    "institution" => "",
+	    "PI_name" => "",
+	    "url" => "",
+	    "contact" => "",
+	    "distribution_statement" => "",
+	    "quality_statement" => "",
 	},
     );
 
@@ -1231,6 +1234,15 @@ sub create_timeseries_cdl_radflux {
 	}
 	$norec++;
 	last if ($norec == 4);
+    }
+
+    ###########################################################
+    # History update
+    #
+    if (length($stationinfo{$stationname}{history}) > 0) {
+	$history = $stationinfo{$stationname}{history}."\n".sprintf "%s revision",strftime("%F",gmtime(time));
+    } else {
+	$history = sprintf "%s creation",strftime("%F",gmtime(time));
     }
 
     ########################################################### 
@@ -1274,10 +1286,13 @@ sub create_timeseries_cdl_radflux {
     ###########################################################
     # Enter values into the CDL template
     #
+    s/\+history/$history/ for (@cdlout);
     s/\+title/$stationinfo{$stationname}{title}/ for (@cdlout);
     s/\+abstract/$stationinfo{$stationname}{abstract}/ for (@cdlout);
     s/\+pname/$stationinfo{$stationname}{product_name}/ for (@cdlout);
     s/\+area/$stationinfo{$stationname}{area}/ for (@cdlout);
+    s/\+keyw/$keywords/ for (@cdlout);
+    s/\+gcmdkeyw/$gcmdkeywords/ for (@cdlout);
     s/\+piname/$stationinfo{$stationname}{PI_name}/ for (@cdlout);
     s/\+inst/$stationinfo{$stationname}{institution}/ for (@cdlout);
     s/\+url/$stationinfo{$stationname}{url}/ for (@cdlout);
@@ -1286,6 +1301,7 @@ sub create_timeseries_cdl_radflux {
     s/\+qual/$stationinfo{$stationname}{quality_statement}/ for (@cdlout);
     s/\+lat/$stationinfo{$stationname}{lat}/ for (@cdlout);
     s/\+lon/$stationinfo{$stationname}{lon}/ for (@cdlout);
+    s/\+stationid/$stationname/ for (@cdlout);
     s/\+time/$obstime/ for (@cdlout);
     s/\+start_date/$timestr_start/ for (@cdlout);
     s/\+stop_date/$timestr_end/ for (@cdlout);
@@ -1294,8 +1310,6 @@ sub create_timeseries_cdl_radflux {
     s/\+dli/$dli/ for (@cdlout);
     s/\+dlitemp/$dlitemp/ for (@cdlout);
     s/\+battmin/$battmin/ for (@cdlout);
-
-    exit;
 
     return(@cdlout);
 }

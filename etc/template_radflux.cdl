@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.4 2008-10-25 08:00:25 steingod Exp $
+// $Id: template_radflux.cdl,v 1.5 2008-10-25 08:17:22 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -14,7 +14,7 @@ variables:
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
     char stationid(stations);
-	stationd:long_name = "Station name";
+	stationd:long_name = "+stationid";
     float latitude(stations);
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
