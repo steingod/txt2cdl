@@ -1,19 +1,20 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.6 2008-10-25 10:12:13 steingod Exp $
+// $Id: template_radflux.cdl,v 1.7 2008-10-25 11:33:09 steingod Exp $
 
 dimensions:
     time = unlimited;
     stations = 1;
+    strlen25 = 25;
 
 variables:
     double time(time);
-	time:long_name = "time" ;
+	time:long_name = "time of the observation" ;
 	time:short_name = "time" ;
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
-    char stationid(stations);
+    char stationid(stations,strlen25);
 	stationid:long_name = "name and/or stationnumber used as identifier";
     float latitude(stations);
 	latitude:long_name = "latitude";
@@ -35,27 +36,32 @@ variables:
 	ssi:standard_name = "surface_downwelling_shortwave_flux";
 	ssi:_FillValue = -999.f;
 	ssi:units = "watts/meter2";
+	ssi:cell_method = "time: mean (last minute)";
     float ssisenstemp(time);
 	ssisenstemp:long_name = "temperature of the surface shortwave irradiation sensor";
 	ssisenstemp:short_name = "ssisenstemp";
 	ssisenstemp:_FillValue = -999.f;
 	ssisenstemp:units = "degC";
+	ssisenstemp:cell_method = "time: mean (last minute)";
     float dli(time);
 	dli:long_name = "longwave irradiation at the surface";
 	dli:short_name = "dli";
 	dli:standard_name = "longwave_downwelling_shortwave_flux";
 	dli:_FillValue = -999.f;
 	dli:units = "watts/meter2";
+	dli:cell_method = "time: mean (last minute)";
     float dlisenstemp(time);
 	dlisenstemp:long_name = "temperature of the surface longwave irradiation sensor";
 	dlisenstemp:short_name = "dlisenstemp";
 	dlisenstemp:_FillValue = -999.f;
 	dlisenstemp:units = "degC";
+	dlisenstemp:cell_method = "time: mean (last minute)";
     float battery(time);
 	battery:long_name = "minimum battery voltage";
 	battery:short_name = "battery";
 	battery:_FillValue = -999.f;
 	battery:units = "V";
+	battery:cell_method = "time: min (last minute)";
 
 // global attributes
 	:Conventions = "CF-1.0";
@@ -83,12 +89,12 @@ variables:
 
 data:
     time =  +time;
-    stationid = +stationid;
+    stationid = "+stationid";
     latitude = +lat;
     longitude = +lon;
     ssi = +ssi;
-    ssisenstemp = +ssitemp;
+    ssisenstemp = +tempssi;
     dli = +dli;
-    dlisenstemp = +dlitemp;
+    dlisenstemp = +tempdli;
     battery = +battmin;
 }

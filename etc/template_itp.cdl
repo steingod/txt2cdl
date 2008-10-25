@@ -1,7 +1,7 @@
 netcdf template_itp {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_itp.cdl,v 1.2 2008-10-19 20:11:04 steingod Exp $
+// $Id: template_itp.cdl,v 1.3 2008-10-25 11:33:09 steingod Exp $
 
 dimensions:
     time = UNLIMITED; //
@@ -9,7 +9,7 @@ dimensions:
 
 variables:
     double time(time);
-	time:long_name = "time" ;
+	time:long_name = "time of the observation" ;
 	time:short_name = "time" ;
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;

@@ -44,7 +44,7 @@
 # flux data from Bear Island.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.15 2008-10-25 10:46:21 steingod Exp $
+# $Id: txt2cdl,v 1.16 2008-10-25 11:32:56 steingod Exp $
 #  
 
 ########################################################### 
@@ -1271,7 +1271,7 @@ sub create_timeseries_cdl_radflux {
 	$dlitemp .= $tmparr[5].",";
 	$battmin .= $tmparr[6].",";
     }
-    warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec-4);
+    ##warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec-4);
 
     ###########################################################
     # Clean records
@@ -1312,9 +1312,9 @@ sub create_timeseries_cdl_radflux {
     s/\+start_date/$timestr_start/ for (@cdlout);
     s/\+stop_date/$timestr_end/ for (@cdlout);
     s/\+ssi/$ssi/ for (@cdlout);
-    s/\+ssitemp/$ssitemp/ for (@cdlout);
+    s/\+tempssi/$ssitemp/ for (@cdlout);
     s/\+dli/$dli/ for (@cdlout);
-    s/\+dlitemp/$dlitemp/ for (@cdlout);
+    s/\+tempdli/$dlitemp/ for (@cdlout);
     s/\+battmin/$battmin/ for (@cdlout);
 
     return(@cdlout);
