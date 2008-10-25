@@ -42,7 +42,7 @@
 # Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.18 2008-10-25 12:07:13 steingod Exp $
+# $Id: txt2cdl,v 1.19 2008-10-25 15:00:43 steingod Exp $
 #  
 
 ########################################################### 
@@ -849,6 +849,7 @@ sub create_trajectory_cdl_awiem {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
     my(@timearr,$timeunix,$timestr_start,$timestr_end,$timeunixref);
+    my($timeunixref2007);
     my(@mytmp,$pname,$hours,$hourref,$timeofdata,$lat,$lon,$nvalues);
     my($nlat,$slat,$wlon,$elon);
     my($myvariables,$myunits,$thickness,$altitude,$myurl);
@@ -1011,6 +1012,8 @@ sub create_trajectory_cdl_awiem {
 	@timearr = gmtime($timeunix);
 	$timestr_start = strftime("%F %T UTC",@timearr);
     }
+    $timeunixref2007 = str2time("2007-01-01 00:00:00 UTC");
+    $timeunixref -= $timeunixref2007;
 
     # stop_date
     @mytmp = grep /^# stop_date: /,@$txtref;
@@ -1095,8 +1098,11 @@ sub create_trajectory_cdl_awiem {
 	$lon .= "$tmparr[1],";
 	$hours = $tmparr[2];
 	$hourref = int($hours) if ($norec == 0);
-	$timeunix = int(($hours-$hourref)*60*60);
-	$timeunix += $timeunixref;
+	#$timeunix = int(($hours-$hourref)*3600);
+	$timeunix = int(($hours-$hourref)*3600*1000);
+	##print "$hours $hourref $timeunix ";
+	$timeunix += ($timeunixref*1000);
+	##print "$timeunix $timeunixref\n";
 	$timeofdata .= "$timeunix,"; 
 	$thickness .= "$tmparr[3],";
 	$altitude .= "$tmparr[4],";
