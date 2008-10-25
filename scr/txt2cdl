@@ -44,7 +44,7 @@
 # flux data from Bear Island.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.16 2008-10-25 11:32:56 steingod Exp $
+# $Id: txt2cdl,v 1.17 2008-10-25 11:37:37 steingod Exp $
 #  
 
 ########################################################### 
@@ -71,7 +71,7 @@ sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
 sub write_file;
 
-my($ifn,$ofn,@text,$fileformat);
+my($ifn,$ofn,@text,$fileformat,$cdlhead);
 my($template_file, @template, $line, @cdloutput);
 my($piname,$title,$topic,$keyw,$email,$area,$inst,$vessel);
 my($distribution,$abstract,$history,$url,$pname,$qual);
@@ -216,7 +216,9 @@ unless ($fileformat eq "awiem" or $fileformat eq "metnoradflux") {
 
 ########################################################### 
 # Create output file
-$cdloutput[0] =~ s/template_\w+ /$ofn /;
+$cdlhead = $ofn;
+$cdlhead =~ s/(\.cdl)|(\.txt)|(\.dat)//;
+$cdloutput[0] =~ s/template_\w+ /$cdlhead /;
 print "\n";
 print " Writing file: $ofn\n";
 die " Could not write output file\n" if (! write_file($ofn, @cdloutput));
