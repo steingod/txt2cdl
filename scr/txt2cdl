@@ -28,9 +28,6 @@
 # Input checking is yet not properly imeplemented, but baseline
 # functionality for the formats supported are implemented.
 #
-# Directory handling and multiple CTD profiles and levels in moorings are
-# yet not implemented. 
-#
 # AUTHOR:
 # Øystein Godøy, METNO/FOU, 09.05.2007 
 #
@@ -42,9 +39,10 @@
 # Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
 # Øystein Godøy, METNO/FOU, 24.10.2008: Adding conversion of radiation
 # flux data from Bear Island.
+# Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.17 2008-10-25 11:37:37 steingod Exp $
+# $Id: txt2cdl,v 1.18 2008-10-25 12:07:13 steingod Exp $
 #  
 
 ########################################################### 
@@ -294,10 +292,14 @@ sub year_and_day2epoch($$) {
 
     $timestr = sprintf "%4d-01-01 00:00 GMT", $myyear;
 
+    #print "$myyear $myday ";
+
     $timeepoch = str2time($timestr);
-    $myday *= (60*60);
+    $myday *= (24*3600.);
 
     $timeepoch += int($myday);
+
+    #print "$myday $timeepoch\n";
 
     return($timeepoch);
 }
@@ -1160,9 +1162,9 @@ sub create_timeseries_cdl_radflux {
     (
 	"Bjørnøya" => {
 	    "title" => "Downwelling surface radiative fluxes at Bear Island",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CM21 and CG4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the stations.", 
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC.", 
 	    "product_name" => "radflux",
-	    "history" => "2008-10-25 creation",
+	    "history" => "2008-10-23 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
 	    "area" => "Ocean > Arctic Ocean > Barents Sea",
 	    "lat" => 74.5166667,
