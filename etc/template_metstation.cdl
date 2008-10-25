@@ -1,7 +1,7 @@
 netcdf template_metstation {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_metstation.cdl,v 1.2 2008-10-24 16:07:40 steingod Exp $
+// $Id: template_metstation.cdl,v 1.3 2008-10-25 08:00:25 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -120,6 +120,7 @@ variables:
 	:abstract = "+abstract"; // Add text if wanted
 	:topicCategory = "+topic"; // Blank separated list
 	:keywords = "+keyw"; // Blank separated list
+	:gcmd_keywords = "+gcmdkeyw"; // newline separated list
 	:Area = "+area"; // Comma separated list, see http://damocles.met.no/
 	:PI_name = "+piname";
 	:contact = "+email";
