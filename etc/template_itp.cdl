@@ -1,7 +1,7 @@
 netcdf template_itp {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_itp.cdl,v 1.4 2008-10-25 12:07:24 steingod Exp $
+// $Id: template_itp.cdl,v 1.5 2008-10-25 16:57:21 steingod Exp $
 
 dimensions:
     time = UNLIMITED; //
@@ -35,7 +35,7 @@ variables:
 	pres:units = "dbar";
 	pres:valid_min = 0.;
 	pres:valid_max = 15000.;
-	pres:axis = "y";
+	//pres:axis = "y";
     float temp(pres);
 	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
 	temp:short_name = "temperature";

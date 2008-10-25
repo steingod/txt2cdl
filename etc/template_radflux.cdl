@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.7 2008-10-25 11:33:09 steingod Exp $
+// $Id: template_radflux.cdl,v 1.8 2008-10-25 16:57:21 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -46,7 +46,7 @@ variables:
     float dli(time);
 	dli:long_name = "longwave irradiation at the surface";
 	dli:short_name = "dli";
-	dli:standard_name = "longwave_downwelling_shortwave_flux";
+	dli:standard_name = "surface_downwelling_longwave_flux";
 	dli:_FillValue = -999.f;
 	dli:units = "watts/meter2";
 	dli:cell_method = "time: mean (last minute)";
