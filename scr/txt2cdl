@@ -44,7 +44,7 @@
 # flux data from Bear Island.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.14 2008-10-25 10:29:55 steingod Exp $
+# $Id: txt2cdl,v 1.15 2008-10-25 10:46:21 steingod Exp $
 #  
 
 ########################################################### 
@@ -1162,7 +1162,7 @@ sub create_timeseries_cdl_radflux {
 	    "product_name" => "radflux",
 	    "history" => "2008-10-25 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
-	    "area" => "Barents Sea",
+	    "area" => "Ocean > Arctic Ocean > Barents Sea",
 	    "lat" => 74.5166667,
 	    "lon" => 19.01666667,
 	    "institution" => "Norwegian Meteorological Institute",
@@ -1176,7 +1176,7 @@ sub create_timeseries_cdl_radflux {
 	    "title" => "",
 	    "abstract" => "",
 	    "product_name" => "",
-	    "history" => "2008-10-25 creation",
+	    "history" => "",
 	    "project_name" => "",
 	    "area" => "",
 	    "lat" => -999.,
@@ -1192,7 +1192,7 @@ sub create_timeseries_cdl_radflux {
 	    "title" => "",
 	    "abstract" => "",
 	    "product_name" => "",
-	    "history" => "2008-10-25 creation",
+	    "history" => "",
 	    "project_name" => "",
 	    "area" => "",
 	    "lat" => -999.,
