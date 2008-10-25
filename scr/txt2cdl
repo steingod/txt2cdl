@@ -44,7 +44,7 @@
 # flux data from Bear Island.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.13 2008-10-25 08:17:06 steingod Exp $
+# $Id: txt2cdl,v 1.14 2008-10-25 10:29:55 steingod Exp $
 #  
 
 ########################################################### 
@@ -1208,6 +1208,11 @@ sub create_timeseries_cdl_radflux {
 
     $misvalin = "NAN";
     $misvalout = -999.;
+    $topiccategory = "ClimatologyMeteorologyAtmosphere";
+    $keywords = "Radiative Flux";
+    $gcmdkeywords = 
+	"Atmosphere > Atmospheric Radiation > Shortwave Radiation\n".
+	"Atmosphere > Atmospheric Radiation > Longwave Radiation";
 
     ###########################################################
     # Copy the template
@@ -1291,6 +1296,7 @@ sub create_timeseries_cdl_radflux {
     s/\+abstract/$stationinfo{$stationname}{abstract}/ for (@cdlout);
     s/\+pname/$stationinfo{$stationname}{product_name}/ for (@cdlout);
     s/\+area/$stationinfo{$stationname}{area}/ for (@cdlout);
+    s/\+topic/$topiccategory/ for (@cdlout);
     s/\+keyw/$keywords/ for (@cdlout);
     s/\+gcmdkeyw/$gcmdkeywords/ for (@cdlout);
     s/\+piname/$stationinfo{$stationname}{PI_name}/ for (@cdlout);
