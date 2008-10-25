@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.5 2008-10-25 08:17:22 steingod Exp $
+// $Id: template_radflux.cdl,v 1.6 2008-10-25 10:12:13 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -14,7 +14,7 @@ variables:
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
     char stationid(stations);
-	stationd:long_name = "+stationid";
+	stationid:long_name = "name and/or stationnumber used as identifier";
     float latitude(stations);
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
@@ -41,11 +41,11 @@ variables:
 	ssisenstemp:_FillValue = -999.f;
 	ssisenstemp:units = "degC";
     float dli(time);
-	ssi:long_name = "longwave irradiation at the surface";
-	ssi:short_name = "dli";
-	ssi:standard_name = "longwave_downwelling_shortwave_flux";
-	ssi:_FillValue = -999.f;
-	ssi:units = "watts/meter2";
+	dli:long_name = "longwave irradiation at the surface";
+	dli:short_name = "dli";
+	dli:standard_name = "longwave_downwelling_shortwave_flux";
+	dli:_FillValue = -999.f;
+	dli:units = "watts/meter2";
     float dlisenstemp(time);
 	dlisenstemp:long_name = "temperature of the surface longwave irradiation sensor";
 	dlisenstemp:short_name = "dlisenstemp";
