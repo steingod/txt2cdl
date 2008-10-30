@@ -42,7 +42,7 @@
 # Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.19 2008-10-25 15:00:43 steingod Exp $
+# $Id: txt2cdl,v 1.20 2008-10-30 16:25:59 steingod Exp $
 #  
 
 ########################################################### 
@@ -919,6 +919,7 @@ sub create_trajectory_cdl_awiem {
     @mytmp = grep /^# keywords: /,@$txtref;
     unless ($#mytmp == -1) {
 	$mykeywords = (split /:/,$mytmp[0])[1];
+	$mykeywords =~ s/^\s//g;
 	$mykeywords =~ s/[\n\r]//g;
 	$mykeywords =~ s/,/ /g;
     }
@@ -927,6 +928,7 @@ sub create_trajectory_cdl_awiem {
     @mytmp = grep /^# gcmd_keywords: /,@$txtref;
     unless ($#mytmp == -1) {
 	$mygcmdkeywords = (split /:/,$mytmp[0])[1];
+	$mygcmdkeywords =~ s/^\s//g;
 	$mygcmdkeywords =~ s/[\n\r]//g;
 	$mygcmdkeywords =~ s/,/ /g;
     }
@@ -958,8 +960,9 @@ sub create_trajectory_cdl_awiem {
     @mytmp = grep /^# history: /,@$txtref;
     unless ($#mytmp == -1) {
 	$myhistory = (split /:/,$mytmp[0])[1];
+	$myhistory =~ s/^\s//g;
 	$myhistory =~ s/[\n\r]//g;
-	$myhistory =~ s/,/\n/g;
+	$myhistory =~ s/,\s*/\n/g;
     }
 
     # area
@@ -1125,6 +1128,7 @@ sub create_trajectory_cdl_awiem {
     s/\+abstract/$abstract/ for (@cdlout);
     s/\+topic/$topiccategory/ for (@cdlout);
     s/\+keyw/$mykeywords/ for (@cdlout);
+    s/\+gcmdkeyw/$mygcmdkeywords/ for (@cdlout);
     s/\+area/$myarea/ for (@cdlout);
     s/\+inst/$institution/ for (@cdlout);
     s/\+url/$url/ for (@cdlout);
@@ -1168,7 +1172,7 @@ sub create_timeseries_cdl_radflux {
     (
 	"Bjørnøya" => {
 	    "title" => "Downwelling surface radiative fluxes at Bear Island",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC.", 
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council.", 
 	    "product_name" => "radflux",
 	    "history" => "2008-10-23 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",

@@ -1,7 +1,7 @@
 netcdf template_awiem {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_awiem.cdl,v 1.3 2008-10-25 15:01:08 steingod Exp $
+// $Id: template_awiem.cdl,v 1.4 2008-10-30 16:25:49 steingod Exp $
 
 dimensions:
     time = unlimited; 
@@ -12,7 +12,7 @@ variables:
 	time:short_name = "time";
 	time:standard_name = "time";
 	time:units = "milliseconds since 2007-01-01 00:00:00 UTC";
-	//time:axis = "T";
+	time:axis = "T";
     float latitude(time);
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
@@ -45,15 +45,15 @@ variables:
 	:Conventions = "CF-1.0";
 	:title = "+title";
 	:abstract = "+abstract"; 
-	:topicCategory = "+topic"; 
+	:topiccategory = "+topic"; 
 	:keywords = "+keyw"; 
-	:gcmd_keywords = "+keyw"; 
-	:Area = "+area";
+	:gcmd_keywords = "+gcmdkeyw"; 
+	:area = "+area";
 	:PI_name = "+piname";
 	:contact = "+email";
 	:institution = "+inst";
 	:url = "+url";
-	:Product_name = "+pname";
+	:product_name = "+pname";
 	:activity_type = "+activity";
 	:project_name = "+projectname";
 	:start_date = "+start_date";
