@@ -1,7 +1,7 @@
 netcdf template_awiem {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_awiem.cdl,v 1.4 2008-10-30 16:25:49 steingod Exp $
+// $Id: template_awiem.cdl,v 1.5 2008-10-30 16:43:28 steingod Exp $
 
 dimensions:
     time = unlimited; 
@@ -64,7 +64,7 @@ variables:
 	:northernmost_latitude = +nlat;
 	:westernmost_longitude = +wlon;
 	:easternmost_longitude = +elon;
-	//:quality_statement = "+quality";
+	:quality_statement = "+quality";
 
 data:
     time =  +time;
