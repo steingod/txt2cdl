@@ -40,9 +40,10 @@
 # Øystein Godøy, METNO/FOU, 24.10.2008: Adding conversion of radiation
 # flux data from Bear Island.
 # Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
+# Øystein Godøy, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.20 2008-10-30 16:25:59 steingod Exp $
+# $Id: txt2cdl,v 1.21 2008-10-30 16:43:17 steingod Exp $
 #  
 
 ########################################################### 
@@ -856,7 +857,7 @@ sub create_trajectory_cdl_awiem {
     my($myhistory,$start_date,$stop_date,$institution,$contact,$myarea);
     my($conventions,$distribution_statement,$project_name,$productname);
     my($topiccategory,$mykeywords,$mygcmdkeywords,$activity_type,$PI_name);
-    my($line,$norec,$misvalin,$misvalout);
+    my($line,$norec,$misvalin,$misvalout,$quality_statement);
 
     ###########################################################
     # Do some initialization
@@ -878,6 +879,7 @@ sub create_trajectory_cdl_awiem {
     $contact = "";
     $myurl = "";
     $project_name = "";
+    $quality_statement = "";
     $start_date = "";
     $stop_date = "";
 
@@ -911,7 +913,7 @@ sub create_trajectory_cdl_awiem {
     unless ($#mytmp == -1) {
 	$topiccategory = (split /:/,$mytmp[0])[1];
 	$topiccategory =~ s/[\n\r]//g;
-	$topiccategory =~ s/,/ /g;
+	$topiccategory =~ s/,\ */ /g;
 	$topiccategory =~ s/^\s//g;
     }
 
@@ -1032,8 +1034,17 @@ sub create_trajectory_cdl_awiem {
     @mytmp = grep /^# institution: /,@$txtref;
     unless ($#mytmp == -1) {
 	$institution = (split /:/,$mytmp[0])[1];
-	$institution =~ s/[\s]//g;
+	$institution =~ s/[\n\r]//g;
 	$institution =~ s/^\s//g;
+    }
+
+    # url
+    @mytmp = grep /^# url: /,@$txtref;
+    unless ($#mytmp == -1) {
+	@tmparr = (split /:/,$mytmp[0]);
+	$myurl = $tmparr[1].":".$tmparr[2];
+	$myurl =~ s/[\n\r]//g;
+	$myurl =~ s/^\s//g;
     }
 
     # PI_name
@@ -1063,6 +1074,14 @@ sub create_trajectory_cdl_awiem {
     unless ($#mytmp == -1) {
 	$project_name = (split /:/,$mytmp[0])[1];
 	$project_name =~ s/[\s]//g;
+    }
+
+    # quality statement
+    @mytmp = grep /^# quality_statement: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$quality_statement = (split /:/,$mytmp[0])[1];
+	$quality_statement =~ s/^\s//g;
+	$quality_statement =~ s/[\n\r]//g;
     }
 
     # variables
@@ -1131,12 +1150,13 @@ sub create_trajectory_cdl_awiem {
     s/\+gcmdkeyw/$mygcmdkeywords/ for (@cdlout);
     s/\+area/$myarea/ for (@cdlout);
     s/\+inst/$institution/ for (@cdlout);
-    s/\+url/$url/ for (@cdlout);
+    s/\+url/$myurl/ for (@cdlout);
     s/\+piname/$PI_name/ for (@cdlout);
     s/\+email/$contact/ for (@cdlout);
     s/\+distribution_statement/$distribution_statement/ for (@cdlout);
     s/\+pname/$productname/ for (@cdlout);
     s/\+projectname/$project_name/ for (@cdlout);
+    s/\+quality/$quality_statement/ for (@cdlout);
     s/\+activity/$activity_type/ for (@cdlout);
     s/\+history/$myhistory/ for (@cdlout);
     s/\+nlat/$nlat/ for (@cdlout);
