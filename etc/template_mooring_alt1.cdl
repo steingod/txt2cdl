@@ -1,0 +1,107 @@
+netcdf template_mooring {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_mooring_alt1.cdl,v 1.1 2008-11-26 19:50:14 steingod Exp $
+
+dimensions:
+    time = unlimited;
+    n_levels = +nlevels; // maximum number of levels (depth)
+    stations = 1;
+
+variables:
+    double time(time);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+    float depth(n_levels);
+	depth:long_name = "Depth in meters";
+	depth:short_name = "depth";
+	depth:standard_name = "depth";
+	depth:units = "meter";
+	depth:valid_min = 0;
+	depth:valid_max = 15000;
+    float latitude(stations);
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.f;
+	latitude:valid_max = 90.f;
+    float longitude(stations);
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.f;
+	longitude:valid_max = 180.f;
+    float pres(time,n_levels);
+	pres:long_name = "Sea Water Pressure";
+	pres:short_name = "Pressure";
+	pres:standard_name = "sea_water_pressure";
+	pres:units = "dbar";
+	pres:valid_min = 0.;
+	pres:valid_max = 15000.;
+    float speed(time,n_levels);
+	speed:long_name = "Sea Water Speed";
+	speed:short_name = "speed";
+	speed:standard_name = "sea_water_speed";
+	speed:units = "cm s-1";
+	speed:_FillValue = 9999.f;
+    float direction(time,n_levels);
+	direction:long_name = "Direction of current in degrees from the north";
+	direction:short_name = "direction";
+	direction:standard_name = "direction_of_sea_water_velocity";
+	direction:units = "degree";
+	direction:valid_min = 0.;
+	direction:valid_max = 360.;
+	direction:_FillValue = 9999.f;
+    float temp(time,n_levels);
+	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
+	temp:short_name = "temperature";
+	temp:standard_name = "sea_water_temperature";
+	temp:_FillValue = 9999.f;
+	temp:units = "degrees Celsius";
+    float psal(time,n_levels);
+	psal:long_name = "Practical salinity (PSU/sal00)";
+	psal:short_name = "salinity";
+	psal:standard_name = "sea_water_salinity";
+	psal:_FillValue = 9999.f;
+	psal:units = "";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; 
+	:topicCategory = "+topic"; 
+	:keywords = "+keyw"; 
+	:gcmd_keywords = "+gcmdkeyw"; 
+	:Area = "+area"; 
+	:project_name = "+projectname";
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:Product_name = "+pname";
+	:Platform_name = "+vessel";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +lat;
+	:northernmost_latitude = +lat;
+	:westernmost_longitude = +lon;
+	:easternmost_longitude = +lon;
+	:quality_statement = "+quality";
+
+data:
+    time =  +time;
+    depth = +depth;
+    latitude = +lat;
+    longitude = +lon;
+    pres = +pres;
+    speed = +speed;
+    direction = +direction;
+    temp = +temp;
+    psal = +psal;
+}
