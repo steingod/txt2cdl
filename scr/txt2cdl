@@ -41,9 +41,10 @@
 # flux data from Bear Island.
 # Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
 # Øystein Godøy, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
+# Øystein Godøy, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.21 2008-10-30 16:43:17 steingod Exp $
+# $Id: txt2cdl,v 1.22 2008-11-26 19:49:24 steingod Exp $
 #  
 
 ########################################################### 
@@ -66,6 +67,7 @@ sub create_ctd_cdl_woce;
 sub create_ctd_cdl_seabirdnfh;
 sub create_itp_cdl;
 sub create_mooring_cdl_mooringgfi;
+sub create_mooring_cdl_ascii;
 sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
 sub write_file;
@@ -184,6 +186,8 @@ if ($fileformat eq "seabirdnfh") {
     @cdloutput = create_ctd_cdl_woce(\@template,\@text);
 } elsif ($fileformat eq "itp") {
     @cdloutput = create_itp_cdl(\@template,\@text);
+} elsif ($fileformat eq "mooring") {
+    @cdloutput = create_mooring_cdl_ascii(\@template,\@text);
 } elsif ($fileformat eq "mooringgfi") {
     @cdloutput = create_mooring_cdl_mooringgfi(\@template,\@text);
 } elsif ($fileformat eq "awiem") {
@@ -196,7 +200,8 @@ if ($fileformat eq "seabirdnfh") {
 
 ########################################################### 
 # Add header information
-unless ($fileformat eq "awiem" or $fileformat eq "metnoradflux") {
+unless ($fileformat eq "awiem" or $fileformat eq "metnoradflux" or
+$fileformat eq "mooring") {
     s/\+title/$title/ for (@cdloutput);
     s/\+abstract/$abstract/ for (@cdloutput);
     s/\+topic/$topic/ for (@cdloutput);
@@ -246,6 +251,7 @@ sub usage() {
     "o WOCE CTD ASCII format - (format=wocectd)\n".
     "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\n".
     "o Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)\n".
+    "o Current mooring format in ASCII - (format=mooring)\n".
     "o Helicopter trajectory of ice thickness by AWI, Germany - (format=awiem)\n".
     "o ITP-data from Woods Hole, daily updates - (format=itp)\n".
     "o METNO radiative flux measurements, continous stream - (format=metnoradflux)";
@@ -843,6 +849,367 @@ sub create_itp_cdl {
 }
 
 #
+# Decode and convert the column based ASCII format that can be used to
+# store morring data. 
+#
+sub create_mooring_cdl_ascii {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my(@timearr,$timeunix,$timestr_start,$timestr_end,$timeunixref);
+    my($timeunixref2007,$year,$month,$day,$hour);
+    my(@mytmp,$pname,$timeofdata,$lat,$lon,$nvalues,$depth);
+    my($myvariables,$myunits,$speed,$direction);
+    my($pressure,$salinity,$temperature,$myurl,$platformname);
+    my($myhistory,$start_date,$stop_date,$institution,$contact,$myarea);
+    my($conventions,$distribution_statement,$project_name,$productname);
+    my($topiccategory,$mykeywords,$mygcmdkeywords,$activity_type,$PI_name);
+    my($line,$norec,$misvalin,$misvalout,$quality_statement);
+
+    ###########################################################
+    # Do some initialization
+    $misvalin = "NaN";
+    $misvalout = 9999.;
+    $title = "";
+    $abstract = "";
+    $productname = "";
+    $platformname = "";
+    $myarea = "";
+    $topiccategory = "";
+    $mykeywords = "";
+    $mygcmdkeywords = "";
+    $activity_type = "";
+    $myhistory = "";
+    $distribution_statement = "";
+    $conventions = "";
+    $PI_name = "";
+    $institution = "";
+    $contact = "";
+    $myurl = "";
+    $project_name = "";
+    $quality_statement = "";
+    $start_date = "";
+    $stop_date = "";
+
+
+    ###########################################################
+    # Copy the template
+    @cdlout = @$tempref;
+
+    ########################################################### 
+    # First the necessary information is extracted from the input data
+    # stream
+
+    # title
+    @mytmp = grep /^# title: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$title = (split /:/,$mytmp[0])[1];
+	$title =~ s/[\n\r]//g;
+	$title =~ s/^\ //;
+    }
+
+    # abstract
+    @mytmp = grep /^# abstract: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$abstract = (split /:/,$mytmp[0])[1];
+	$abstract =~ s/[\n\r]//g;
+	$abstract =~ s/^\ //;
+    }
+
+    # topiccatergory
+    @mytmp = grep /^# topiccategory: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$topiccategory = (split /:/,$mytmp[0])[1];
+	$topiccategory =~ s/[\n\r]//g;
+	$topiccategory =~ s/,\ */ /g;
+	$topiccategory =~ s/^\s//g;
+    }
+
+    # keywords
+    @mytmp = grep /^# keywords: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$mykeywords = (split /:/,$mytmp[0])[1];
+	$mykeywords =~ s/^\s//g;
+	$mykeywords =~ s/[\n\r]//g;
+	$mykeywords =~ s/,/ /g;
+    }
+
+    # gcmd_keywords
+    @mytmp = grep /^# gcmd_keywords: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$mygcmdkeywords = (split /:/,$mytmp[0])[1];
+	$mygcmdkeywords =~ s/^\s//g;
+	$mygcmdkeywords =~ s/[\n\r]//g;
+	$mygcmdkeywords =~ s/,/ /g;
+    }
+
+    # activity_type
+    @mytmp = grep /^# activity_type: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$activity_type = (split /:/,$mytmp[0])[1];
+	$activity_type =~ s/[\n\r]//g;
+	$activity_type =~ s/^\s//g;
+    }
+
+    # Conventions
+    @mytmp = grep /^# Conventions: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$conventions = (split /:/,$mytmp[0])[1];
+	$conventions =~ s/[\n\r]//g;
+    }
+
+    # product_name
+    @mytmp = grep /^# product_name: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$productname = (split /:/,$mytmp[0])[1];
+	$productname =~ s/[\n\r]//g;
+	$productname =~ s/^\s//g;
+    }
+
+    # platform_name
+    @mytmp = grep /^# platform: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$platformname = (split /:/,$mytmp[0])[1];
+	$platformname =~ s/[\n\r]//g;
+	$platformname =~ s/^\s//;
+    }
+
+    # Measurement level
+    @mytmp = grep /^# measurement_level: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$depth = (split /:/,$mytmp[0])[1];
+	$depth =~ s/[\n\r]//g;
+	die "Measurement level has to specified in meter" unless $depth =~ m/meter/;
+	$depth =~ s/^\s//g;
+	$depth =~ s/meter//g;
+    }
+
+    # history
+    @mytmp = grep /^# history: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$myhistory = (split /:/,$mytmp[0])[1];
+	$myhistory =~ s/^\s//g;
+	$myhistory =~ s/[\n\r]//g;
+	$myhistory =~ s/,\s*/\n/g;
+    }
+
+    # area
+    @mytmp = grep /^# area: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$myarea = (split /:/,$mytmp[0])[1];
+	$myarea =~ s/[\n\r]//g;
+	$myarea =~ s/^\s//g;
+    }
+
+    # northernmost_latitude
+    @mytmp = grep /^# northernmost_latitude: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$lat = (split /:/,$mytmp[0])[1];
+	$lat =~ s/^ //;
+	$lat =~ s/[\n\r]//g;
+    }
+
+    # southernmost_latitude
+    @mytmp = grep /^# southernmost_latitude: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$lat = (split /:/,$mytmp[0])[1];
+	$lat =~ s/^ //;
+	$lat =~ s/[\n\r]//g;
+    }
+
+    # westernmost_longitude
+    @mytmp = grep /^# westernmost_longitude: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$lon = (split /:/,$mytmp[0])[1];
+	$lon =~ s/^ //;
+	$lon =~ s/[\n\r]//g;
+    }
+
+    # easternmost_longitude
+    @mytmp = grep /^# easternmost_longitude: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$lon = (split /:/,$mytmp[0])[1];
+	$lon =~ s/^ //;
+	$lon =~ s/[\n\r]//g;
+    }
+
+    # start_date
+    @mytmp = grep /^# start_date: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$start_date = (split /:/,$mytmp[0])[1];
+	$start_date =~ s/[\n\r]//g;
+	$timeunix = str2time($start_date,"UTC");
+	$timeunixref = $timeunix;
+	@timearr = gmtime($timeunix);
+	$timestr_start = strftime("%F %T UTC",@timearr);
+    }
+    $timeunixref2007 = str2time("2007-01-01 00:00:00 UTC");
+    $timeunixref -= $timeunixref2007;
+
+    # stop_date
+    @mytmp = grep /^# stop_date: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$stop_date = (split /:/,$mytmp[0])[1];
+	$stop_date =~ s/[\r\n]//g;
+	$timeunix = str2time($stop_date,"UTC");
+	@timearr = gmtime($timeunix);
+	$timestr_end = strftime("%F %T UTC",@timearr);
+    }
+
+    # institution
+    @mytmp = grep /^# institution: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$institution = (split /:/,$mytmp[0])[1];
+	$institution =~ s/[\n\r]//g;
+	$institution =~ s/^\s//g;
+    }
+
+    # url
+    @mytmp = grep /^# url: /,@$txtref;
+    unless ($#mytmp == -1) {
+	@tmparr = (split /:/,$mytmp[0]);
+	$myurl = $tmparr[1].":".$tmparr[2];
+	$myurl =~ s/[\n\r]//g;
+	$myurl =~ s/^\s//g;
+    }
+
+    # PI_name
+    @mytmp = grep /^# PI_name: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$PI_name = (split /:/,$mytmp[0])[1];
+	$PI_name =~ s/[\n\r]//g;
+	$PI_name =~ s/^\s//g;
+    }
+
+    # contact
+    @mytmp = grep /^# contact: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$contact = (split /:/,$mytmp[0])[1];
+	$contact =~ s/[\s]//g;
+    }
+
+    # distribution_statement
+    @mytmp = grep /^# distribution_statement: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$distribution_statement = (split /:/,$mytmp[0])[1];
+	$distribution_statement =~ s/[\n\r]//g;
+	$distribution_statement =~ s/[\s]//;
+    }
+
+    # project_name
+    @mytmp = grep /^# project_name: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$project_name = (split /:/,$mytmp[0])[1];
+	$project_name =~ s/[\s]//g;
+    }
+
+    # quality statement
+    @mytmp = grep /^# quality_statement: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$quality_statement = (split /:/,$mytmp[0])[1];
+	$quality_statement =~ s/^\s//g;
+	$quality_statement =~ s/[\n\r]//g;
+    }
+
+    # variables
+    @mytmp = grep /^# variables: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$myvariables = (split /:/,$mytmp[0])[1];
+	$myvariables =~ s/[\s]//g;
+	die "Incorrect variables for this format specification" unless ($myvariables eq "year,month,day,hour,speed,dir,temp,salt,pres");
+    }
+
+    # units
+    @mytmp = grep /^# units: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$myunits = (split /:/,$mytmp[0])[1];
+	$myunits =~ s/[\s]//;
+	$myunits =~ s/[\r\n]//;
+	unless ($myunits eq "NA,NA,NA,NA,cm/s,degrees from north,celsius,PSU,dbar") {
+	print "$myunits\n";
+	die "Incorrect unit specification for this format" 
+	}
+    }
+
+    # Nvalues
+    @mytmp = grep /^\# number of observations: /,@$txtref;
+    unless ($#mytmp == -1) {
+	$nvalues = (split /:/,$mytmp[0])[1];
+	$nvalues =~ s/[\s\n\r]//g;
+    }
+
+    # Data records
+    @mytmp = grep /^\d/,@$txtref;
+    s/\ +/ /g for (@mytmp);
+    s/^\ |\ $// for (@mytmp);
+    s/[\n\r]//g for (@mytmp);
+    $norec = 0;
+    foreach $line (@mytmp) {
+	next if (length($line) == 0);
+	@tmparr = split / /,$line;
+	$year = $tmparr[0];
+	$month = $tmparr[1];
+	$day = $tmparr[2];
+	$hour = $tmparr[3];
+	$timeunix = str2time(sprintf("%4d-%02d-%02d %02d:00:00 UTC",$year,$month,$day,$hour),"UTC");
+	$timeofdata .= "$timeunix,"; 
+	$speed .= "$tmparr[4],";
+	$direction .= "$tmparr[5],";
+	$temperature .= "$tmparr[6],";
+	$salinity .= "$tmparr[7],";
+	$pressure .= "$tmparr[8],";
+	$norec++;
+    }
+    warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
+    $timeofdata =~ s/,$//;
+    $speed =~ s/,$//;
+    $speed =~ s/$misvalin/$misvalout/g;
+    $direction =~ s/,$//;
+    $direction =~ s/$misvalin/$misvalout/g;
+    $temperature =~ s/,$//;
+    $temperature =~ s/$misvalin/$misvalout/g;
+    $salinity =~ s/,$//;
+    $salinity =~ s/$misvalin/$misvalout/g;
+    $pressure =~ s/,$//;
+    $pressure =~ s/$misvalin/$misvalout/g;
+
+    ########################################################### 
+    # Then this information is substituted into the CDL template
+
+    s/\+title/$title/ for (@cdlout);
+    s/\+abstract/$abstract/ for (@cdlout);
+    s/\+topic/$topiccategory/ for (@cdlout);
+    s/\+keyw/$mykeywords/ for (@cdlout);
+    s/\+gcmdkeyw/$mygcmdkeywords/ for (@cdlout);
+    s/\+area/$myarea/ for (@cdlout);
+    s/\+inst/$institution/ for (@cdlout);
+    s/\+url/$myurl/ for (@cdlout);
+    s/\+piname/$PI_name/ for (@cdlout);
+    s/\+email/$contact/ for (@cdlout);
+    s/\+distribution/$distribution_statement/ for (@cdlout);
+    s/\+pname/$productname/ for (@cdlout);
+    s/\+projectname/$project_name/ for (@cdlout);
+    s/\+vessel/$platformname/ for (@cdlout);
+    s/\+quality/$quality_statement/ for (@cdlout);
+    s/\+activity/$activity_type/ for (@cdlout);
+    s/\+history/$myhistory/ for (@cdlout);
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+start_date/$timestr_start/ for (@cdlout);
+    s/\+stop_date/$timestr_end/ for (@cdlout);
+    s/\+nlevels/1/ for (@cdlout);
+    s/\+depth/$depth/ for (@cdlout);
+    s/\+time/$timeofdata/ for (@cdlout);
+    s/\+speed/$speed/ for (@cdlout);
+    s/\+direction/$direction/ for (@cdlout);
+    s/\+pres/$pressure/ for (@cdlout);
+    s/\+temp/$temperature/ for (@cdlout);
+    s/\+psal/$salinity/ for (@cdlout);
+
+    return(@cdlout);
+}
+
+
+#
 # Decode and convert a specific trajectory format used by AWI for ice
 # thickness measurements from helicopter.
 #
@@ -1193,7 +1560,7 @@ sub create_timeseries_cdl_radflux {
 	"Bjørnøya" => {
 	    "title" => "Downwelling surface radiative fluxes at Bear Island",
 	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council.", 
-	    "product_name" => "radflux",
+	    "product_name" => "radiative fluxes",
 	    "history" => "2008-10-23 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
 	    "area" => "Ocean > Arctic Ocean > Barents Sea",
@@ -1204,23 +1571,23 @@ sub create_timeseries_cdl_radflux {
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
 	    "distribution_statement" => "Free",
-	    "quality_statement" => "None",
+	    "quality_statement" => "Quality controlled",
 	},
 	"Jan Mayen" => {
-	    "title" => "",
-	    "abstract" => "",
-	    "product_name" => "",
-	    "history" => "",
-	    "project_name" => "",
-	    "area" => "",
-	    "lat" => -999.,
-	    "lon" => -999.,
-	    "institution" => "",
-	    "PI_name" => "",
-	    "url" => "",
-	    "contact" => "",
-	    "distribution_statement" => "",
-	    "quality_statement" => "",
+	    "title" => "Downwelling surface radiative fluxes at Jan Mayen",
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council.",
+	    "product_name" => "radiative fluxes",
+	    "history" => "2008-11-23 creation",
+	    "project_name" => "iAOOS-Norway",
+	    "area" => "Ocean > Arctic Ocean > Greenland Sea",
+	    "lat" => 70.933333,
+	    "lon" => -8.6666667,
+	    "institution" => "Norwegian Meteorological Institute",
+	    "PI_name" => "Øystein Godøy",
+	    "url" => "http://www.met.no/",
+	    "contact" => "o.godoy\@met.no",
+	    "distribution_statement" => "Free",
+	    "quality_statement" => "Quality controlled",
 	},
 	"unknown" => {
 	    "title" => "",
@@ -1261,6 +1628,7 @@ sub create_timeseries_cdl_radflux {
 	if ($norec == 0) {
 	    @tmparr = split /,/,$line;
 	    $stationname = $tmparr[1];
+	    $stationname =~ s/ Strålingsstasjon//;
 	    $datalogger = $tmparr[2];
 	}
 	if ($norec==1) {
