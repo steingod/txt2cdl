@@ -43,12 +43,12 @@
 # Øystein Godøy, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
 # Øystein Godøy, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
 # Øystein Godøy, METNO/FOU, 27.12.2008: Added quality control of DLI
-# measurements due to technical trouble at Jan Mayen and Bear Island.
-# Minute values should not exceed 200 W/m^2, be careful in the future. Did
-# also add warning when processing radiative flux measurements...
+# measurements at Bear Island. Manual inspection and time windows are
+# being used as well as inverting the signal between April and
+# December 
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.24 2008-12-27 17:51:41 steingod Exp $
+# $Id: txt2cdl,v 1.25 2008-12-27 22:05:06 steingod Exp $
 #  
 
 ########################################################### 
@@ -197,7 +197,6 @@ if ($fileformat eq "seabirdnfh") {
 } elsif ($fileformat eq "awiem") {
     @cdloutput = create_trajectory_cdl_awiem(\@template,\@text);
 } elsif ($fileformat eq "metnoradflux") {
-    warn "DLI measurements are truncated at 200 W/m^2!!";
     @cdloutput = create_timeseries_cdl_radflux(\@template,\@text);
 } else {
     die "Fileformat ($fileformat) is not supported\n";
@@ -1611,6 +1610,13 @@ sub create_timeseries_cdl_radflux {
 	    "quality_statement" => "",
 	},
     );
+    my $valperiod1 = str2time("2008-04-08 12:22:00","UTC");
+    my $valperiod2a = str2time("2008-11-15 11:04:00","UTC");
+    my $valperiod2b = str2time("2008-11-18 10:24:00","UTC");
+    my $valperiod3a = str2time("2008-11-21 09:36:00","UTC");
+    my $valperiod3b = str2time("2008-11-21 09:44:00","UTC");
+    my $invertdlistart = str2time("2008-04-21 12:15:00","UTC");
+    my $invertdliend = str2time("2008-12-17 07:45:00","UTC");
 
     $misvalin = "NAN";
     $misvalout = -999.;
@@ -1674,8 +1680,15 @@ sub create_timeseries_cdl_radflux {
 	$nvalues = $tmparr[1];
 	$ssi .= $tmparr[2].",";
 	$ssitemp .= $tmparr[3].",";
-	if (abs($tmparr[4]) > 200) {
-	    $dli .= $misvalout.",";
+	if ($stationname eq "Bjørnøya") {
+	    if (($unixtime < $valperiod1) || ($unixtime > $valperiod2a && $unixtime < $valperiod2b) || ($unixtime > $valperiod3a && $unixtime < $valperiod3b)) {
+		$dli .= $misvalout.",";
+	    } elsif ($unixtime >= $invertdlistart && $unixtime <= $invertdliend && $tmparr[4] ne $misvalin) {
+		$tmparr[4] *= -1;
+		$dli .= $tmparr[4].",";
+	    } else {
+		$dli .= $tmparr[4].",";
+	    }
 	} else {
 	    $dli .= $tmparr[4].",";
 	}

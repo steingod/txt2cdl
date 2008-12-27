@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.8 2008-10-25 16:57:21 steingod Exp $
+// $Id: template_radflux.cdl,v 1.9 2008-12-27 22:05:06 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -44,9 +44,9 @@ variables:
 	ssisenstemp:units = "degC";
 	ssisenstemp:cell_method = "time: mean (last minute)";
     float dli(time);
-	dli:long_name = "longwave irradiation at the surface";
+	dli:long_name = "difference between downward atmospheric longwave irradiation and emitted CGR4 irradiance";
 	dli:short_name = "dli";
-	dli:standard_name = "surface_downwelling_longwave_flux";
+	dli:standard_name = "surface_net_downward_longwave_flux";
 	dli:_FillValue = -999.f;
 	dli:units = "watts/meter2";
 	dli:cell_method = "time: mean (last minute)";
