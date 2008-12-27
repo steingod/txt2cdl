@@ -48,7 +48,7 @@
 # also add warning when processing radiative flux measurements...
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.23 2008-12-27 17:50:36 steingod Exp $
+# $Id: txt2cdl,v 1.24 2008-12-27 17:51:41 steingod Exp $
 #  
 
 ########################################################### 
@@ -197,6 +197,7 @@ if ($fileformat eq "seabirdnfh") {
 } elsif ($fileformat eq "awiem") {
     @cdloutput = create_trajectory_cdl_awiem(\@template,\@text);
 } elsif ($fileformat eq "metnoradflux") {
+    warn "DLI measurements are truncated at 200 W/m^2!!";
     @cdloutput = create_timeseries_cdl_radflux(\@template,\@text);
 } else {
     die "Fileformat ($fileformat) is not supported\n";
