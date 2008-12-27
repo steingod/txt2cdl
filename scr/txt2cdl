@@ -42,9 +42,13 @@
 # Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
 # Øystein Godøy, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
 # Øystein Godøy, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
+# Øystein Godøy, METNO/FOU, 27.12.2008: Added quality control of DLI
+# measurements due to technical trouble at Jan Mayen and Bear Island.
+# Minute values should not exceed 200 W/m^2, be careful in the future. Did
+# also add warning when processing radiative flux measurements...
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.22 2008-11-26 19:49:24 steingod Exp $
+# $Id: txt2cdl,v 1.23 2008-12-27 17:50:36 steingod Exp $
 #  
 
 ########################################################### 
@@ -1669,7 +1673,11 @@ sub create_timeseries_cdl_radflux {
 	$nvalues = $tmparr[1];
 	$ssi .= $tmparr[2].",";
 	$ssitemp .= $tmparr[3].",";
-	$dli .= $tmparr[4].",";
+	if (abs($tmparr[4]) > 200) {
+	    $dli .= $misvalout.",";
+	} else {
+	    $dli .= $tmparr[4].",";
+	}
 	$dlitemp .= $tmparr[5].",";
 	$battmin .= $tmparr[6].",";
     }
