@@ -1,7 +1,7 @@
 netcdf template_mooring {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_mooring.cdl,v 1.4 2008-10-24 17:22:24 steingod Exp $
+// $Id: template_mooring.cdl,v 1.5 2009-01-21 12:51:12 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -14,6 +14,7 @@ variables:
 	time:short_name = "time" ;
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+	time:axis = "T";
     float depth(n_levels);
 	depth:long_name = "Depth in meters";
 	depth:short_name = "depth";
