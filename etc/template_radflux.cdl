@@ -1,11 +1,10 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.10 2009-01-21 12:51:12 steingod Exp $
+// $Id: template_radflux.cdl,v 1.11 2009-02-10 16:37:53 steingod Exp $
 
 dimensions:
     time = unlimited;
-    stations = 1;
     strlen25 = 25;
 
 variables:
@@ -15,16 +14,16 @@ variables:
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
 	time:axis = "T";
-    char stationid(stations,strlen25);
+    char stationid(strlen25);
 	stationid:long_name = "name and/or stationnumber used as identifier";
-    float latitude(stations);
+    float latitude;
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
 	latitude:standard_name = "latitude";
 	latitude:units = "degree_north";
 	latitude:valid_min = -90.f;
 	latitude:valid_max = 90.f;
-    float longitude(stations);
+    float longitude;
 	longitude:long_name = "longitude";
 	longitude:short_name = "longitude";
 	longitude:standard_name = "longitude";
@@ -69,16 +68,18 @@ variables:
 	:history = "+history";
 	:title = "+title";
 	:abstract = "+abstract"; // Add text if wanted
-	:topicCategory = "+topic"; // Blank separated list
+	:topiccategory = "+topic"; // Blank separated list
 	:keywords = "+keyw"; // Blank separated list
 	:gcmd_keywords = "+gcmdkeyw"; // Newline separated list
-	:Area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:activity_type = "+activity_type";
 	:PI_name = "+piname";
 	:contact = "+email";
 	:institution = "+inst";
 	:url = "+url";
-	:Product_name = "+pname";
+	:product_name = "+pname";
 	:Platform_name = "+stationid";
+	:project_name = "+projectname";
 	:start_date = "+start_date";
 	:stop_date = "+stop_date";
 	:distribution_statement = "+distribution"; 
