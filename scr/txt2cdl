@@ -48,7 +48,7 @@
 # December 
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.25 2008-12-27 22:05:06 steingod Exp $
+# $Id: txt2cdl,v 1.26 2009-02-10 16:36:53 steingod Exp $
 #  
 
 ########################################################### 
@@ -1551,8 +1551,8 @@ sub create_trajectory_cdl_awiem {
 sub create_timeseries_cdl_radflux {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
-    my($norec);
-    my($stationname,$variables,$datalogger,$procmeth);
+    my($norec,$i,$qchit);
+    my($stationname,$variables,$datalogger,$procmeth,$activitytype);
     my $varnames = "TIMESTAMP,RECORD,P_Wpm2_Avg,T_gr_C_Avg,P_L_Wpm2_Avg,T_L_gr_C_Avg,Batt_V_Min";
     my $varmeth = ",,Avg,Avg,Avg,Avg,Min";
     my($timestr,$timestr_start,$timestr_end,$obstime,$unixtime);
@@ -1563,35 +1563,71 @@ sub create_timeseries_cdl_radflux {
     (
 	"Bjørnøya" => {
 	    "title" => "Downwelling surface radiative fluxes at Bear Island",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council.", 
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control focus on the radiative parameters, thus sensor temperatures may contain errors.", 
 	    "product_name" => "radiative fluxes",
 	    "history" => "2008-10-23 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
-	    "area" => "Ocean > Arctic Ocean > Barents Sea",
+	    "area" => "Barents Sea",
 	    "lat" => 74.5166667,
 	    "lon" => 19.01666667,
 	    "institution" => "Norwegian Meteorological Institute",
 	    "PI_name" => "Øystein Godøy",
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Free",
+	    "distribution_statement" => "Restricted to iAOOS-Norway",
 	    "quality_statement" => "Quality controlled",
+	    "quality_removals" => "5",
+	    "quality_keys" => {
+	    	"0" => {
+		"par" => "dli",
+		"start" => str2time("2008-01-01 00:00:00","UTC"), 
+		"end" => str2time("2008-04-08 12:22:00","UTC"),
+		},
+	    	"1" => {
+		"par" => "dli",
+		"start" => str2time("2008-11-15 11:04:00","UTC"), 
+		"end" => str2time("2008-11-18 10:24:00","UTC"),
+		},
+	    	"2" => {
+		"par" => "dli",
+		"start" => str2time("2008-11-21 09:36:00","UTC"), 
+		"end" => str2time("2008-11-21 09:38:00","UTC"),
+		},
+	    	"3" => {
+		"par" => "ssi",
+		"start" => str2time("2008-11-21 09:55:00","UTC"), 
+		"end" => str2time("2008-11-21 09:58:00","UTC"),
+		},
+	    	"4" => {
+		"par" => "dli",
+		"start" => str2time("2009-01-31 15:04:00","UTC"), 
+		"end" => str2time("2009-02-11 00:00:00","UTC"),
+		},
+	    },
 	},
 	"Jan Mayen" => {
 	    "title" => "Downwelling surface radiative fluxes at Jan Mayen",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council.",
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control focus on the radiative parameters, thus sensor temperatures may contain errors.",
 	    "product_name" => "radiative fluxes",
 	    "history" => "2008-11-23 creation",
 	    "project_name" => "iAOOS-Norway",
-	    "area" => "Ocean > Arctic Ocean > Greenland Sea",
+	    "area" => "Greenland Sea",
 	    "lat" => 70.933333,
 	    "lon" => -8.6666667,
 	    "institution" => "Norwegian Meteorological Institute",
 	    "PI_name" => "Øystein Godøy",
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Free",
+	    "distribution_statement" => "Restricted to iAOOS-Norway",
 	    "quality_statement" => "Quality controlled",
+	    "quality_removals" => "1",
+	    "quality_keys" => {
+	    	"0" => {
+		"par" => "ssi",
+		"start" => str2time("2008-11-01 00:00:00","UTC"), 
+		"end" => str2time("2008-12-03 18:00:00","UTC"),
+		},
+	    },
 	},
 	"unknown" => {
 	    "title" => "",
@@ -1608,16 +1644,14 @@ sub create_timeseries_cdl_radflux {
 	    "contact" => "",
 	    "distribution_statement" => "",
 	    "quality_statement" => "",
+	    "quality_removals" => "0",
+	    "quality_keys" => "",
 	},
     );
-    my $valperiod1 = str2time("2008-04-08 12:22:00","UTC");
-    my $valperiod2a = str2time("2008-11-15 11:04:00","UTC");
-    my $valperiod2b = str2time("2008-11-18 10:24:00","UTC");
-    my $valperiod3a = str2time("2008-11-21 09:36:00","UTC");
-    my $valperiod3b = str2time("2008-11-21 09:44:00","UTC");
     my $invertdlistart = str2time("2008-04-21 12:15:00","UTC");
     my $invertdliend = str2time("2008-12-17 07:45:00","UTC");
 
+    $qchit = 0;
     $misvalin = "NAN";
     $misvalout = -999.;
     $topiccategory = "ClimatologyMeteorologyAtmosphere";
@@ -1625,6 +1659,7 @@ sub create_timeseries_cdl_radflux {
     $gcmdkeywords = 
 	"Atmosphere > Atmospheric Radiation > Shortwave Radiation\n".
 	"Atmosphere > Atmospheric Radiation > Longwave Radiation";
+    $activitytype = "Land station";
 
     ###########################################################
     # Copy the template
@@ -1678,20 +1713,47 @@ sub create_timeseries_cdl_radflux {
 	$timestr_start = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime)) if ($norec==5);
 	$timestr_end = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime));
 	$nvalues = $tmparr[1];
+	if ($stationname eq "Bjørnøya") {
+	    if ($unixtime >= $invertdlistart && $unixtime <= $invertdliend && $tmparr[4] ne $misvalin) {
+		$tmparr[4] *= -1;
+	    }
+	}
+	$qchit  = 0;
+	for ($i =0; $i < $stationinfo{$stationname}{"quality_removals"};$i++) {
+	    if (($unixtime >
+		$stationinfo{$stationname}{"quality_keys"}{$i}{"start"}) && 
+		($unixtime <
+		$stationinfo{$stationname}{"quality_keys"}{$i}{"end"})) {
+		$qchit = 1;
+		#print "$norec $i [".strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime))."] $tmparr[2] - $tmparr[4] - $stationinfo{$stationname}{\"quality_keys\"}{$i}{\"par\"} - ";
+		if ($stationinfo{$stationname}{"quality_keys"}{$i}{"par"} eq "ssi") {
+		    $ssi .= $misvalout.",";
+		    $ssitemp .= $tmparr[3].",";
+		    $dli .= $tmparr[4].",";
+		    $dlitemp .= $tmparr[5].",";
+		    $battmin .= $tmparr[6].",";
+		    last;
+		} elsif ($stationinfo{$stationname}{"quality_keys"}{$i}{"par"} eq "dli") {
+		    $ssi .= $tmparr[2].",";
+		    $ssitemp .= $tmparr[3].",";
+		    $dli .= $misvalout.",";
+		    $dlitemp .= $tmparr[5].",";
+		    $battmin .= $tmparr[6].",";
+		    last;
+		} else {
+		    $ssi .= $misvalout.",";
+		    $ssitemp .= $tmparr[3].",";
+		    $dli .= $misvalout.",";
+		    $dlitemp .= $tmparr[5].",";
+		    $battmin .= $tmparr[6].",";
+		    last;
+		}
+	    }
+	}
+	next if ($qchit);
 	$ssi .= $tmparr[2].",";
 	$ssitemp .= $tmparr[3].",";
-	if ($stationname eq "Bjørnøya") {
-	    if (($unixtime < $valperiod1) || ($unixtime > $valperiod2a && $unixtime < $valperiod2b) || ($unixtime > $valperiod3a && $unixtime < $valperiod3b)) {
-		$dli .= $misvalout.",";
-	    } elsif ($unixtime >= $invertdlistart && $unixtime <= $invertdliend && $tmparr[4] ne $misvalin) {
-		$tmparr[4] *= -1;
-		$dli .= $tmparr[4].",";
-	    } else {
-		$dli .= $tmparr[4].",";
-	    }
-	} else {
-	    $dli .= $tmparr[4].",";
-	}
+	$dli .= $tmparr[4].",";
 	$dlitemp .= $tmparr[5].",";
 	$battmin .= $tmparr[6].",";
     }
@@ -1719,10 +1781,12 @@ sub create_timeseries_cdl_radflux {
     s/\+title/$stationinfo{$stationname}{title}/ for (@cdlout);
     s/\+abstract/$stationinfo{$stationname}{abstract}/ for (@cdlout);
     s/\+pname/$stationinfo{$stationname}{product_name}/ for (@cdlout);
+    s/\+project_name/$stationinfo{$stationname}{project_name}/ for (@cdlout);
     s/\+area/$stationinfo{$stationname}{area}/ for (@cdlout);
     s/\+topic/$topiccategory/ for (@cdlout);
     s/\+keyw/$keywords/ for (@cdlout);
     s/\+gcmdkeyw/$gcmdkeywords/ for (@cdlout);
+    s/\+activity_type/$activitytype/ for (@cdlout);
     s/\+piname/$stationinfo{$stationname}{PI_name}/ for (@cdlout);
     s/\+inst/$stationinfo{$stationname}{institution}/ for (@cdlout);
     s/\+url/$stationinfo{$stationname}{url}/ for (@cdlout);
