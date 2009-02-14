@@ -46,9 +46,11 @@
 # measurements at Bear Island. Manual inspection and time windows are
 # being used as well as inverting the signal between April and
 # December 
+# Øystein Godøy, METNO/FOU, 14.02.2009: Added support for Vagabond CTD
+# data and started rewrite of CTD handling of SeaBird profiles.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.26 2009-02-10 16:36:53 steingod Exp $
+# $Id: txt2cdl,v 1.27 2009-02-14 23:38:00 steingod Exp $
 #  
 
 ########################################################### 
@@ -184,8 +186,8 @@ print " Reading file: $ifn\n";
 # Extract information from input file and create CDL structure
 print "\n";
 print " Converting data to CDL\n";
-if ($fileformat eq "seabirdnfh") {
-    @cdloutput = create_ctd_cdl_seabirdnfh(\@template,\@text);
+if ($fileformat eq "seabirdctd") {
+    @cdloutput = create_ctd_cdl_seabird(\@template,\@text);
 } elsif ($fileformat eq "wocectd") {
     @cdloutput = create_ctd_cdl_woce(\@template,\@text);
 } elsif ($fileformat eq "itp") {
@@ -253,7 +255,7 @@ sub usage() {
     my $text = "This software transforms various ASCII formats into CDL files which can be converted to netCDF by ncgen. The file formats supported may change.";
     my $formats = 
     "o WOCE CTD ASCII format - (format=wocectd)\n".
-    "o SeaBird ASCII format by NFH, Tromsø, Norway - (format=seabirdnfh)\n".
+    "o SeaBird ASCII format (several versions) - (format=seabirdctd)\n".
     "o Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)\n".
     "o Current mooring format in ASCII - (format=mooring)\n".
     "o Helicopter trajectory of ice thickness by AWI, Germany - (format=awiem)\n".
@@ -436,11 +438,11 @@ sub create_ctd_cdl_woce {
 #
 # Decode and convert a specific SEABIRD format used by NFH/Tromsø
 #
-sub create_ctd_cdl_seabirdnfh {
+sub create_ctd_cdl_seabird {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
     my(@timearr,$timeunix,$timestr);
-    my(@mytmp,$pname,$vessel,$lat,$lon,$nvalues);
+    my(@mytmp,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues);
     my($pres,$temp,$cond,$psal);
     my($line,$norec);
 
@@ -457,38 +459,59 @@ sub create_ctd_cdl_seabirdnfh {
     $pname =~ s/(^(\* ))|://g;
     $pname =~ s/[\n\r]//g;
 
-    # Time
-    @mytmp = grep /^\* NMEA UTC \(Time\) = /,@$txtref;
-    $timestr = (split /=/,$mytmp[0])[1];
-    $timestr =~ s/[\n\r]//g;
-    $timestr =~ s/\s+/ /g;
-    $timeunix = str2time($timestr);
-    @timearr = gmtime($timeunix);
-    $timestr = strftime("%F %T UTC",@timearr);
+    if ($pname =~ "Sea-Bird SBE19plus Data File") {
+	# Time
+	@mytmp = grep /^\* cast /,@$txtref;
+	$timestr = substr $mytmp[0],11,21;
+	$timeunix = str2time($timestr."UTC");
+	@timearr = gmtime($timeunix);
+	$timestr = strftime("%F %T UTC",@timearr);
 
-    # Vessel
-    @mytmp = grep /^\*\* Ship: /,@$txtref;
-    $vessel = (split /:/,$mytmp[0])[1];
-    $vessel =~ s/^(\s+)//;
-    $vessel =~ s/[\n\r]//g;
+	if (grep /Vagabond/,@$txtref) {
+	    @mytmp = grep /^\*\* Vagabond/,@$txtref;
+	    $tmpstr = $mytmp[0];
+	    @mytmp =  split /-/,$tmpstr;
+	    $vessel = "Vagabond";
+	    $lat = (substr $mytmp[1],1,2)+(substr $mytmp[1],4,2)/60.;
+	    $lon = (substr $mytmp[2],1,2)+(substr $mytmp[2],4,2)/60.;
+	} else {
+	    die "Cannot interprete this format...\n";
+	}
+	
+    } elsif ($pname =~ "Sea-Bird SBE 9 Data File") {
+# Time
+	@mytmp = grep /^\* NMEA UTC \(Time\) = /,@$txtref;
+	$timestr = (split /=/,$mytmp[0])[1];
+	$timestr =~ s/[\n\r]//g;
+	$timestr =~ s/\s+/ /g;
+	$timeunix = str2time($timestr);
+	@timearr = gmtime($timeunix);
+	$timestr = strftime("%F %T UTC",@timearr);
 
-    # Latitude
-    @mytmp = grep /^\* NMEA Latitude = /,@$txtref;
-    $lat = (split /=/,$mytmp[0])[1];
-    $lat =~ s/^ //;
-    @mytmp = split / /,$lat,3;
-    $lat = $mytmp[0]+($mytmp[1]/60.);
-    $mytmp[2] =~ s/[\n\r]//g;
-    $lat *= (-1.) if ($mytmp[2] eq "S");
+# Vessel
+	@mytmp = grep /^\*\* Ship: /,@$txtref;
+	$vessel = (split /:/,$mytmp[0])[1];
+	$vessel =~ s/^(\s+)//;
+	$vessel =~ s/[\n\r]//g;
 
-    # Longitude
-    @mytmp = grep /^\* NMEA Longitude = /,@$txtref;
-    $lon = (split /=/,$mytmp[0])[1];
-    $lon =~ s/^ //;
-    @mytmp = split / /,$lon,3;
-    $lon = $mytmp[0]+($mytmp[1]/60.);
-    $mytmp[2] =~ s/[\n\r]//g;
-    $lon *= (-1.) if ($mytmp[2] eq "W");
+# Latitude
+	@mytmp = grep /^\* NMEA Latitude = /,@$txtref;
+	$lat = (split /=/,$mytmp[0])[1];
+	$lat =~ s/^ //;
+	@mytmp = split / /,$lat,3;
+	$lat = $mytmp[0]+($mytmp[1]/60.);
+	$mytmp[2] =~ s/[\n\r]//g;
+	$lat *= (-1.) if ($mytmp[2] eq "S");
+
+# Longitude
+	@mytmp = grep /^\* NMEA Longitude = /,@$txtref;
+	$lon = (split /=/,$mytmp[0])[1];
+	$lon =~ s/^ //;
+	@mytmp = split / /,$lon,3;
+	$lon = $mytmp[0]+($mytmp[1]/60.);
+	$mytmp[2] =~ s/[\n\r]//g;
+	$lon *= (-1.) if ($mytmp[2] eq "W");
+    }
 
     # Nvalues
     @mytmp = grep /^\# nvalues = /,@$txtref;
@@ -720,7 +743,7 @@ sub create_mooring_cdl_mooringgfi {
 sub create_itp_cdl {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
-    my(@timearr,$timeunix,$timestr,$timeunixref);
+    my(@timearr,$timeunix,$timestr_start,$timestr_end,$timeunixref);
     my(@mytmp,$pname,$hours,$hourref,$timeofdata,$lat,$lon,$nvalues);
     my($nlat,$slat,$wlon,$elon);
     my($myvariables,$myunits,$thickness,$altitude,$myurl);
@@ -728,7 +751,7 @@ sub create_itp_cdl {
     my($conventions,$distribution_statement,$project_name,$productname);
     my($topiccategory,$mykeywords,$mygcmdkeywords,$activity_type,$PI_name);
     my($line,$norec,$misvalin,$misvalout);
-    my($itpid,$profileid,$vessel);
+    my($itpid,$profileid,$vessel,$quality);
     my($myyear,$myday,$pressure,$temperature,$salinity);
 
     ###########################################################
@@ -740,20 +763,21 @@ sub create_itp_cdl {
     $productname = "ITP profile";
     $myarea = "Arctic Ocean";
     $topiccategory = "oceans";
-    $mykeywords = "pressure,temperature,salinity";
-    $mygcmdkeywords = "";
-    $activity_type = "Ice station";
+    $mykeywords = "pressure temperature salinity";
+    $mygcmdkeywords = "Oceans > Ocean Temperature > Water Temperature\nOceans > Salinity/Density > Salinity\nOceans > Ocean Pressure > Water Pressure";
+    $activity_type = "Float";
     $vessel = "";
     $myhistory = "";
     $distribution_statement = "Free";
     $conventions = "CF-1.0";
-    $PI_name = "";
+    $PI_name = "Not available";
     $institution = "Woods Hole Oceanographic Institute";
     $contact = "itp\@whoi.edu";
     $myurl = "http://www.whoi.edu/itp/";
     $project_name = "Damocles";
     $start_date = "";
     $stop_date = "";
+    $quality = "Level 2 data";
 
 
     ###########################################################
@@ -784,7 +808,7 @@ sub create_itp_cdl {
 	    $myday = $tmparr[1];
 	    $timeunix = year_and_day2epoch($myyear,$myday);
 	    @timearr = gmtime($timeunix);
-	    $timestr= strftime("%F %T UTC",@timearr);
+	    $timestr_start = strftime("%F %T UTC",@timearr);
 	    $lon = $tmparr[2];
 	    $lat = $tmparr[3];
 	    $nvalues = $tmparr[4];
@@ -798,7 +822,12 @@ sub create_itp_cdl {
 	@tmparr = split / /,$line;
 	$myyear = $tmparr[0];
 	$myday = $tmparr[1];
-	$timeofdata .= year_and_day2epoch($myyear,$myday).",";
+	$timeunix = year_and_day2epoch($myyear,$myday);
+	$timeofdata .= $timeunix.",";
+	if ($norec == 3) {
+	    @timearr = gmtime($timeunix);
+	    $timestr_end = strftime("%F %T UTC",@timearr);
+	}
 	$pressure .= $tmparr[2].",";
 	$temperature .= $tmparr[3].",";
 	$salinity .= $tmparr[4].",";
@@ -812,7 +841,7 @@ sub create_itp_cdl {
     $salinity =~ s/,$//;
     $temperature =~ s/,$//;
 
-    $title .= sprintf "ITP %02d Profile %06d",$itpid,$profileid;
+    $title .= sprintf "ITP %02d Profile",$itpid;
     $vessel = sprintf "ITP %02d",$itpid;
     $myhistory = sprintf "%s creation",strftime("%F",gmtime(time));
 
@@ -831,23 +860,25 @@ sub create_itp_cdl {
     s/\+email/$contact/ for (@cdlout);
     s/\+distribution/$distribution_statement/ for (@cdlout);
     s/\+pname/$productname/ for (@cdlout);
-    s/\+projectname/$project_name/ for (@cdlout);
-    s/\+activity/$activity_type/ for (@cdlout);
+    s/\+project_name/$project_name/ for (@cdlout);
+    s/\+activity_type/$activity_type/ for (@cdlout);
     s/\+history/$myhistory/ for (@cdlout);
     s/\+vessel/$vessel/ for (@cdlout);
     s/\+nlat/$lat/ for (@cdlout);
     s/\+slat/$lat/ for (@cdlout);
     s/\+wlon/$lon/ for (@cdlout);
     s/\+elon/$lon/ for (@cdlout);
-    s/\+start_date/$timestr/ for (@cdlout);
-    s/\+stop_date/$timestr/ for (@cdlout);
+    s/\+start_date/$timestr_start/ for (@cdlout);
+    s/\+stop_date/$timestr_end/ for (@cdlout);
     s/\+nvalues/$nvalues/ for (@cdlout);
     s/\+time/$timeofdata/ for (@cdlout);
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
-    s/\+temperature/$temperature/ for (@cdlout);
-    s/\+salinity/$salinity/ for (@cdlout);
-    s/\+pressure/$pressure/ for (@cdlout);
+    s/\+temp/$temperature/ for (@cdlout);
+    s/\+psal/$salinity/ for (@cdlout);
+    s/\+pres/$pressure/ for (@cdlout);
+    s/\+qual/$quality/ for (@cdlout);
+    splice @cdlout,9,1,"variables:\n\t:profile_number = $profileid;\n";
 
     return(@cdlout);
 }
@@ -1623,7 +1654,7 @@ sub create_timeseries_cdl_radflux {
 	    "quality_removals" => "1",
 	    "quality_keys" => {
 	    	"0" => {
-		"par" => "ssi",
+		"par" => "ssi&dli",
 		"start" => str2time("2008-11-01 00:00:00","UTC"), 
 		"end" => str2time("2008-12-03 18:00:00","UTC"),
 		},
@@ -1648,8 +1679,14 @@ sub create_timeseries_cdl_radflux {
 	    "quality_keys" => "",
 	},
     );
-    my $invertdlistart = str2time("2008-04-21 12:15:00","UTC");
-    my $invertdliend = str2time("2008-12-17 07:45:00","UTC");
+    # ########################################################### 
+    # Corrections to be made to raw data due to wrong mounting or
+    # programming.
+    #
+    my $invertbidlistart = str2time("2008-04-21 12:15:00","UTC");
+    my $invertbidliend = str2time("2008-12-17 07:45:00","UTC");
+    my $corrclockjmstart = str2time("2008-11-01 00:00:00","UTC");
+    my $corrclockjmend = str2time("2009-02-11 07:36:00","UTC");
 
     $qchit = 0;
     $misvalin = "NAN";
@@ -1709,12 +1746,18 @@ sub create_timeseries_cdl_radflux {
 	$line =~ s/["\n\r]//g;
 	@tmparr = split /,/,$line;
 	$unixtime = str2time($tmparr[0],"UTC");
+	# Corrections at Jan Mayen
+	if (($stationname eq "Jan Mayen") && ($unixtime >= $corrclockjmstart && 
+		$unixtime <= $corrclockjmend)) {
+	    $unixtime -= 3600*2;
+	}
 	$obstime .= $unixtime.",";
 	$timestr_start = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime)) if ($norec==5);
 	$timestr_end = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime));
 	$nvalues = $tmparr[1];
+	# Corrections at Bjørnøya
 	if ($stationname eq "Bjørnøya") {
-	    if ($unixtime >= $invertdlistart && $unixtime <= $invertdliend && $tmparr[4] ne $misvalin) {
+	    if ($unixtime >= $invertbidlistart && $unixtime <= $invertbidliend && $tmparr[4] ne $misvalin) {
 		$tmparr[4] *= -1;
 	    }
 	}

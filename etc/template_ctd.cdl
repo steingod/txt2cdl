@@ -1,12 +1,11 @@
 netcdf template_ctd {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_ctd.cdl,v 1.7 2009-01-21 12:51:11 steingod Exp $
+// $Id: template_ctd.cdl,v 1.8 2009-02-14 23:38:00 steingod Exp $
 
 dimensions:
     time = unlimited; //
     n_levels = +nvalues; // maximum number of levels (depth)
-    stations = 1;
 
 variables:
     double time(time);
@@ -15,14 +14,14 @@ variables:
 	time:standard_name = "time" ;
 	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
 	time:axis = "T";
-    float latitude(stations);
+    float latitude;
 	latitude:long_name = "latitude";
 	latitude:short_name = "latitude";
 	latitude:standard_name = "latitude";
 	latitude:units = "degree_north";
 	latitude:valid_min = -90.;
 	latitude:valid_max = 90.;
-    float longitude(stations);
+    float longitude;
 	longitude:long_name = "longitude";
 	longitude:short_name = "longitude";
 	longitude:standard_name = "longitude";
@@ -41,48 +40,38 @@ variables:
 	temp:short_name = "temperature";
 	temp:_FillValue = 9999.f;
 	temp:units = "degrees Celsius";
-//    char qc_temp(n_levels);
-//	qc_temp:long_name = "Quality flag temperature";
-//	qc_temp:short_name = "qflgtemp";
-//	qc_temp:_FillValue = " ";
     float cond(n_levels);
 	cond:long_name = "Ocean conductivity (S/m)";
 	cond:short_name = "conductivity";
 	cond:standard_name = "sea_water_electrical_conductivity";
 	cond:_FillValue = 9999.f;
 	cond:units = "S/m";
-//    char qc_cond(n_levels);
-//	qc_cond:long_name = "Quality flag conductivity";
-//	qc_cond:short_name = "qflgcond";
-//	qc_cond:_FillValue = " ";
     float psal(n_levels);
 	psal:long_name = "Practical salinity (PSU/sal00)";
 	psal:short_name = "salinity";
 	psal:standard_name = "sea_water_salinity";
 	psal:_FillValue = 9999.f;
 	psal:units = "";
-//    char qc_psal(n_levels);
-//	qc_psal:long_name = "Quality flag salinity";
-//	qc_psal:short_name = "qflgsal";
-//	qc_psal:_FillValue = " ";
 
 // global attributes
 	:Conventions = "CF-1.0";
 	:history = "+history";
 	:title = "+title";
 	:abstract = "+abstract"; // Add text if wanted
-	:topicCategory = "+topic"; // Blank separated list
+	:topiccategory = "+topic"; // Blank separated list
 	:keywords = "+keyw"; // Blank separated list
 	:gcmd_keywords = "+keyw"; // Newline separated list
-	:Area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:activity_type = "+activity_type";
 	:PI_name = "+piname";
 	:contact = "+email";
 	:institution = "+inst";
 	:url = "+url";
-	:Product_name = "+pname";
+	:product_name = "+pname";
 	:Platform_name = "+vessel";
-	:start_date = "+YYYY-MM-DD HH:MM:SS UTC";
-	:stop_date = "+YYYY-MM-DD HH:MM:SS UTC";
+	:project_name = "+project_name";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
 	:distribution_statement = "+distribution"; 
 	:southernmost_latitude = +lat;
 	:northernmost_latitude = +lat;
