@@ -47,10 +47,12 @@
 # being used as well as inverting the signal between April and
 # December 
 # Øystein Godøy, METNO/FOU, 14.02.2009: Added support for Vagabond CTD
-# data and started rewrite of CTD handling of SeaBird profiles.
+# data and started rewrite of CTD handling of SeaBird profiles. These need
+# special care as they measure both downwards and upwards. Implementation
+# is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.27 2009-02-14 23:38:00 steingod Exp $
+# $Id: txt2cdl,v 1.28 2009-02-15 21:13:22 steingod Exp $
 #  
 
 ########################################################### 
@@ -472,8 +474,8 @@ sub create_ctd_cdl_seabird {
 	    $tmpstr = $mytmp[0];
 	    @mytmp =  split /-/,$tmpstr;
 	    $vessel = "Vagabond";
-	    $lat = (substr $mytmp[1],1,2)+(substr $mytmp[1],4,2)/60.;
-	    $lon = (substr $mytmp[2],1,2)+(substr $mytmp[2],4,2)/60.;
+	    $lat = (substr $mytmp[1],1,2)+((substr $mytmp[1],4,2)+(substr $mytmp[1],7,2)/100.)/60.;
+	    $lon = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
 	} else {
 	    die "Cannot interprete this format...\n";
 	}

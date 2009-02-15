@@ -21,7 +21,9 @@
 # file formats.
 #
 # BUGS:
-# NA
+# When applied to ITP data, some profiles seem to generate incorrect
+# NetCDF files. The reason for this is yet not known as they look OK as do
+# the CDL files.
 #
 # AUTHOR:
 # Øystein Godøy, METNO/FOU, 15.02.2009
@@ -30,7 +32,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: dir2nc,v 1.4 2009-02-15 13:26:43 steingod Exp $
+# $Id: dir2nc,v 1.5 2009-02-15 21:13:22 steingod Exp $
 #
 
 use strict;
@@ -53,14 +55,13 @@ $ofd = $opt_o;
 
 $dirname = $ofd;
 $dirname =~ s/^(\/.+\/)//g;
-print "$dirname\n";
 
 opendir(DIR, $ifd) || die "can't open $ifd $!";
 @files = readdir(DIR);
 closedir(DIR);
 
 foreach $file (@files) {
-    next if ($file !~ /dat$/);
+    next if ($file !~ /grd.+dat$/);
     $newfile = $dirname."_".$file;
     $newfile =~ s/\.dat/\.cdl/;
     print "Converting $file to $newfile\n";
