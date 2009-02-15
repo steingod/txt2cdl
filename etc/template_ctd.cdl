@@ -1,7 +1,7 @@
 netcdf template_ctd {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_ctd.cdl,v 1.8 2009-02-14 23:38:00 steingod Exp $
+// $Id: template_ctd.cdl,v 1.9 2009-02-15 13:24:11 steingod Exp $
 
 dimensions:
     time = unlimited; //
@@ -60,7 +60,7 @@ variables:
 	:abstract = "+abstract"; // Add text if wanted
 	:topiccategory = "+topic"; // Blank separated list
 	:keywords = "+keyw"; // Blank separated list
-	:gcmd_keywords = "+keyw"; // Newline separated list
+	:gcmd_keywords = "+gcmdkeyw"; // Newline separated list
 	:area = "+area"; // Comma separated list, see http://damocles.met.no/
 	:activity_type = "+activity_type";
 	:PI_name = "+piname";
