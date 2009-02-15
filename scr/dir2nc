@@ -28,7 +28,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: dir2nc,v 1.1 2009-02-15 00:32:36 steingod Exp $
+# $Id: dir2nc,v 1.2 2009-02-15 08:09:40 steingod Exp $
 #
 #
 
@@ -39,9 +39,8 @@ use vars qw($opt_i $opt_o);
 
 sub usage;
 
-my($ifd,$ofd);
-my(@files,$file,$newfile);
-my $txt2cdl = "./txt2cdl";
+my($ifd,$ofd,$dirname);
+my(@files,$file,$newfile); my $txt2cdl = "./txt2cdl";
 my $template = "../etc/template_ctd.cdl";
 my $format = "itp";
 my $ncgen = "/usr/bin/ncgen -b";
@@ -51,13 +50,17 @@ usage if ((! $opt_i) || (!$opt_o));
 $ifd = $opt_i;
 $ofd = $opt_o;
 
+$dirname = $ofd;
+$dirname =~ s/^(\/.+\/)//g;
+print "$dirname\n";
+
 opendir(DIR, $ifd) || die "can't open $ifd $!";
 @files = readdir(DIR);
 closedir(DIR);
 
 foreach $file (@files) {
     next if ($file !~ /dat$/);
-    $newfile = $file;
+    $newfile = $dirname."_".$file;
     $newfile =~ s/\.dat/\.cdl/;
     print "Converting $file to $newfile\n";
     system("$txt2cdl -i $ifd/$file -o $ofd/$newfile -m $template -f $format;$ncgen -b $ofd/$newfile;rm $ofd/$newfile");
