@@ -1,0 +1,37 @@
+#!/usr/bin/perl -w
+#
+# NAME:
+# updateitp
+#
+# PURPOSE:
+# To generate continously updated ITP profiles by converting the last
+# available file from WHOI.
+#
+# REQUIREMENTS:
+# NA
+#
+# INPUT:
+# NA
+#
+# OUTPUT:
+# NA
+#
+# NOTES:
+# NA
+#
+# BUGS:
+# NA
+#
+# AUTHOR:
+# NA
+#
+# MODIFIED:
+# NA
+#
+# CVS_ID:
+# $Id: updateitp,v 1.1 2009-03-02 21:41:08 steingod Exp $
+#
+
+use strict;
+
+

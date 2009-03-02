@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.28 2009-02-15 21:13:22 steingod Exp $
+# $Id: txt2cdl,v 1.29 2009-03-02 21:41:08 steingod Exp $
 #  
 
 ########################################################### 
@@ -549,7 +549,8 @@ sub create_ctd_cdl_seabird {
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
     s/\+time/$timeunix/ for (@cdlout);
-    s/\+YYYY\-MM\-DD HH\:MM\:SS UTC/$timestr/ for (@cdlout);
+    s/\+start_date/$timestr/ for (@cdlout);
+    s/\+stop_date/$timestr/ for (@cdlout);
     s/\+pres/$pres/ for (@cdlout);
     s/\+temp/$temp/ for (@cdlout);
     s/\+cond/$cond/ for (@cdlout);
@@ -1826,7 +1827,7 @@ sub create_timeseries_cdl_radflux {
     s/\+title/$stationinfo{$stationname}{title}/ for (@cdlout);
     s/\+abstract/$stationinfo{$stationname}{abstract}/ for (@cdlout);
     s/\+pname/$stationinfo{$stationname}{product_name}/ for (@cdlout);
-    s/\+project_name/$stationinfo{$stationname}{project_name}/ for (@cdlout);
+    s/\+projectname/$stationinfo{$stationname}{project_name}/ for (@cdlout);
     s/\+area/$stationinfo{$stationname}{area}/ for (@cdlout);
     s/\+topic/$topiccategory/ for (@cdlout);
     s/\+keyw/$keywords/ for (@cdlout);
