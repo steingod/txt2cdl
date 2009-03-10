@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.29 2009-03-02 21:41:08 steingod Exp $
+# $Id: txt2cdl,v 1.30 2009-03-10 11:06:49 steingod Exp $
 #  
 
 ########################################################### 
@@ -1689,7 +1689,7 @@ sub create_timeseries_cdl_radflux {
     my $invertbidlistart = str2time("2008-04-21 12:15:00","UTC");
     my $invertbidliend = str2time("2008-12-17 07:45:00","UTC");
     my $corrclockjmstart = str2time("2008-11-01 00:00:00","UTC");
-    my $corrclockjmend = str2time("2009-02-11 07:36:00","UTC");
+    my $corrclockjmend = str2time("2009-02-11 09:27:00","UTC");
 
     $qchit = 0;
     $misvalin = "NAN";
@@ -1750,7 +1750,8 @@ sub create_timeseries_cdl_radflux {
 	@tmparr = split /,/,$line;
 	$unixtime = str2time($tmparr[0],"UTC");
 	# Corrections at Jan Mayen
-	if (($stationname eq "Jan Mayen") && ($unixtime >= $corrclockjmstart && 
+	if (($stationname eq "Jan Mayen") && $norec < 137980 
+	    && ($unixtime >= $corrclockjmstart && 
 		$unixtime <= $corrclockjmend)) {
 	    $unixtime -= 3600*2;
 	}

@@ -32,7 +32,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: dir2nc,v 1.5 2009-02-15 21:13:22 steingod Exp $
+# $Id: dir2nc,v 1.6 2009-03-10 11:06:49 steingod Exp $
 #
 
 use strict;
@@ -69,3 +69,10 @@ foreach $file (@files) {
 }
 
 exit;
+
+sub usage {
+    print "dir2nc -i <idir> -o <odir>\n";
+    print "\tidir: input directory\n";
+    print "\todir: output directory\n";
+    exit;
+}
