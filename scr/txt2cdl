@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.31 2009-03-11 10:49:34 steingod Exp $
+# $Id: txt2cdl,v 1.32 2009-03-11 15:17:55 steingod Exp $
 #  
 
 ########################################################### 
@@ -756,6 +756,9 @@ sub create_itp_cdl {
     my($line,$norec,$misvalin,$misvalout);
     my($itpid,$profileid,$vessel,$quality);
     my($myyear,$myday,$pressure,$temperature,$salinity);
+    my $variables1 = "%year day pressure(dbar) temperature(C) salinity";
+    my $variables2 = "%pressure(dbar) temperature(C) salinity nobs";
+    my($ftype);
 
     ###########################################################
     # Do some initialization
@@ -792,6 +795,13 @@ sub create_itp_cdl {
     s/\ +/ /g for (@mytmp);
     s/^\ |\ $// for (@mytmp);
     s/[\n\r]//g for (@mytmp);
+    if ($variables1 eq $mytmp[2]) {
+	$ftype = "level 2";
+    } elsif ($variables2 eq $mytmp[2]) {
+	$ftype = "level 3";
+    } else {
+	die "Could not recognise file type.";
+    }
     $norec = 0;
     foreach $line (@mytmp) {
 	if ($norec == 0){
@@ -812,6 +822,7 @@ sub create_itp_cdl {
 	    $timeunix = year_and_day2epoch($myyear,$myday);
 	    @timearr = gmtime($timeunix);
 	    $timestr_start = strftime("%F %T UTC",@timearr);
+	    $timestr_end = $timestr_start;
 	    $lon = $tmparr[2];
 	    $lat = $tmparr[3];
 	    $nvalues = $tmparr[4];
@@ -830,17 +841,25 @@ sub create_itp_cdl {
 	    next;
 	}
 	@tmparr = split / /,$line;
-	$myyear = $tmparr[0];
-	$myday = $tmparr[1];
-	$timeunix = year_and_day2epoch($myyear,$myday);
+	if ($ftype eq "level 2") {
+	    $myyear = $tmparr[0];
+	    $myday = $tmparr[1];
+	    $timeunix = year_and_day2epoch($myyear,$myday);
+	}
 	$timeofdata .= $timeunix.",";
 	if ($norec == 3) {
 	    @timearr = gmtime($timeunix);
 	    $timestr_end = strftime("%F %T UTC",@timearr);
 	}
-	$pressure .= $tmparr[2].",";
-	$temperature .= $tmparr[3].",";
-	$salinity .= $tmparr[4].",";
+	if ($ftype eq "level 3") {
+	    $pressure .= $tmparr[0].",";
+	    $temperature .= $tmparr[1].",";
+	    $salinity .= $tmparr[2].",";
+	} else {
+	    $pressure .= $tmparr[2].",";
+	    $temperature .= $tmparr[3].",";
+	    $salinity .= $tmparr[4].",";
+	}
 	$norec++;
     }
     warn "Data records: nvalues ($nvalues) and norec ($norec-4) differ\n" if ($nvalues != $norec-4);
