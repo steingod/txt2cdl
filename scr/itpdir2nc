@@ -34,7 +34,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: itpdir2nc,v 1.1 2009-03-11 10:49:34 steingod Exp $
+# $Id: itpdir2nc,v 1.2 2009-03-11 11:21:17 steingod Exp $
 #
 
 use strict;
@@ -45,7 +45,7 @@ use vars qw($opt_i $opt_o);
 sub usage;
 
 my($ifd,$ofd,$dirname,@tmp,$tgzfile,$ncfile);
-my(@files,$file,$newfile,@files2tar); 
+my(@files,$file,$newfile,@files2tar,$status); 
 my $txt2cdl = "./txt2cdl";
 my $template = "../etc/template_ctd.cdl";
 my $format = "itp";
@@ -68,13 +68,17 @@ opendir(DIR, $ifd) || die "can't open $ifd $!";
 closedir(DIR);
 
 foreach $file (sort(@files)) {
+    $status = 0;
     next if ($file !~ /grd.+dat$/);
     $newfile = $dirname."_".$file;
     $newfile =~ s/\.dat/\.cdl/;
     $ncfile = $newfile;
     $ncfile =~ s/\.cdl/\.nc/;
     print "Converting $file to $ncfile\n";
-    system("$txt2cdl -i $ifd/$file -o $ofd/$newfile -m $template -f $format;$ncgen -b $ofd/$newfile;rm $ofd/$newfile");
+    $status = system("$txt2cdl -i $ifd/$file -o $ofd/$newfile -m $template -f $format;");
+    next if ($status);
+    $status = system("$ncgen -b $ofd/$newfile;rm $ofd/$newfile");
+    warn "Could not manage $newfile" if ($status);
     push @files2tar,"$ncfile";
 }
 
