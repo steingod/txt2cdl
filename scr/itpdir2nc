@@ -1,10 +1,12 @@
 #!/usr/bin/perl -w
 #
 # NAME:
-# dir2nc
+# itpdir2nc
 #
 # PURPOSE:
-# To generate NetCDF files for a directory full of ASCII files. 
+# To generate NetCDF files for a directory full of ASCII files. NetCDF
+# files are located within the same directory and a gzipped tyar file is
+# generated.
 #
 # REQUIREMENTS:
 # NA
@@ -32,7 +34,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: dir2nc,v 1.7 2009-03-10 11:32:51 steingod Exp $
+# $Id: itpdir2nc,v 1.1 2009-03-11 10:49:34 steingod Exp $
 #
 
 use strict;
@@ -42,37 +44,46 @@ use vars qw($opt_i $opt_o);
 
 sub usage;
 
-my($ifd,$ofd,$dirname);
-my(@files,$file,$newfile); my $txt2cdl = "./txt2cdl";
+my($ifd,$ofd,$dirname,@tmp,$tgzfile,$ncfile);
+my(@files,$file,$newfile,@files2tar); 
+my $txt2cdl = "./txt2cdl";
 my $template = "../etc/template_ctd.cdl";
 my $format = "itp";
 my $ncgen = "/usr/bin/ncgen -b";
+my $tarcmd = "/bin/tar";
 
 usage if !getopts('i:o:');
-usage if ((! $opt_i) || (!$opt_o));
+usage if ((! $opt_i));
 $ifd = $opt_i;
-$ofd = $opt_o;
+$ofd = $ifd;
 
 $dirname = $ofd;
-$dirname =~ s/^(\/.+\/)//g;
+@tmp = split /\//,$dirname;
+$dirname = $tmp[$#tmp];
+
+$tgzfile = "$dirname"."_"."$dirname"."ctd.tgz";
 
 opendir(DIR, $ifd) || die "can't open $ifd $!";
 @files = readdir(DIR);
 closedir(DIR);
 
-foreach $file (@files) {
+foreach $file (sort(@files)) {
     next if ($file !~ /grd.+dat$/);
     $newfile = $dirname."_".$file;
     $newfile =~ s/\.dat/\.cdl/;
-    print "Converting $file to $newfile\n";
+    $ncfile = $newfile;
+    $ncfile =~ s/\.cdl/\.nc/;
+    print "Converting $file to $ncfile\n";
     system("$txt2cdl -i $ifd/$file -o $ofd/$newfile -m $template -f $format;$ncgen -b $ofd/$newfile;rm $ofd/$newfile");
+    push @files2tar,"$ncfile";
 }
+
+system("cd $ofd;$tarcmd -cvzf $ofd/$tgzfile @files2tar");
 
 exit;
 
 sub usage {
-    print "dir2nc -i <idir> -o <odir>\n";
+    print "itpdir2nc -i <idir>\n";
     print "\tidir: input directory\n";
-    print "\todir: output directory (do not end with /)\n";
     exit;
 }

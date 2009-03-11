@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.30 2009-03-10 11:06:49 steingod Exp $
+# $Id: txt2cdl,v 1.31 2009-03-11 10:49:34 steingod Exp $
 #  
 
 ########################################################### 
@@ -815,6 +815,13 @@ sub create_itp_cdl {
 	    $lon = $tmparr[2];
 	    $lat = $tmparr[3];
 	    $nvalues = $tmparr[4];
+	    @tmparr = gmtime(time);
+	    if ($myyear > ($tmparr[5]+1901)) {
+		die "Year of observation is out of scope!";
+	    }
+	    if ($lat > 90. || $lat < -90. || $lon > 360. || $lon < -360) {
+		die "Geographical position out of scope!";
+	    }
 	    $norec++;
 	    next;
 	}
@@ -1719,7 +1726,7 @@ sub create_timeseries_cdl_radflux {
 	}
 	if ($norec==1) {
 	    $variables = $line; 
-	    die "Variable names do not match" if ($variables ne $varnames);
+	    die "Variable names\n\t$variables\ndo not match\n\t$varnames" if ($variables ne $varnames);
 	}
 	if ($norec==3) {
 	    $procmeth = $line; 
