@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.32 2009-03-11 15:17:55 steingod Exp $
+# $Id: txt2cdl,v 1.33 2009-03-13 12:06:14 steingod Exp $
 #  
 
 ########################################################### 
@@ -758,7 +758,7 @@ sub create_itp_cdl {
     my($myyear,$myday,$pressure,$temperature,$salinity);
     my $variables1 = "%year day pressure(dbar) temperature(C) salinity";
     my $variables2 = "%pressure(dbar) temperature(C) salinity nobs";
-    my($ftype);
+    my($ftype,%projectnames);
 
     ###########################################################
     # Do some initialization
@@ -784,6 +784,39 @@ sub create_itp_cdl {
     $start_date = "";
     $stop_date = "";
     $quality = "Level 2 data";
+    %projectnames = (
+    	"1" => "Beaufort Gyre Observing System (BGOS)",
+	"2" => "Beaufort Gyre Freshwater Experiment (BGFE)",
+	"3" => "Beaufort Gyre Observing System (BGOS)",
+	"4" => "Beaufort Gyre Observing System (BGOS)",
+	"5" => "Beaufort Gyre Observing System (BGOS)",
+	"6" => "Beaufort Gyre Observing System (BGOS)",
+	"7" => "North Pole Environmental Observatory (NPEO)",
+	"8" => "Beaufort Gyre Observing System (BGOS)",
+	"9" => "Damocles",
+	"10" => "Damocles",
+	"11" => "Damocles",
+	"12" => "Damocles",
+	"13" => "Beaufort Gyre Observing System (BGOS)",
+	"14" => "Damocles",
+	"15" => "Damocles",
+	"16" => "Damocles",
+	"17" => "Damocles",
+	"18" => "Beaufort Gyre Observing System (BGOS)",
+	"19" => "North Pole Environmental Observatory (NPEO)",
+	"20" => "Beaufort Gyre Observing System (BGOS)",
+	"21" => "Beaufort Gyre Observing System (BGOS)",
+	"22" => "Beaufort Gyre Observing System (BGOS)",
+	"23" => "Beaufort Gyre Observing System (BGOS)",
+	"24" => "Damocles",
+	"25" => "Damocles",
+	"26" => "Damocles",
+	"27" => "Damocles",
+	"28" => "Damocles",
+	"29" => "Damocles",
+	"30" => "Beaufort Gyre Observing System (BGOS)",
+	"31" => "Not available"
+    );
 
 
     ###########################################################
@@ -872,6 +905,7 @@ sub create_itp_cdl {
 
     $title .= sprintf "ITP %02d Profile",$itpid;
     $vessel = sprintf "ITP %02d",$itpid;
+    $project_name = "$projectnames{$itpid}";
     $myhistory = sprintf "%s creation",strftime("%F",gmtime(time));
 
     ########################################################### 
