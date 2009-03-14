@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.33 2009-03-13 12:06:14 steingod Exp $
+# $Id: txt2cdl,v 1.34 2009-03-14 10:12:00 steingod Exp $
 #  
 
 ########################################################### 
@@ -64,6 +64,7 @@ use Text::Wrap;
 use Date::Parse;
 #use Date::Format;
 use POSIX qw(strftime);
+##use Data::Table;
 use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q);
 
 ########################################################### 
@@ -79,6 +80,7 @@ sub create_mooring_cdl_ascii;
 sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
 sub write_file;
+sub transpose;
 
 my($ifn,$ofn,@text,$fileformat,$cdlhead);
 my($template_file, @template, $line, @cdloutput);
@@ -310,6 +312,7 @@ sub year_and_day2epoch($$) {
     #print "$myyear $myday ";
 
     $timeepoch = str2time($timestr);
+    $myday -= 1;
     $myday *= (24*3600.);
 
     $timeepoch += int($myday);
@@ -444,7 +447,7 @@ sub create_ctd_cdl_seabird {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
     my(@timearr,$timeunix,$timestr);
-    my(@mytmp,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues);
+    my(@mytmp,@mytmp2,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues);
     my($pres,$temp,$cond,$psal);
     my($line,$norec);
 
@@ -522,6 +525,11 @@ sub create_ctd_cdl_seabird {
 
     # Data records
     @mytmp = grep /^\s/,@$txtref;
+    push @mytmp2, [map { shift @$_ } @mytmp ] while grep {scalar @$_} @mytmp;
+    @mytmp = sort {$a->[2] <=> $b->[2]} @mytmp2;
+
+    #@mytmp2 = transpose sort {$a->[2] <=> $b->[2]} transpose @mytmp;
+    print "@mytmp\n";
     s/^(\s+)// for (@mytmp);
     s/\s+/ /g for (@mytmp);
     s/[\n\r]//g for (@mytmp);
@@ -1914,3 +1922,11 @@ sub create_timeseries_cdl_radflux {
 
     return(@cdlout);
 }
+
+sub transpose {
+  map {
+    my $j = $_;
+    [ map $_[$_][$j], 0..$#_ ]
+  } 0..$#{$_[0]};
+}
+
