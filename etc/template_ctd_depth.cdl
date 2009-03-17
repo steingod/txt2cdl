@@ -1,0 +1,89 @@
+netcdf template_ctd {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_ctd_depth.cdl,v 1.1 2009-03-17 13:18:05 steingod Exp $
+
+dimensions:
+    time = unlimited; //
+    n_levels = +nvalues; // maximum number of levels (depth)
+
+variables:
+    double time(time);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+	time:axis = "T";
+    float latitude;
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.;
+	latitude:valid_max = 90.;
+    float longitude;
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.;
+	longitude:valid_max = 180.;
+    float depth(n_levels);
+	pres:long_name = "Depth below sea surface";
+	pres:short_name = "depth";
+	pres:standard_name = "depth";
+	pres:units = "m";
+	pres:valid_min = 0.;
+	pres:valid_max = 15000.;
+    float temp(n_levels);
+	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
+	temp:short_name = "temperature";
+	temp:_FillValue = 9999.f;
+	temp:units = "degrees Celsius";
+    float cond(n_levels);
+	cond:long_name = "Ocean conductivity (S/m)";
+	cond:short_name = "conductivity";
+	cond:standard_name = "sea_water_electrical_conductivity";
+	cond:_FillValue = 9999.f;
+	cond:units = "S/m";
+    float psal(n_levels);
+	psal:long_name = "Practical salinity (PSU/sal00)";
+	psal:short_name = "salinity";
+	psal:standard_name = "sea_water_salinity";
+	psal:_FillValue = 9999.f;
+	psal:units = "";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; // Add text if wanted
+	:topiccategory = "+topic"; // Blank separated list
+	:keywords = "+keyw"; // Blank separated list
+	:gcmd_keywords = "+gcmdkeyw"; // Newline separated list
+	:area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:activity_type = "+activity_type";
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:product_name = "+pname";
+	:Platform_name = "+vessel";
+	:project_name = "+project_name";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +lat;
+	:northernmost_latitude = +lat;
+	:westernmost_longitude = +lon;
+	:easternmost_longitude = +lon;
+	:quality_statement = "+qual";
+
+data:
+    time =  +time;
+    latitude = +lat;
+    longitude = +lon;
+    depth = +depth;
+    temp = +temp;
+    psal = +psal;
+}
