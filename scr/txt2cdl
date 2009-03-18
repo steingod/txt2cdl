@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.34 2009-03-14 10:12:00 steingod Exp $
+# $Id: txt2cdl,v 1.35 2009-03-18 20:57:37 steingod Exp $
 #  
 
 ########################################################### 
@@ -65,6 +65,8 @@ use Date::Parse;
 #use Date::Format;
 use POSIX qw(strftime);
 ##use Data::Table;
+##use PDL::Basic;
+##use PDL::Matrix;
 use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q);
 
 ########################################################### 
@@ -80,7 +82,7 @@ sub create_mooring_cdl_ascii;
 sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
 sub write_file;
-sub transpose;
+sub sort_matrix;
 
 my($ifn,$ofn,@text,$fileformat,$cdlhead);
 my($template_file, @template, $line, @cdloutput);
@@ -161,7 +163,7 @@ if ($opt_u) {
 if ($opt_h) {
     $history = $opt_h;
 } else {
-    $history = strftime("%F",gmtime(time))." Created";
+    $history = strftime("%F",gmtime(time))." creation";
 }
 if ($opt_m) {
     $template_file = $opt_m;
@@ -447,8 +449,8 @@ sub create_ctd_cdl_seabird {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
     my(@timearr,$timeunix,$timestr);
-    my(@mytmp,@mytmp2,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues);
-    my($pres,$temp,$cond,$psal);
+    my(@mytmp,@mytmp2,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues,$ncol,$i,$j);
+    my($pres,$temp,$cond,$psal,$depth);
     my($line,$norec);
 
     ###########################################################
@@ -518,35 +520,58 @@ sub create_ctd_cdl_seabird {
 	$lon *= (-1.) if ($mytmp[2] eq "W");
     }
 
-    # Nvalues
+    # Number of columns
+    @mytmp = grep /^\# nquan = /,@$txtref;
+    $ncol = (split /=/,$mytmp[0])[1];
+    $ncol =~ s/[\s\n\r]//g;
+
+    # Number of records
     @mytmp = grep /^\# nvalues = /,@$txtref;
     $nvalues = (split /=/,$mytmp[0])[1];
     $nvalues =~ s/[\s\n\r]//g;
 
     # Data records
     @mytmp = grep /^\s/,@$txtref;
-    push @mytmp2, [map { shift @$_ } @mytmp ] while grep {scalar @$_} @mytmp;
-    @mytmp = sort {$a->[2] <=> $b->[2]} @mytmp2;
-
-    #@mytmp2 = transpose sort {$a->[2] <=> $b->[2]} transpose @mytmp;
-    print "@mytmp\n";
     s/^(\s+)// for (@mytmp);
     s/\s+/ /g for (@mytmp);
     s/[\n\r]//g for (@mytmp);
-    $norec = 0;
+    undef @mytmp2;
+    $i = 0;
     foreach $line (@mytmp) {
-	@tmparr = split / /,$line;
-	$pres .= "$tmparr[1],";
-	$temp .= "$tmparr[2],";
-	$cond .= "$tmparr[3],";
-	$psal .= "$tmparr[4],";
-	$norec++;
+	my @columns = split /\s+/,$line;
+	$mytmp2[$i++] = \@columns;
     }
-    warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
-    $pres =~s/,$//;
-    $temp =~s/,$//;
-    $cond =~s/,$//;
-    $psal =~s/,$//;
+    @mytmp = sort { $a->[2] <=> $b->[2] } @mytmp2;
+    #map { print join(" ", @$_),"\n";} @mytmp;
+    #$norec = 0;
+    if ($vessel =~ /Vagabond/) {
+	for ($i=0;$i<$#mytmp;$i++) {
+	    $depth .= "$mytmp[$i][1],";
+	    $temp .= "$mytmp[$i][3],";
+	    $cond .= "$mytmp[$i][5],";
+	    $psal .= "$mytmp[$i][4],";
+	}
+    } else {
+	for ($i=0;$i<$#mytmp;$i++) {
+	    $pres .= "$mytmp[$i][1],";
+	    $temp .= "$mytmp[$i][2],";
+	    $cond .= "$mytmp[$i][3],";
+	    $psal .= "$mytmp[$i][4],";
+	    #$norec++;
+	}
+    }
+    #warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
+    if ($vessel =~ /Vagabond/) {
+	$depth =~s/,$//;
+	$temp =~s/,$//;
+	$cond =~s/,$//;
+	$psal =~s/,$//;
+    } else {
+	$pres =~s/,$//;
+	$temp =~s/,$//;
+	$cond =~s/,$//;
+	$psal =~s/,$//;
+    }
 
     ########################################################### 
     # Then this information is substituted into the CDL template
@@ -559,7 +584,11 @@ sub create_ctd_cdl_seabird {
     s/\+time/$timeunix/ for (@cdlout);
     s/\+start_date/$timestr/ for (@cdlout);
     s/\+stop_date/$timestr/ for (@cdlout);
-    s/\+pres/$pres/ for (@cdlout);
+    if ($vessel =~ /Vagabond/) {
+	s/\+depth/$depth/ for (@cdlout);
+    } else {
+	s/\+pres/$pres/ for (@cdlout);
+    }
     s/\+temp/$temp/ for (@cdlout);
     s/\+cond/$cond/ for (@cdlout);
     s/\+psal/$psal/ for (@cdlout);
@@ -1923,10 +1952,36 @@ sub create_timeseries_cdl_radflux {
     return(@cdlout);
 }
 
-sub transpose {
-  map {
-    my $j = $_;
-    [ map $_[$_][$j], 0..$#_ ]
-  } 0..$#{$_[0]};
-}
+##sub transpose {
+##  map {
+##    my $j = $_;
+##    [ map $_[$_][$j], 0..$#_ ]
+##  } 0..$#{$_[0]};
+##}
+
+sub sort_matrix($$) {
+    my $ref_matrix = $_[0];
+    my @indexMatrix = @{$_[1]};
+
+    my @indexes = map {$_->[0]} @indexMatrix;
+    my @operators = map {$_->[1] ? ' cmp ' : ' <=> '} @indexMatrix;
+    my @directions = map {$_->[2]} @indexMatrix;
+
+    my $body_code = '';
+    my @body_array;
+    for (my $i = 0; $i <= $#indexes; $i++) {
+        if ($directions[$i]) {
+            push(@body_array, "(\$a->[$i]" . $operators[$i]  . "\$b->[$i])");
+        } else {
+            push(@body_array, "(\$b->[$i]" . $operators[$i]  . "\$a->[$i])");
+        };
+    };
+    $body_code = join( ' or ', @body_array);
+
+    my $array_code = '(map { [' . join(q(, ), map {"\$_->[$_]"} @indexes) . ', $_]} @$ref_matrix)';
+
+    my $code = "map {\$_->[-1]} (sort { $body_code} $array_code)";
+    my @result = eval $code;
+    return [@result];
+};
 

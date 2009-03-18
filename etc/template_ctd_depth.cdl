@@ -1,11 +1,11 @@
 netcdf template_ctd {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_ctd_depth.cdl,v 1.1 2009-03-17 13:18:05 steingod Exp $
+// $Id: template_ctd_depth.cdl,v 1.2 2009-03-18 20:57:37 steingod Exp $
 
 dimensions:
-    time = unlimited; //
-    n_levels = +nvalues; // maximum number of levels (depth)
+    time = unlimited; 
+    n_levels = +nvalues; 
 
 variables:
     double time(time);
@@ -29,23 +29,23 @@ variables:
 	longitude:valid_min = -180.;
 	longitude:valid_max = 180.;
     float depth(n_levels);
-	pres:long_name = "Depth below sea surface";
-	pres:short_name = "depth";
-	pres:standard_name = "depth";
-	pres:units = "m";
-	pres:valid_min = 0.;
-	pres:valid_max = 15000.;
+	depth:long_name = "Depth below sea surface";
+	depth:short_name = "depth";
+	depth:standard_name = "depth";
+	depth:units = "m";
+	depth:valid_min = 0.;
+	depth:valid_max = 15000.;
     float temp(n_levels);
 	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
 	temp:short_name = "temperature";
 	temp:_FillValue = 9999.f;
 	temp:units = "degrees Celsius";
     float cond(n_levels);
-	cond:long_name = "Ocean conductivity (S/m)";
+	cond:long_name = "Ocean conductivity (mS/cm)";
 	cond:short_name = "conductivity";
 	cond:standard_name = "sea_water_electrical_conductivity";
 	cond:_FillValue = 9999.f;
-	cond:units = "S/m";
+	cond:units = "mS/cm";
     float psal(n_levels);
 	psal:long_name = "Practical salinity (PSU/sal00)";
 	psal:short_name = "salinity";
@@ -57,11 +57,11 @@ variables:
 	:Conventions = "CF-1.0";
 	:history = "+history";
 	:title = "+title";
-	:abstract = "+abstract"; // Add text if wanted
-	:topiccategory = "+topic"; // Blank separated list
-	:keywords = "+keyw"; // Blank separated list
-	:gcmd_keywords = "+gcmdkeyw"; // Newline separated list
-	:area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:abstract = "+abstract"; 
+	:topiccategory = "+topic"; 
+	:keywords = "+keyw"; 
+	:gcmd_keywords = "+gcmdkeyw"; 
+	:area = "+area"; 
 	:activity_type = "+activity_type";
 	:PI_name = "+piname";
 	:contact = "+email";
@@ -86,4 +86,5 @@ data:
     depth = +depth;
     temp = +temp;
     psal = +psal;
+    cond = +cond;
 }
