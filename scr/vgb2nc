@@ -1,0 +1,106 @@
+#!/usr/bin/perl -w
+#
+# NAME:
+# vgb2nc
+#
+# PURPOSE:
+# To generate NetCDF files for a directory full of ASCII files containing
+# Vagabond CTD-measurements. NetCDF files are located within the same
+# directory and a gzipped tar file is generated.
+#
+# REQUIREMENTS:
+# NA
+#
+# INPUT:
+# NA
+#
+# OUTPUT:
+# NA
+#
+# NOTES:
+# NA
+#
+# BUGS:
+# When applied to ITP data, some profiles seem to generate incorrect
+# NetCDF files. The reason for this is yet not known as they look OK as do
+# the CDL files.
+#
+# AUTHOR:
+# Øystein Godøy, METNO/FOU, 15.02.2009
+#
+# MODIFIED:
+# NA
+#
+# CVS_ID:
+# $Id: vgb2nc,v 1.1 2009-04-27 15:52:57 steingod Exp $
+#
+
+use strict;
+use Getopt::Std;
+
+use vars qw($opt_i $opt_o);
+
+sub usage;
+
+my($ifd,$ofd,$dirname,@tmp,$tgzfile,$ncfile);
+my(@files,$file,$newfile,@files2tar,$status); 
+my $txt2cdl = "./txt2cdl";
+my $template = "../etc/template_ctd_depth.cdl";
+my $format = "seabirdctd";
+my $ncgen = "/usr/bin/ncgen -b";
+my $tarcmd = "/bin/tar";
+my $title = "CTD observations during the DAMOCLES support of Vagabond";
+my $abstract = "VAGABOND is a dedicated base camp for DAMOCLES, which main objective is to study Arctic Ocean sea ice and its future. France Pinczon du Sel and Eric Brossier bring their polar yacht and their experience to work with scientists for 5 years, on the East Coast of Spitsbergen 2004-2009. During the stay oceanographic measurements are made.";
+my $author = "Pascaline Bourgain";
+my $email = "pablod\@locean-ipsl.upmc.fr";
+my $institution = "Université Pierre et Marie Curie/UPMC";
+my $url = "http://vagabond.fr/";
+my $topic = "Oceans";
+my $distribution = "Restricted to Damocles";
+my $history = "2009-04-27 creation";
+my $area = "Barents Sea";
+my $quality = "Unknown quality";
+my $keyw = "Ocean Salinity Conductivity Temperature";
+my $gcmdkeyw = "Oceans > Salinity/Density > Salinity\nOceans > Salinity/Density > Conductivity\nOceans > Ocean Temperature > Water Temperature";
+my $activity = "Cruise";
+my $project = "DAMOCLES";
+
+usage if !getopts('i:o:');
+usage if ((! $opt_i));
+$ifd = $opt_i;
+$ofd = $ifd;
+
+$dirname = $ofd;
+@tmp = split /\//,$dirname;
+$dirname = $tmp[$#tmp];
+
+$tgzfile = "$dirname"."_"."$dirname"."ctd.tgz";
+
+opendir(DIR, $ifd) || die "can't open $ifd $!";
+@files = readdir(DIR);
+closedir(DIR);
+
+foreach $file (sort(@files)) {
+    $status = 0;
+    next if ($file !~ /\.cnv$/);
+    $newfile = $dirname."_".$file;
+    $newfile =~ s/\.cnv/\.cdl/;
+    $ncfile = $newfile;
+    $ncfile =~ s/\.cdl/\.nc/;
+    print "Converting $file to $ncfile\n";
+    $status = system("$txt2cdl -i $ifd/$file -o $ofd/$newfile -m $template -f $format -t \"$title\" -b \"$abstract\" -a \"$author\" -g \"$institution\" -u \"$url\" -e \"$email\" -p \"$topic\" -r \"$area\" -c \"$distribution\" -h \"$history\" -q \"$quality\" -k \"$keyw\" -v \"$gcmdkeyw\" -y \"$activity\" -z \"$project\"");
+    next if ($status);
+    $status = system("$ncgen -b $ofd/$newfile;rm $ofd/$newfile");
+    warn "Could not manage $newfile" if ($status);
+    push @files2tar,"$ncfile";
+}
+
+system("cd $ofd;$tarcmd -cvzf $ofd/$tgzfile @files2tar");
+
+exit;
+
+sub usage {
+    print "$0 -i <idir>\n";
+    print "\tidir: input directory\n";
+    exit;
+}

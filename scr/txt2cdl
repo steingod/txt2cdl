@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.35 2009-03-18 20:57:37 steingod Exp $
+# $Id: txt2cdl,v 1.36 2009-04-27 15:52:57 steingod Exp $
 #  
 
 ########################################################### 
@@ -67,7 +67,7 @@ use POSIX qw(strftime);
 ##use Data::Table;
 ##use PDL::Basic;
 ##use PDL::Matrix;
-use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q);
+use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q $opt_v $opt_z $opt_y);
 
 ########################################################### 
 # Prototypes
@@ -86,12 +86,13 @@ sub sort_matrix;
 
 my($ifn,$ofn,@text,$fileformat,$cdlhead);
 my($template_file, @template, $line, @cdloutput);
-my($piname,$title,$topic,$keyw,$email,$area,$inst,$vessel);
+my($piname,$title,$topic,$keyw,$gcmdkeyw,$email,$area,$inst,$vessel);
 my($distribution,$abstract,$history,$url,$pname,$qual);
+my($project_name,$activity_type);
 
 ########################################################### 
 # Option decoding
-usage if !getopts('i:o:a:m:t:e:k:r:g:v:c:g:p:b:h:u:f:n:q:');
+usage if !getopts('i:o:a:m:t:e:k:r:g:v:c:g:p:b:h:u:f:n:q:v:z:y:');
 usage if ((! $opt_i) || (!$opt_o) || (!$opt_f) || (!$opt_m));
 $ifn = $opt_i;
 $ofn = $opt_o;
@@ -120,10 +121,25 @@ if ($opt_p) {
 } else {
     $topic = "";
 }
+if ($opt_y) {
+    $activity_type = $opt_y;
+} else {
+    $activity_type = "";
+}
+if ($opt_z) {
+    $project_name = $opt_z;
+} else {
+    $project_name = "";
+}
 if ($opt_k) {
     $keyw = $opt_k;
 } else {
     $keyw = "";
+}
+if ($opt_v) {
+    $gcmdkeyw = $opt_v;
+} else {
+    $gcmdkeyw = "";
 }
 if ($opt_e) {
     $email = $opt_e;
@@ -218,6 +234,9 @@ $fileformat eq "mooring") {
     s/\+abstract/$abstract/ for (@cdloutput);
     s/\+topic/$topic/ for (@cdloutput);
     s/\+keyw/$keyw/ for (@cdloutput);
+    s/\+gcmdkeyw/$gcmdkeyw/ for (@cdloutput);
+    s/\+activity_type/$activity_type/ for (@cdloutput);
+    s/\+project_name/$project_name/ for (@cdloutput);
     s/\+area/$area/ for (@cdloutput);
     s/\+inst/$inst/ for (@cdloutput);
     s/\+piname/$piname/ for (@cdloutput);
@@ -270,14 +289,18 @@ sub usage() {
     my $author = "Øystein Godøy, METNO/FOU, 24.10.2008";
 
     print "\n";
-    print wrap("","\t","$0 -i <infile> -o <outfile> -f <format> -m <template> [-a <author> -e <email> -g <institution> -u <url> -t <title> -b <abstract> -v <platform> -n <product_name> -p <topic> -k <keywords> -r <area_covered> -c <distribution> -h <history> -q <quality>]\n");
+    print wrap("","\t","$0 -i <infile> -o <outfile> -f <format> -m
+    <template>\n [-a <author> -e <email> -g <institution> -u <url>\n -t
+    <title> -b <abstract> -v <platform> -n <product_name>\n -p <topic> -k
+    <keywords> -v <gcmdkeywords>\n -r <area_covered> -c <distribution> -h
+    <history>\n -q <quality> -y <activity> -z <project> -v <gcmdkw>]\n");
     print "\n";
     print "\t<infile>: Some supported ASCII file,\n".
 	"\t\tif a directory it tries to process contents\n";
     print "\t<outfile>: CDL file according to CF standard,\n".
 	"\t\tif infile is a directory this should be a directory\n";
     print "\t<format>: Input file format, se below\n";
-    print "\t<template>: CDL template file according to CF standard, usually in etc\n";
+    print "\t<template>: CDL template file according to CF standard\n";
     print "\t<author>: PI name\n";
     print "\t<email>: PI or responsible person email address\n";
     print "\t<institution>: Name of institution\n";
