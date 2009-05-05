@@ -32,7 +32,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: vgb2nc,v 1.1 2009-04-27 15:52:57 steingod Exp $
+# $Id: vgb2nc,v 1.2 2009-05-05 21:28:22 steingod Exp $
 #
 
 use strict;
@@ -50,9 +50,9 @@ my $format = "seabirdctd";
 my $ncgen = "/usr/bin/ncgen -b";
 my $tarcmd = "/bin/tar";
 my $title = "CTD observations during the DAMOCLES support of Vagabond";
-my $abstract = "VAGABOND is a dedicated base camp for DAMOCLES, which main objective is to study Arctic Ocean sea ice and its future. France Pinczon du Sel and Eric Brossier bring their polar yacht and their experience to work with scientists for 5 years, on the East Coast of Spitsbergen 2004-2009. During the stay oceanographic measurements are made.";
-my $author = "Pascaline Bourgain";
-my $email = "pablod\@locean-ipsl.upmc.fr";
+my $abstract = "VAGABOND is a dedicated base camp for DAMOCLES, which main objective is to study sea ice and brines formation. France Pinczon du Sel and Eric Brossier bring their polar yacht VAGABOND and their experience to work with scientists for 5 years, on the East Coast of Spitsbergen 2004-2009. During the stay, oceanographic, meteorological, radiometric and atmospheric soundings were made in Storfjorden.";
+my $author = "Jean Claude Gascard";
+my $email = "jga\@locean-ipsl.upmc.fr";
 my $institution = "Université Pierre et Marie Curie/UPMC";
 my $url = "http://vagabond.fr/";
 my $topic = "Oceans";
