@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.36 2009-04-27 15:52:57 steingod Exp $
+# $Id: txt2cdl,v 1.37 2009-05-05 21:19:55 steingod Exp $
 #  
 
 ########################################################### 
@@ -568,14 +568,16 @@ sub create_ctd_cdl_seabird {
     #map { print join(" ", @$_),"\n";} @mytmp;
     #$norec = 0;
     if ($vessel =~ /Vagabond/) {
-	for ($i=0;$i<$#mytmp;$i++) {
-	    $depth .= "$mytmp[$i][1],";
+	undef($timeunix);
+	for ($i=0;$i<=$#mytmp;$i++) {
+	    $timeunix .= "$mytmp[$i][1],";
+	    $depth .= "$mytmp[$i][2],";
 	    $temp .= "$mytmp[$i][3],";
 	    $cond .= "$mytmp[$i][5],";
 	    $psal .= "$mytmp[$i][4],";
 	}
     } else {
-	for ($i=0;$i<$#mytmp;$i++) {
+	for ($i=0;$i<=$#mytmp;$i++) {
 	    $pres .= "$mytmp[$i][1],";
 	    $temp .= "$mytmp[$i][2],";
 	    $cond .= "$mytmp[$i][3],";
@@ -585,6 +587,7 @@ sub create_ctd_cdl_seabird {
     }
     #warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
     if ($vessel =~ /Vagabond/) {
+	$timeunix =~s/,$//;
 	$depth =~s/,$//;
 	$temp =~s/,$//;
 	$cond =~s/,$//;
@@ -605,6 +608,9 @@ sub create_ctd_cdl_seabird {
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
     s/\+time/$timeunix/ for (@cdlout);
+    if ($vessel =~ /Vagabond/) {
+	s/time:units = "seconds since 1970-01-01 00:00:00 UTC"/time:units = "seconds since $timestr"/ for (@cdlout);
+    }
     s/\+start_date/$timestr/ for (@cdlout);
     s/\+stop_date/$timestr/ for (@cdlout);
     if ($vessel =~ /Vagabond/) {
