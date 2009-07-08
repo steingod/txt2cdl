@@ -32,7 +32,7 @@
 # NA
 #
 # CVS_ID:
-# $Id: vgb2nc,v 1.2 2009-05-05 21:28:22 steingod Exp $
+# $Id: vgb2nc,v 1.3 2009-07-08 14:37:07 steingod Exp $
 #
 
 use strict;
@@ -57,7 +57,7 @@ my $institution = "Université Pierre et Marie Curie/UPMC";
 my $url = "http://vagabond.fr/";
 my $topic = "Oceans";
 my $distribution = "Restricted to Damocles";
-my $history = "2009-04-27 creation";
+my $history = "2009-07-08 creation";
 my $area = "Barents Sea";
 my $quality = "Unknown quality";
 my $keyw = "Ocean Salinity Conductivity Temperature";
