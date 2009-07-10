@@ -52,7 +52,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.37 2009-05-05 21:19:55 steingod Exp $
+# $Id: txt2cdl,v 1.38 2009-07-10 13:45:20 steingod Exp $
 #  
 
 ########################################################### 
@@ -81,6 +81,8 @@ sub create_mooring_cdl_mooringgfi;
 sub create_mooring_cdl_ascii;
 sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
+sub create_cdl_nfhbio;
+sub create_cdl_nfhpigm;
 sub write_file;
 sub sort_matrix;
 
@@ -222,6 +224,10 @@ if ($fileformat eq "seabirdctd") {
     @cdloutput = create_trajectory_cdl_awiem(\@template,\@text);
 } elsif ($fileformat eq "metnoradflux") {
     @cdloutput = create_timeseries_cdl_radflux(\@template,\@text);
+} elsif ($fileformat eq "nfhbio") {
+    @cdloutput = create_cdl_nfhbio(\@template,\@text);
+} elsif ($fileformat eq "nfhpigm") {
+    @cdloutput = create_cdl_nfhpigm(\@template,\@text);
 } else {
     die "Fileformat ($fileformat) is not supported\n";
 }
@@ -285,7 +291,10 @@ sub usage() {
     "o Current mooring format in ASCII - (format=mooring)\n".
     "o Helicopter trajectory of ice thickness by AWI, Germany - (format=awiem)\n".
     "o ITP-data from Woods Hole, daily updates - (format=itp)\n".
-    "o METNO radiative flux measurements, continous stream - (format=metnoradflux)";
+    "o METNO radiative flux measurements, continous stream -
+    (format=metnoradflux)\n".
+    "o BIO-data from NFH, Norway - (format=nfhbio)\n".
+    "o PIGM-data from NFH, Norway - (format=nfhpigm)";
     my $author = "Øystein Godøy, METNO/FOU, 24.10.2008";
 
     print "\n";
@@ -471,7 +480,7 @@ sub create_ctd_cdl_woce {
 sub create_ctd_cdl_seabird {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
-    my(@timearr,$timeunix,$timestr);
+    my(@timearr,$timeunix,$timeunixcast,$timestr);
     my(@mytmp,@mytmp2,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues,$ncol,$i,$j);
     my($pres,$temp,$cond,$psal,$depth);
     my($line,$norec);
@@ -489,11 +498,18 @@ sub create_ctd_cdl_seabird {
     $pname =~ s/(^(\* ))|://g;
     $pname =~ s/[\n\r]//g;
 
-    if ($pname =~ "Sea-Bird SBE19plus Data File") {
+    if (grep /Vagabond/,@$txtref) {
 	# Time
-	@mytmp = grep /^\* cast /,@$txtref;
-	$timestr = substr $mytmp[0],11,21;
+	@mytmp = grep /^\# start_time = /,@$txtref;
+	@timearr = split /=/,$mytmp[0];
+	$timestr = $timearr[1];
+	$timestr =~ s/^\s+//;
+	$timestr =~ s/\n$//;
+	##$timestr = substr $mytmp[0],11,21;
 	$timeunix = str2time($timestr."UTC");
+	die "\n\tThe time specification of this dataset is obviously incorrect...\n\n" if ($timeunix > time || $timeunix < 86400);
+	$timeunixcast = $timeunix;
+	undef(@timearr);
 	@timearr = gmtime($timeunix);
 	$timestr = strftime("%F %T UTC",@timearr);
 
@@ -502,8 +518,16 @@ sub create_ctd_cdl_seabird {
 	    $tmpstr = $mytmp[0];
 	    @mytmp =  split /-/,$tmpstr;
 	    $vessel = "Vagabond";
-	    $lat = (substr $mytmp[1],1,2)+((substr $mytmp[1],4,2)+(substr $mytmp[1],7,2)/100.)/60.;
-	    $lon = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
+	    if ($mytmp[1] =~ m/\d+/) {
+		$lat = (substr $mytmp[1],1,2)+((substr $mytmp[1],4,2)+(substr $mytmp[1],7,2)/100.)/60.;
+		$lon = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
+	    } elsif ($mytmp[2] =~ m/\d+/) {
+		$lat = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
+		$lon = (substr $mytmp[3],1,2)+((substr $mytmp[3],4,2)+(substr $mytmp[3],7,2)/100.)/60.;
+	    } else {
+		$lat = (substr $mytmp[3],1,2)+((substr $mytmp[3],4,2)+(substr $mytmp[3],7,2)/100.)/60.;
+		$lon = (substr $mytmp[4],1,2)+((substr $mytmp[4],4,2)+(substr $mytmp[4],7,2)/100.)/60.;
+	    }
 	} else {
 	    die "Cannot interprete this format...\n";
 	}
@@ -607,8 +631,9 @@ sub create_ctd_cdl_seabird {
     s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
-    s/\+time/$timeunix/ for (@cdlout);
+    s/\+time/$timeunixcast/ for (@cdlout);
     if ($vessel =~ /Vagabond/) {
+	s/\+sampletime/$timeunix/ for (@cdlout);
 	s/time:units = "seconds since 1970-01-01 00:00:00 UTC"/time:units = "seconds since $timestr"/ for (@cdlout);
     }
     s/\+start_date/$timestr/ for (@cdlout);
@@ -1980,6 +2005,113 @@ sub create_timeseries_cdl_radflux {
 
     return(@cdlout);
 }
+
+#
+# Decode and convert the NFH bilogical format.
+#
+sub create_cdl_nfhbio {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my(@source,@mytmp,@mytmp1);
+    my($title,$abstract,$topiccategory);
+    my($southernmost_latitude,$northernmost_latitude);
+    my($keywords,$variables,$units);
+    my($westernmost_longitude,$easternmost_longitude,$start_date,$stop_date);
+    my($institution,$url,$PI_name,$contact,$platform,$distribution_statement);
+    my($quality_statement,$project_name);
+    my(@timearr,$timeunix,$timestr);
+    #my(@mytmp,@mytmp2,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues,$ncol,$i,$j);
+    #my($pres,$temp,$cond,$psal,$depth);
+    my($line,$norec);
+
+    ###########################################################
+    # Copy the template and the input stream
+    @cdlout = @$tempref;
+    @source = @$txtref;
+
+    ########################################################### 
+    # First the necessary global information is extracted from the input
+    # data stream
+    $title = (grep /#\s+title: /,@source)[0];
+    $title =~ s/#\s+title:\s*//;
+    $abstract = (grep /#\s+abstract: /,@source)[0];
+    $abstract =~ s/#\s+abstract:\s*//;
+    $topiccategory = (grep /#\s+topiccategory: /,@source)[0];
+    $topiccategory =~ s/#\s+topiccategory:\s*//;
+    $keywords = (grep /#\s+keywords: /,@source)[0];
+    $keywords =~ s/#\s+keywords:\s*//;
+    $area = (grep /#\s+area: /,@source)[0];
+    $area =~ s/#\s+area:\s*//;
+    $southernmost_latitude = (grep /#\s+southernmost_latitude: /,@source)[0];
+    $southernmost_latitude =~ s/#\s+southernmost_latitude:\s*//;
+    $northernmost_latitude = (grep /#\s+northernmost_latitude: /,@source)[0];
+    $northernmost_latitude =~ s/#\s+northernmost_latitude:\s*//;
+    $westernmost_longitude = (grep /#\s+westernmost_longitude: /,@source)[0];
+    $westernmost_longitude =~ s/#\s+westernmost_longitude:\s*//;
+    $easternmost_longitude = (grep /#\s+easternmost_longitude: /,@source)[0];
+    $easternmost_longitude =~ s/#\s+easternmost_longitude:\s*//;
+    $start_date = (grep /#\s+start_date: /,@source)[0];
+    $start_date =~ s/#\s+start_date:\s*//;
+    $stop_date = (grep /#\s+stop_date: /,@source)[0];
+    $stop_date =~ s/#\s+stop_date:\s*//;
+    $institution = (grep /#\s+institution: /,@source)[0];
+    $institution =~ s/#\s+institution:\s*//;
+    $url = (grep /#\s+url: /,@source)[0];
+    $url =~ s/#\s+url:\s*//;
+    $PI_name = (grep /#\s+PI_name: /,@source)[0];
+    $PI_name =~ s/#\s+PI_name:\s*//;
+    $contact = (grep /#\s+contact: /,@source)[0];
+    $contact =~ s/#\s+contact:\s*//;
+    $distribution_statement = (grep /#\s+distribution_statement: /,@source)[0];
+    $distribution_statement =~ s/#\s+distribution_statement:\s*//;
+    $project_name = (grep /#\s+project_name: /,@source)[0];
+    $project_name =~ s/#\s+project_name:\s*//;
+    $quality_statement = (grep /#\s+quality_statement: /,@source)[0];
+    $quality_statement =~ s/#\s+quality_statement:\s*//;
+    $variables = (grep /#\s+variables: /,@source)[0];
+    $variables =~ s/#\s+variables:\s*//;
+    $units = (grep /#\s+units: /,@source)[0];
+    $units =~ s/#\s+units:\s*//;
+
+    ########################################################### 
+    # Then the actual data records are reformatted and
+    # internationalised...
+    #
+    @mytmp = grep /^\t/,@source;
+    @mytmp1 = map{$_ =~ s/^\s+\n//} @mytmp;
+    print "@mytmp1\n";
+    exit;
+    #@mytmp = map(s/^\t//) @mytmp1;
+    #print "@mytmp\n";
+
+    exit;
+
+    ########################################################### 
+    # Then this information is substituted into the CDL template
+
+##    s/\+nvalues/$nvalues/ for (@cdlout);
+##    s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
+##    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+##    s/\+lat/$lat/ for (@cdlout);
+##    s/\+lon/$lon/ for (@cdlout);
+##    s/\+time/$timeunix/ for (@cdlout);
+##    if ($vessel =~ /Vagabond/) {
+##	s/time:units = "seconds since 1970-01-01 00:00:00 UTC"/time:units = "seconds since $timestr"/ for (@cdlout);
+##    }
+##    s/\+start_date/$timestr/ for (@cdlout);
+##    s/\+stop_date/$timestr/ for (@cdlout);
+##    if ($vessel =~ /Vagabond/) {
+##	s/\+depth/$depth/ for (@cdlout);
+##    } else {
+##	s/\+pres/$pres/ for (@cdlout);
+##    }
+##    s/\+temp/$temp/ for (@cdlout);
+##    s/\+cond/$cond/ for (@cdlout);
+##    s/\+psal/$psal/ for (@cdlout);
+
+    return(@cdlout);
+}
+
 
 ##sub transpose {
 ##  map {
