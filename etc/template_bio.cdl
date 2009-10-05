@@ -1,0 +1,102 @@
+netcdf template_ctd {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_bio.cdl,v 1.1 2009-10-05 18:00:55 steingod Exp $
+
+dimensions:
+    depth = +ndepths; 
+    stations = +nstations;
+
+variables:
+    double time(stations);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+	time:axis = "T";
+    float latitude(stations);
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.;
+	latitude:valid_max = 90.;
+    float longitude(stations);
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.;
+	longitude:valid_max = 180.;
+    float depth(stations,depth);
+	depth:long_name = "Depth below sea surface";
+	depth:short_name = "depth";
+	depth:standard_name = "depth";
+	depth:units = "m";
+	depth:valid_min = 0.;
+	depth:valid_max = 15000.;
+	depth:positive = "down";
+    float chl-a(stations,depth);
+	chl-a:long_name = "TBDS";
+	chl-a:short_name = "TBD";
+	chl-a:_FillValue = 9999.f;
+	chl-a:units = "TBD";
+	chl-a:coordinates = "time longitude latitude depth";
+    float phaeopigment(stations,depth);
+	phaeopigment:long_name = "TBD";
+	phaeopigment:short_name = "TBD";
+	phaeopigment:standard_name = "TBD";
+	phaeopigment:_FillValue = 9999.f;
+	phaeopigment:units = "TBD";
+	phaeopigment:coordinates = "time longitude latitude depth";
+    float POC(stations,depth);
+	POC:long_name = "TBD";
+	POC:short_name = "TBD";
+	POC:standard_name = "TDF";
+	POC:_FillValue = 9999.f;
+	POC:units = "TBD";
+	POC:coordinates = "time longitude latitude depth";
+    float PON(stations,depth);
+	PON:long_name = "TBD";
+	PON:short_name = "TBD";
+	PON:standard_name = "TDF";
+	PON:_FillValue = 9999.f;
+	PON:units = "TBD";
+	PON:coordinates = "time longitude latitude depth";
+
+// global attributes
+	:Conventions = "CF-1.4";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; 
+	:topiccategory = "+topic"; 
+	:keywords = "+keyw"; 
+	:gcmd_keywords = "+gcmdkeyw"; 
+	:area = "+area"; 
+	:activity_type = "+activity_type";
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:product_name = "+pname";
+	:Platform_name = "+vessel";
+	:project_name = "+project_name";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +slat;
+	:northernmost_latitude = +nlat;
+	:westernmost_longitude = +wlon;
+	:easternmost_longitude = +elon;
+	:quality_statement = "+qual";
+	:CF\:pointFeature = "profile";
+
+data:
+    time =  +time;
+    latitude = +lat;
+    longitude = +lon;
+    depth = +depth;
+    temp = +temp;
+    psal = +psal;
+    cond = +cond;
+}
