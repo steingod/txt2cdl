@@ -12,6 +12,7 @@
 # o Getopt::Std;
 # o Time::Local;
 # o Date::Parse; 
+# o Date::Manip;
 # o POSIX qw(strftime);
 # o Text::Wrap;
 #
@@ -52,7 +53,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.38 2009-07-10 13:45:20 steingod Exp $
+# $Id: txt2cdl,v 1.39 2009-10-05 20:58:15 steingod Exp $
 #  
 
 ########################################################### 
@@ -62,7 +63,7 @@ use Getopt::Std;
 use Time::Local;
 use Text::Wrap;
 use Date::Parse;
-#use Date::Format;
+use Date::Manip;
 use POSIX qw(strftime);
 ##use Data::Table;
 ##use PDL::Basic;
@@ -2020,9 +2021,13 @@ sub create_cdl_nfhbio {
     my($institution,$url,$PI_name,$contact,$platform,$distribution_statement);
     my($quality_statement,$project_name);
     my(@timearr,$timeunix,$timestr);
-    #my(@mytmp,@mytmp2,$tmpstr,$pname,$vessel,$lat,$lon,$nvalues,$ncol,$i,$j);
-    #my($pres,$temp,$cond,$psal,$depth);
     my($line,$norec);
+    my(@mytimes, @mydepths, $mydate, @mylatlonpair, $ll, $tz);
+    my(%mydata, $sc, $lat, $lon, $z, $chl, $pigm, $pon, $poc);
+    my($ndepths,$nstations);
+    my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
+    my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
+    my $misval = 9999.;
 
     ###########################################################
     # Copy the template and the input stream
@@ -2034,84 +2039,209 @@ sub create_cdl_nfhbio {
     # data stream
     $title = (grep /#\s+title: /,@source)[0];
     $title =~ s/#\s+title:\s*//;
+    $title =~ s/\s+$//;
     $abstract = (grep /#\s+abstract: /,@source)[0];
     $abstract =~ s/#\s+abstract:\s*//;
+    $abstract =~ s/\s+$//;
     $topiccategory = (grep /#\s+topiccategory: /,@source)[0];
     $topiccategory =~ s/#\s+topiccategory:\s*//;
+    $topiccategory =~ s/\s+$//;
     $keywords = (grep /#\s+keywords: /,@source)[0];
     $keywords =~ s/#\s+keywords:\s*//;
+    $keywords =~ s/\s+$//;
     $area = (grep /#\s+area: /,@source)[0];
     $area =~ s/#\s+area:\s*//;
+    $area =~ s/\s+$//;
     $southernmost_latitude = (grep /#\s+southernmost_latitude: /,@source)[0];
     $southernmost_latitude =~ s/#\s+southernmost_latitude:\s*//;
+    $southernmost_latitude =~ s/\s+$//;
     $northernmost_latitude = (grep /#\s+northernmost_latitude: /,@source)[0];
     $northernmost_latitude =~ s/#\s+northernmost_latitude:\s*//;
+    $northernmost_latitude =~ s/\s+$//;
     $westernmost_longitude = (grep /#\s+westernmost_longitude: /,@source)[0];
     $westernmost_longitude =~ s/#\s+westernmost_longitude:\s*//;
+    $westernmost_longitude =~ s/\s+$//;
     $easternmost_longitude = (grep /#\s+easternmost_longitude: /,@source)[0];
     $easternmost_longitude =~ s/#\s+easternmost_longitude:\s*//;
+    $easternmost_longitude =~ s/\s+$//;
     $start_date = (grep /#\s+start_date: /,@source)[0];
     $start_date =~ s/#\s+start_date:\s*//;
+    $start_date =~ s/\s+$//;
     $stop_date = (grep /#\s+stop_date: /,@source)[0];
     $stop_date =~ s/#\s+stop_date:\s*//;
+    $stop_date =~ s/\s+$//;
     $institution = (grep /#\s+institution: /,@source)[0];
     $institution =~ s/#\s+institution:\s*//;
+    $institution =~ s/\s+$//;
     $url = (grep /#\s+url: /,@source)[0];
     $url =~ s/#\s+url:\s*//;
+    $url =~ s/\s+$//;
     $PI_name = (grep /#\s+PI_name: /,@source)[0];
     $PI_name =~ s/#\s+PI_name:\s*//;
+    $PI_name =~ s/\s+$//;
     $contact = (grep /#\s+contact: /,@source)[0];
     $contact =~ s/#\s+contact:\s*//;
+    $contact =~ s/\s+$//;
     $distribution_statement = (grep /#\s+distribution_statement: /,@source)[0];
     $distribution_statement =~ s/#\s+distribution_statement:\s*//;
+    $distribution_statement =~ s/\s+$//;
     $project_name = (grep /#\s+project_name: /,@source)[0];
     $project_name =~ s/#\s+project_name:\s*//;
+    $project_name =~ s/\s+$//;
     $quality_statement = (grep /#\s+quality_statement: /,@source)[0];
     $quality_statement =~ s/#\s+quality_statement:\s*//;
+    $quality_statement =~ s/\s+$//;
     $variables = (grep /#\s+variables: /,@source)[0];
     $variables =~ s/#\s+variables:\s*//;
+    $variables =~ s/\s+$//;
     $units = (grep /#\s+units: /,@source)[0];
     $units =~ s/#\s+units:\s*//;
+    $units =~ s/\s+$//;
+
+    # Check that the file follows the expected outline
+    unless ($variables eq $nfhbiovar){
+	print ">>>$variables<<<\n";
+	print ">>>$nfhbiovar<<<\n";
+	die "Variables names does not match the expected" 
+    }
+    unless ($units eq $nfhbiounits){
+	print ">>>$units<<<\n";
+	print ">>>$nfhbiounits<<<\n";
+	die "Units names does not match the expected" 
+    }
 
     ########################################################### 
-    # Then the actual data records are reformatted and
-    # internationalised...
+    # Then the actual data records are decoded and prepared for future use
     #
-    @mytmp = grep /^\t/,@source;
-    @mytmp1 = map{$_ =~ s/^\s+\n//} @mytmp;
-    print "@mytmp1\n";
-    exit;
-    #@mytmp = map(s/^\t//) @mytmp1;
-    #print "@mytmp\n";
+    foreach (@source) {
+	next unless m/^\t/;
+	next if ($_ =~ m/^\t\s+\n$/); 
+	$_ =~ s/^\t//;
+	$_ =~ s/\s+/ /g;
+	#print "$_\n";
+	@mytmp = split /\s+/,$_;
+	$mydate = $mytmp[3]." ".$mytmp[2]." UTC";
+	$tz = Date_TimeZone;
+	unless ($tz eq "UTC") {
+	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+	} else {
+	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+	}
+	unless (grep /$mydate/,@mytimes) {
+	    push @mytimes, $mydate; 
+	    $sc = 0;
+	}
+	$ll = $mytmp[0]." ".(-1*$mytmp[1]);
+	push @mydepths, $mytmp[4] unless grep /^$mytmp[4]$/,@mydepths;
+	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
-    exit;
-
+	$mydata{$mydate}{"lat"} = $mytmp[0];
+	$mydata{$mydate}{"lon"} = -1*$mytmp[1];
+	$mydata{$mydate}{"z"}[$sc] = $mytmp[4];
+	$mydata{$mydate}{"chl-a"}[$sc] = $mytmp[5];
+	$mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[6];
+	$mydata{$mydate}{"POC"}[$sc] = $mytmp[7];
+	$mydata{$mydate}{"PON"}[$sc] = $mytmp[8];
+	$mydata{$mydate}{"noobs"} = ($sc+1);
+	$sc++;
+    }
+##    print join("\n",sort {$a <=> $b} @mydepths)."\n";
+##    print "Number of unique depths: $#mydepths\n";
+##    print join("\n",@mytimes)."\n";
+##    print "Number of unique dates: $#mytimes\n";
+##    print join("\n",@mylatlonpair)."\n";
+##    print "Number of unique positions: $#mylatlonpair\n";
+##
+##    print "$mydata{'2007-05-28 08:06 UTC'}{lat}\n";
+##    print "$mydata{'2007-05-28 08:06 UTC'}{lon}\n";
+##    print $mydata{'2007-05-28 08:06 UTC'}{noobs}."\n";
+##    for ($sc=0;$sc<$mydata{'2007-05-28 08:06 UTC'}{noobs};$sc++) {
+##	print "\t$mydata{'2007-05-28 08:06 UTC'}{z}[$sc] ";
+##	print "\t$mydata{'2007-05-28 08:06 UTC'}{'chl-a'}[$sc] ";
+##	print "\t$mydata{'2007-05-28 08:06 UTC'}{phaoepigment}[$sc] ";
+##	print "\t$mydata{'2007-05-28 08:06 UTC'}{POC}[$sc] ";
+##	print "\t$mydata{'2007-05-28 08:06 UTC'}{PON}[$sc] ";
+##	print "\n";
+##    }
+    
     ########################################################### 
-    # Then this information is substituted into the CDL template
+    # Dump data into CDL template
+    # Global attributes
+    s/\+title/$title/ for (@cdlout); # Actually a global variabel
+    s/\+abstract/$abstract/ for (@cdlout); # Actually a global variabel
+    s/\+keyw/$keywords/ for (@cdlout); # Actually a global variabel
+    #s/\+gcmdkeyw/$gcmdkeywords/ for (@cdlout); # Actually a global variabel
+    s/\+topic/$topiccategory/ for (@cdlout); # Actually a global variabel
+    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+    s/\+slat/$southernmost_latitude/ for (@cdlout);
+    s/\+nlat/$northernmost_latitude/ for (@cdlout);
+    s/\+elon/$easternmost_longitude/ for (@cdlout);
+    s/\+wlon/$westernmost_longitude/ for (@cdlout);
+    s/\+start_date/$start_date/ for (@cdlout);
+    s/\+stop_date/$stop_date/ for (@cdlout);
+    s/\+area/$area/ for (@cdlout);
+    s/\+inst/$institution/ for (@cdlout);
+    s/\+piname/$PI_name/ for (@cdlout);
+    s/\+email/$contact/ for (@cdlout);
+    s/\+url/$url/ for (@cdlout);
+    s/\+distribution/$distribution_statement/ for (@cdlout);
+    s/\+qual/$quality_statement/ for (@cdlout);
+    s/\+project_name/$project_name/ for (@cdlout);
+    #s/\+product_name/$product_name/ for (@cdlout);
+    $ndepths = $#mydepths+1;
+    s/\+ndepths/$ndepths/ for (@cdlout);
+    $nstations = $#mylatlonpair+1;
+    s/\+nstations/$nstations/ for (@cdlout);
 
-##    s/\+nvalues/$nvalues/ for (@cdlout);
-##    s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
-##    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
-##    s/\+lat/$lat/ for (@cdlout);
-##    s/\+lon/$lon/ for (@cdlout);
-##    s/\+time/$timeunix/ for (@cdlout);
-##    if ($vessel =~ /Vagabond/) {
-##	s/time:units = "seconds since 1970-01-01 00:00:00 UTC"/time:units = "seconds since $timestr"/ for (@cdlout);
-##    }
-##    s/\+start_date/$timestr/ for (@cdlout);
-##    s/\+stop_date/$timestr/ for (@cdlout);
-##    if ($vessel =~ /Vagabond/) {
-##	s/\+depth/$depth/ for (@cdlout);
-##    } else {
-##	s/\+pres/$pres/ for (@cdlout);
-##    }
-##    s/\+temp/$temp/ for (@cdlout);
-##    s/\+cond/$cond/ for (@cdlout);
-##    s/\+psal/$psal/ for (@cdlout);
+    # Multi-dimensional array...
+    foreach (sort(keys(%mydata))) {
+	print "$_\n";
+	$timeunix .= UnixDate($_,"%s").",";
+	$lat .= $mydata{$_}{lat}.",";
+	$lon .= $mydata{$_}{lon}.",";
+	foreach $z (sort {$a <=> $b} @mydepths) {
+	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
+		if ($mydata{$_}{z}[$sc]==$z) {
+		    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
+		    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
+		    $pon .= $mydata{$_}{PON}[$sc].",";
+		    $poc .= $mydata{$_}{POC}[$sc].",";
+		    last;
+		} else {
+		    $chl .= "$misval,";
+		    $pigm .= "$misval,";
+		    $pon .= "$misval,";
+		    $poc .= "$misval,";
+		    last;
+		}
+	    }
+	}
+    }
+    $z = join ",",sort({$a <=> $b} @mydepths);
+
+    # Clean up records
+    $timeunix =~ s/,$//;
+    $z =~ s/,$//;
+    $lat =~ s/,$//;
+    $lon =~ s/,$//;
+    $chl =~ s/,$//;
+    $pigm =~ s/,$//;
+    $pon =~ s/,$//;
+    $poc =~ s/,$//;
+
+    # Dumpa to file
+    s/\+time/$timeunix/ for (@cdlout);
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+depth/$z/ for (@cdlout);
+    s/\+chl-a/$chl/ for (@cdlout);
+    s/\+pigm/$pigm/ for (@cdlout);
+    s/\+pon/$pon/ for (@cdlout);
+    s/\+poc/$poc/ for (@cdlout);
 
     return(@cdlout);
 }
-
 
 ##sub transpose {
 ##  map {
