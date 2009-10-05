@@ -1,7 +1,7 @@
 netcdf template_ctd {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_bio.cdl,v 1.1 2009-10-05 18:00:55 steingod Exp $
+// $Id: template_bio.cdl,v 1.2 2009-10-05 20:57:44 steingod Exp $
 
 dimensions:
     depth = +ndepths; 
@@ -89,14 +89,15 @@ variables:
 	:westernmost_longitude = +wlon;
 	:easternmost_longitude = +elon;
 	:quality_statement = "+qual";
-	:CF\:pointFeature = "profile";
+	//:CF\:pointFeature = "profile";
 
 data:
     time =  +time;
     latitude = +lat;
     longitude = +lon;
     depth = +depth;
-    temp = +temp;
-    psal = +psal;
-    cond = +cond;
+    chl-a = +chl-a;
+    phaeopigment = +pigm;
+    POC = +poc;
+    PON = +pon;
 }
