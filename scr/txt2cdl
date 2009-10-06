@@ -53,7 +53,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.40 2009-10-06 11:09:10 steingod Exp $
+# $Id: txt2cdl,v 1.41 2009-10-06 12:06:34 steingod Exp $
 #  
 
 ########################################################### 
@@ -2028,6 +2028,7 @@ sub create_cdl_nfhbio {
     my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
     my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
     my $misval = 9999.;
+    my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrogen";
 
     ###########################################################
     # Copy the template and the input stream
@@ -2171,7 +2172,7 @@ sub create_cdl_nfhbio {
     s/\+title/$title/ for (@cdlout); # Actually a global variabel
     s/\+abstract/$abstract/ for (@cdlout); # Actually a global variabel
     s/\+keyw/$keywords/ for (@cdlout); # Actually a global variabel
-    #s/\+gcmdkeyw/$gcmdkeywords/ for (@cdlout); # Actually a global variabel
+    s/\+gcmdkeyw/$gcmdkeyw/ for (@cdlout); # Actually a global variabel
     s/\+topic/$topiccategory/ for (@cdlout); # Actually a global variabel
     s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
     s/\+slat/$southernmost_latitude/ for (@cdlout);
@@ -2220,7 +2221,6 @@ sub create_cdl_nfhbio {
 	}
     }
     $z = join ",",sort({$a <=> $b} @mydepths);
-    print "$z\n";
 
     # Clean up records
     $timeunix =~ s/,$//;
