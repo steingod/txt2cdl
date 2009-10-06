@@ -53,7 +53,7 @@
 # is yet not finished.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.39 2009-10-05 20:58:15 steingod Exp $
+# $Id: txt2cdl,v 1.40 2009-10-06 11:09:10 steingod Exp $
 #  
 
 ########################################################### 
@@ -2024,7 +2024,7 @@ sub create_cdl_nfhbio {
     my($line,$norec);
     my(@mytimes, @mydepths, $mydate, @mylatlonpair, $ll, $tz);
     my(%mydata, $sc, $lat, $lon, $z, $chl, $pigm, $pon, $poc);
-    my($ndepths,$nstations);
+    my($ndepths,$nstations,$match);
     my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
     my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
     my $misval = 9999.;
@@ -2196,29 +2196,31 @@ sub create_cdl_nfhbio {
 
     # Multi-dimensional array...
     foreach (sort(keys(%mydata))) {
-	print "$_\n";
 	$timeunix .= UnixDate($_,"%s").",";
 	$lat .= $mydata{$_}{lat}.",";
 	$lon .= $mydata{$_}{lon}.",";
 	foreach $z (sort {$a <=> $b} @mydepths) {
+	    $match = 0;
 	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
 		if ($mydata{$_}{z}[$sc]==$z) {
 		    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
 		    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
 		    $pon .= $mydata{$_}{PON}[$sc].",";
 		    $poc .= $mydata{$_}{POC}[$sc].",";
-		    last;
-		} else {
-		    $chl .= "$misval,";
-		    $pigm .= "$misval,";
-		    $pon .= "$misval,";
-		    $poc .= "$misval,";
+		    $match = 1;
 		    last;
 		}
+	    }
+	    unless ($match) {
+		$chl .= "$misval,";
+		$pigm .= "$misval,";
+		$pon .= "$misval,";
+		$poc .= "$misval,";
 	    }
 	}
     }
     $z = join ",",sort({$a <=> $b} @mydepths);
+    print "$z\n";
 
     # Clean up records
     $timeunix =~ s/,$//;
