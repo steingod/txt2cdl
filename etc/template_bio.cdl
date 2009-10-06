@@ -1,7 +1,7 @@
 netcdf template_ctd {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_bio.cdl,v 1.2 2009-10-05 20:57:44 steingod Exp $
+// $Id: template_bio.cdl,v 1.3 2009-10-06 10:15:59 steingod Exp $
 
 dimensions:
     depth = +ndepths; 
@@ -28,7 +28,7 @@ variables:
 	longitude:units = "degree_east";
 	longitude:valid_min = -180.;
 	longitude:valid_max = 180.;
-    float depth(stations,depth);
+    float depth(depth);
 	depth:long_name = "Depth below sea surface";
 	depth:short_name = "depth";
 	depth:standard_name = "depth";
