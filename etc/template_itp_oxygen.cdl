@@ -1,0 +1,94 @@
+netcdf template_itp {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_itp_oxygen.cdl,v 1.1 2009-10-06 15:33:48 steingod Exp $
+
+dimensions:
+    time = UNLIMITED; //
+    pres = +nvalues; // maximum number of levels (depth)
+    stations = 1;
+
+variables:
+    double time(time);
+	time:long_name = "time of the observation" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+	time:axis = "T";
+    float latitude(stations);
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.;
+	latitude:valid_max = 90.;
+    float longitude(stations);
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.;
+	longitude:valid_max = 180.;
+    float pres(pres);
+	pres:long_name = "Sea Water Pressure";
+	pres:short_name = "Pressure";
+	pres:standard_name = "sea_water_pressure";
+	pres:units = "dbar";
+	pres:valid_min = 0.;
+	pres:valid_max = 15000.;
+	//pres:axis = "y";
+    float temp(pres);
+	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
+	temp:short_name = "temperature";
+	temp:_FillValue = 9999.f;
+	temp:units = "degrees Celsius";
+	temp:axis = "x";
+    float psal(pres);
+	psal:long_name = "Practical salinity (PSU/sal00)";
+	psal:short_name = "salinity";
+	psal:standard_name = "sea_water_salinity";
+	psal:_FillValue = 9999.f;
+	psal:units = "";
+	psal:axis = "x";
+    float o2(pres);
+	o2:long_name = "oxygen content";
+	o2:short_name = "oxygen";
+	o2:standard_name = "moles_of_oxygen_per_unit_mass_in_sea_water";
+	o2:_FillValue = 9999.f;
+	o2:units = "micromol kg-1";
+	o2:axis = "x";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; 
+	:topicCategory = "+topic"; 
+	:keywords = "+keyw"; 
+	:gcmd_keywords = "+gcmdkeyw"; 
+	:Area = "+area"; 
+	:activity_type = "+activity";
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:Product_name = "+pname";
+	:Platform_name = "+vessel";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +lat;
+	:northernmost_latitude = +lat;
+	:westernmost_longitude = +lon;
+	:easternmost_longitude = +lon;
+	:quality_statement = "+qual";
+
+data:
+    time =  +time;
+    latitude = +lat;
+    longitude = +lon;
+    pres = +pressure;
+    temp = +temperature;
+    psal = +salinity;
+    o2 = +oxygen;
+}
