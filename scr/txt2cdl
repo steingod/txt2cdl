@@ -51,9 +51,12 @@
 # data and started rewrite of CTD handling of SeaBird profiles. These need
 # special care as they measure both downwards and upwards. Implementation
 # is yet not finished.
+# Øystein Godøy, METNO/FOU, 06.10.2009: Biological data from NDF/Tromsø is
+# now supported through ASCII dump of Excel.
+# Øystein Godøy, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.41 2009-10-06 12:06:34 steingod Exp $
+# $Id: txt2cdl,v 1.42 2009-10-06 16:15:28 steingod Exp $
 #  
 
 ########################################################### 
@@ -847,10 +850,11 @@ sub create_itp_cdl {
     my($topiccategory,$mykeywords,$mygcmdkeywords,$activity_type,$PI_name);
     my($line,$norec,$misvalin,$misvalout);
     my($itpid,$profileid,$vessel,$quality);
-    my($myyear,$myday,$pressure,$temperature,$salinity);
+    my($myyear,$myday,$pressure,$temperature,$salinity,$oxygen);
     my $variables1 = "%year day pressure(dbar) temperature(C) salinity";
     my $variables2 = "%pressure(dbar) temperature(C) salinity nobs";
-    my($ftype,%projectnames);
+    my $variables3 = "%year day pressure(dbar) temperature(C) salinity oxygen(umol/kg)";
+    my($ftype,%projectnames,@witho2);
 
     ###########################################################
     # Do some initialization
@@ -909,7 +913,7 @@ sub create_itp_cdl {
 	"30" => "Beaufort Gyre Observing System (BGOS)",
 	"31" => "Not available"
     );
-
+    @witho2 = (6,13,23,29);
 
     ###########################################################
     # Copy the template
@@ -924,6 +928,8 @@ sub create_itp_cdl {
 	$ftype = "level 2";
     } elsif ($variables2 eq $mytmp[2]) {
 	$ftype = "level 3";
+    } elsif ($variables3 eq $mytmp[2]) {
+	$ftype = "level 4";
     } else {
 	die "Could not recognise file type.";
     }
@@ -980,6 +986,11 @@ sub create_itp_cdl {
 	    $pressure .= $tmparr[0].",";
 	    $temperature .= $tmparr[1].",";
 	    $salinity .= $tmparr[2].",";
+	} elsif ($ftype eq "level 4") {
+	    $pressure .= $tmparr[2].",";
+	    $temperature .= $tmparr[3].",";
+	    $salinity .= $tmparr[4].",";
+	    $oxygen .= $tmparr[5].",";
 	} else {
 	    $pressure .= $tmparr[2].",";
 	    $temperature .= $tmparr[3].",";
@@ -994,6 +1005,7 @@ sub create_itp_cdl {
     $pressure =~ s/,$//;
     $salinity =~ s/,$//;
     $temperature =~ s/,$//;
+    $oxygen =~ s/,$// if ($ftype eq "level 4");
 
     $title .= sprintf "ITP %02d Profile",$itpid;
     $vessel = sprintf "ITP %02d",$itpid;
@@ -1032,8 +1044,11 @@ sub create_itp_cdl {
     s/\+temp/$temperature/ for (@cdlout);
     s/\+psal/$salinity/ for (@cdlout);
     s/\+pres/$pressure/ for (@cdlout);
+    if ($ftype eq "level 4") {
+	s/\+oxygen/$oxygen/ for (@cdlout); 
+    }
     s/\+qual/$quality/ for (@cdlout);
-    splice @cdlout,9,1,"variables:\n\t:profile_number = $profileid;\n";
+    splice @cdlout,10,1,"variables:\n\t:profile_number = $profileid;\n";
 
     return(@cdlout);
 }

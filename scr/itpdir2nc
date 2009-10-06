@@ -31,10 +31,11 @@
 # Øystein Godøy, METNO/FOU, 15.02.2009
 #
 # MODIFIED:
-# NA
+# Øystein Godøy, METNO/FOU, 06.10.2009: Updated for files containing
+# oxygen as well...
 #
 # CVS_ID:
-# $Id: itpdir2nc,v 1.2 2009-03-11 11:21:17 steingod Exp $
+# $Id: itpdir2nc,v 1.3 2009-10-06 16:15:28 steingod Exp $
 #
 
 use strict;
@@ -45,12 +46,14 @@ use vars qw($opt_i $opt_o);
 sub usage;
 
 my($ifd,$ofd,$dirname,@tmp,$tgzfile,$ncfile);
-my(@files,$file,$newfile,@files2tar,$status); 
+my(@files,$file,$newfile,@files2tar,$status,$template); 
 my $txt2cdl = "./txt2cdl";
-my $template = "../etc/template_ctd.cdl";
+my $template1 = "../etc/template_ctd.cdl";
+my $template2 = "../etc/template_ctd_oxygen.cdl";
 my $format = "itp";
 my $ncgen = "/usr/bin/ncgen -b";
 my $tarcmd = "/bin/tar";
+my @witho2 = ("itp06","itp13","itp23","itp29");
 
 usage if !getopts('i:o:');
 usage if ((! $opt_i));
@@ -60,6 +63,12 @@ $ofd = $ifd;
 $dirname = $ofd;
 @tmp = split /\//,$dirname;
 $dirname = $tmp[$#tmp];
+
+if (grep /$dirname/,@witho2) {
+    $template = $template2;
+} else {
+    $template = $template1;
+}
 
 $tgzfile = "$dirname"."_"."$dirname"."ctd.tgz";
 
