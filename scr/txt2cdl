@@ -56,7 +56,7 @@
 # Øystein Godøy, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.42 2009-10-06 16:15:28 steingod Exp $
+# $Id: txt2cdl,v 1.43 2009-10-07 08:49:59 steingod Exp $
 #  
 
 ########################################################### 
@@ -911,7 +911,9 @@ sub create_itp_cdl {
 	"28" => "Damocles",
 	"29" => "Damocles",
 	"30" => "Beaufort Gyre Observing System (BGOS)",
-	"31" => "Not available"
+	"31" => "Not available",
+	"36" => "Nansen and Amundsen Basins Observational System (NABOS)",
+	"37" => "Nansen and Amundsen Basins Observational System (NABOS)"
     );
     @witho2 = (6,13,23,29);
 
