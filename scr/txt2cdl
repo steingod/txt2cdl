@@ -54,9 +54,11 @@
 # Øystein Godøy, METNO/FOU, 06.10.2009: Biological data from NDF/Tromsø is
 # now supported through ASCII dump of Excel.
 # Øystein Godøy, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
+# Øystein Godøy, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
+# measurements.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.44 2009-10-14 07:27:05 steingod Exp $
+# $Id: txt2cdl,v 1.45 2009-11-03 10:43:53 steingod Exp $
 #  
 
 ########################################################### 
@@ -1835,6 +1837,31 @@ sub create_timeseries_cdl_radflux {
 		},
 	    },
 	},
+	"Hopen" => {
+	    "title" => "Downwelling surface radiative fluxes at Hopen",
+	    "abstract" => "Downwelling surface radiative fluxes observed
+	    at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control focus on the radiative parameters, thus sensor temperatures may contain errors.",
+	    "product_name" => "radiative fluxes",
+	    "history" => "2009-11-03 creation",
+	    "project_name" => "iAOOS-Norway",
+	    "area" => "Barents Sea",
+	    "lat" => 76.5,
+	    "lon" => 25.07,
+	    "institution" => "Norwegian Meteorological Institute",
+	    "PI_name" => "Øystein Godøy",
+	    "url" => "http://www.met.no/",
+	    "contact" => "o.godoy\@met.no",
+	    "distribution_statement" => "Restricted to iAOOS-Norway",
+	    "quality_statement" => "Quality controlled",
+	    "quality_removals" => "0",
+	    "quality_keys" => {
+	    	"0" => {
+		"par" => "ssi&dli",
+		"start" => str2time("2009-07-21 00:00:00","UTC"), 
+		"end" => str2time("2009-07-21 18:00:00","UTC"),
+		},
+	    },
+	},
 	"unknown" => {
 	    "title" => "",
 	    "abstract" => "",
@@ -1887,6 +1914,7 @@ sub create_timeseries_cdl_radflux {
 	    @tmparr = split /,/,$line;
 	    $stationname = $tmparr[1];
 	    $stationname =~ s/ Strålingsstasjon//;
+	    $stationname =~ s/_Strålingsmåler//;
 	    $datalogger = $tmparr[2];
 	}
 	if ($norec==1) {
