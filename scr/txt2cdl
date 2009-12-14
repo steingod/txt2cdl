@@ -58,7 +58,7 @@
 # measurements.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.46 2009-12-14 10:11:08 steingod Exp $
+# $Id: txt2cdl,v 1.47 2009-12-14 10:13:13 steingod Exp $
 #  
 
 ########################################################### 
@@ -1853,9 +1853,9 @@ sub create_timeseries_cdl_radflux {
 	    "contact" => "o.godoy\@met.no",
 	    "distribution_statement" => "Restricted to iAOOS-Norway",
 	    "quality_statement" => "Quality controlled",
-	    "quality_removals" => "0",
+	    "quality_removals" => "1",
 	    "quality_keys" => {
-	    	"1" => {
+	    	"0" => {
 		"par" => "ssi&dli",
 		"start" => str2time("2009-07-21 00:00:00","UTC"), 
 		"end" => str2time("2009-11-01 00:00:00","UTC"),
