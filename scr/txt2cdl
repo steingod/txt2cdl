@@ -56,9 +56,10 @@
 # Øystein Godøy, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
 # Øystein Godøy, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
 # measurements.
+# Øystein Godøy, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.47 2009-12-14 10:13:13 steingod Exp $
+# $Id: txt2cdl,v 1.48 2010-03-24 12:39:21 steingod Exp $
 #  
 
 ########################################################### 
@@ -1771,7 +1772,7 @@ sub create_timeseries_cdl_radflux {
     (
 	"Bjørnøya" => {
 	    "title" => "Downwelling surface radiative fluxes at Bear Island",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control focus on the radiative parameters, thus sensor temperatures may contain errors.", 
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.", 
 	    "product_name" => "radiative fluxes",
 	    "history" => "2008-10-23 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
@@ -1783,7 +1784,7 @@ sub create_timeseries_cdl_radflux {
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
 	    "distribution_statement" => "Restricted to iAOOS-Norway",
-	    "quality_statement" => "Quality controlled",
+	    "quality_statement" => "Quality controlled by visual inspection",
 	    "quality_removals" => "5",
 	    "quality_keys" => {
 	    	"0" => {
@@ -1815,7 +1816,7 @@ sub create_timeseries_cdl_radflux {
 	},
 	"Jan Mayen" => {
 	    "title" => "Downwelling surface radiative fluxes at Jan Mayen",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control focus on the radiative parameters, thus sensor temperatures may contain errors.",
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
 	    "product_name" => "radiative fluxes",
 	    "history" => "2008-11-23 creation",
 	    "project_name" => "iAOOS-Norway",
@@ -1827,7 +1828,7 @@ sub create_timeseries_cdl_radflux {
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
 	    "distribution_statement" => "Restricted to iAOOS-Norway",
-	    "quality_statement" => "Quality controlled",
+	    "quality_statement" => "Quality controlled by visual inspection",
 	    "quality_removals" => "1",
 	    "quality_keys" => {
 	    	"0" => {
@@ -1840,7 +1841,7 @@ sub create_timeseries_cdl_radflux {
 	"Hopen" => {
 	    "title" => "Downwelling surface radiative fluxes at Hopen",
 	    "abstract" => "Downwelling surface radiative fluxes observed
-	    at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control focus on the radiative parameters, thus sensor temperatures may contain errors.",
+	    at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
 	    "product_name" => "radiative fluxes",
 	    "history" => "2009-11-03 creation",
 	    "project_name" => "iAOOS-Norway",
@@ -1852,7 +1853,7 @@ sub create_timeseries_cdl_radflux {
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
 	    "distribution_statement" => "Restricted to iAOOS-Norway",
-	    "quality_statement" => "Quality controlled",
+	    "quality_statement" => "Quality controlled by visual inspection",
 	    "quality_removals" => "1",
 	    "quality_keys" => {
 	    	"0" => {
