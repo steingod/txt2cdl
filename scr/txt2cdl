@@ -57,9 +57,11 @@
 # Øystein Godøy, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
 # measurements.
 # Øystein Godøy, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
+# Øystein Godøy, METNO/FOU, 02.06.2010: Modified support for NFH BIO
+# format.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.48 2010-03-24 12:39:21 steingod Exp $
+# $Id: txt2cdl,v 1.49 2010-06-02 22:11:37 steingod Exp $
 #  
 
 ########################################################### 
@@ -2057,7 +2059,7 @@ sub create_timeseries_cdl_radflux {
 }
 
 #
-# Decode and convert the NFH bilogical format.
+# Decode and convert the NFH biological format.
 #
 sub create_cdl_nfhbio {
     my(@cdlout,@tmparr);
@@ -2072,11 +2074,16 @@ sub create_cdl_nfhbio {
     my(@timearr,$timeunix,$timestr);
     my($line,$norec);
     my(@mytimes, @mydepths, $mydate, @mylatlonpair, $ll, $tz);
-    my(%mydata, $sc, $lat, $lon, $z, $chl, $pigm, $pon, $poc);
+    my(%mydata, $sc, $lat, $lon, $z);
+    my($chl, $chl_stdev, $pigm, $pigm_stdev, $fpc);
+    my($pon, $pon_stdev, $poc, $poc_stdev);
     my($ndepths,$nstations,$match);
-    my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
-    my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
-    my $misval = 9999.;
+    #my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
+    my $nfhbiovar = "date, time, latitude, longitude, sampling_depth, POC, stdev_POC, PON, stdev_PON, FPC, Chla, stdev_Chla, Phaeo, stdev_Phaeo";
+    #my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
+    my $nfhbiounits = "year_month_day, hours(hh:mm UTC), degrees_north, degrees_west, meter, mg_POC_m-2_d-1,  mg_POC_m-2_d-1,  mg_PON_m-2_d-1, mg_PON_m-2_d-1, mg_FPC_m-2_d-1, mg_Chla_m-2_d-1, mg_Chla_m-2_d-1, mg_Phaeo_m-2_d-1, mg_Phaeo_m-2_d-1";
+    my $misvalin = -999;
+    my $misvalout = 9999.;
     my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrogen";
 
     ###########################################################
@@ -2164,13 +2171,14 @@ sub create_cdl_nfhbio {
     # Then the actual data records are decoded and prepared for future use
     #
     foreach (@source) {
-	next unless m/^\t/;
-	next if ($_ =~ m/^\t\s+\n$/); 
+	next if m/^#/;
+	##next if ($_ =~ m/^\t\s+\n$/); 
 	$_ =~ s/^\t//;
 	$_ =~ s/\s+/ /g;
 	#print "$_\n";
+	$_ =~ s/$misvalin/$misvalout/g;
 	@mytmp = split /\s+/,$_;
-	$mydate = $mytmp[3]." ".$mytmp[2]." UTC";
+	$mydate = $mytmp[0]." ".$mytmp[1]." UTC";
 	$tz = Date_TimeZone;
 	unless ($tz eq "UTC") {
 	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
@@ -2182,38 +2190,25 @@ sub create_cdl_nfhbio {
 	    push @mytimes, $mydate; 
 	    $sc = 0;
 	}
-	$ll = $mytmp[0]." ".(-1*$mytmp[1]);
+	$ll = $mytmp[2]." ".(-1*$mytmp[3]);
 	push @mydepths, $mytmp[4] unless grep /^$mytmp[4]$/,@mydepths;
 	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
-	$mydata{$mydate}{"lat"} = $mytmp[0];
-	$mydata{$mydate}{"lon"} = -1*$mytmp[1];
+	$mydata{$mydate}{"lat"} = $mytmp[2];
+	$mydata{$mydate}{"lon"} = -1*$mytmp[3];
 	$mydata{$mydate}{"z"}[$sc] = $mytmp[4];
-	$mydata{$mydate}{"chl-a"}[$sc] = $mytmp[5];
-	$mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[6];
-	$mydata{$mydate}{"POC"}[$sc] = $mytmp[7];
-	$mydata{$mydate}{"PON"}[$sc] = $mytmp[8];
+	$mydata{$mydate}{"POC"}[$sc] = $mytmp[5];
+	$mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[6];
+	$mydata{$mydate}{"PON"}[$sc] = $mytmp[7];
+	$mydata{$mydate}{"PON_stdev"}[$sc] = $mytmp[8];
+	$mydata{$mydate}{"FPC"}[$sc] = $mytmp[9];
+	$mydata{$mydate}{"chl-a"}[$sc] = $mytmp[10];
+	$mydata{$mydate}{"chl-a_stdev"}[$sc] = $mytmp[11];
+	$mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[12];
+	$mydata{$mydate}{"phaoepigment_stdev"}[$sc] = $mytmp[13];
 	$mydata{$mydate}{"noobs"} = ($sc+1);
 	$sc++;
     }
-##    print join("\n",sort {$a <=> $b} @mydepths)."\n";
-##    print "Number of unique depths: $#mydepths\n";
-##    print join("\n",@mytimes)."\n";
-##    print "Number of unique dates: $#mytimes\n";
-##    print join("\n",@mylatlonpair)."\n";
-##    print "Number of unique positions: $#mylatlonpair\n";
-##
-##    print "$mydata{'2007-05-28 08:06 UTC'}{lat}\n";
-##    print "$mydata{'2007-05-28 08:06 UTC'}{lon}\n";
-##    print $mydata{'2007-05-28 08:06 UTC'}{noobs}."\n";
-##    for ($sc=0;$sc<$mydata{'2007-05-28 08:06 UTC'}{noobs};$sc++) {
-##	print "\t$mydata{'2007-05-28 08:06 UTC'}{z}[$sc] ";
-##	print "\t$mydata{'2007-05-28 08:06 UTC'}{'chl-a'}[$sc] ";
-##	print "\t$mydata{'2007-05-28 08:06 UTC'}{phaoepigment}[$sc] ";
-##	print "\t$mydata{'2007-05-28 08:06 UTC'}{POC}[$sc] ";
-##	print "\t$mydata{'2007-05-28 08:06 UTC'}{PON}[$sc] ";
-##	print "\n";
-##    }
     
     ########################################################### 
     # Dump data into CDL template
@@ -2254,18 +2249,23 @@ sub create_cdl_nfhbio {
 	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
 		if ($mydata{$_}{z}[$sc]==$z) {
 		    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
+		    $chl_stdev .= $mydata{$_}{'chl-a_stdev'}[$sc].",";
 		    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
+		    $pigm_stdev .= $mydata{$_}{phaoepigment_stdev}[$sc].",";
 		    $pon .= $mydata{$_}{PON}[$sc].",";
+		    $pon_stdev .= $mydata{$_}{PON_stdev}[$sc].",";
 		    $poc .= $mydata{$_}{POC}[$sc].",";
+		    $poc_stdev .= $mydata{$_}{POC_stdev}[$sc].",";
+		    $fpc .= $mydata{$_}{FPC}[$sc].",";
 		    $match = 1;
 		    last;
 		}
 	    }
 	    unless ($match) {
-		$chl .= "$misval,";
-		$pigm .= "$misval,";
-		$pon .= "$misval,";
-		$poc .= "$misval,";
+		$chl .= "$misvalout,";
+		$pigm .= "$misvalout,";
+		$pon .= "$misvalout,";
+		$poc .= "$misvalout,";
 	    }
 	}
     }
@@ -2277,19 +2277,29 @@ sub create_cdl_nfhbio {
     $lat =~ s/,$//;
     $lon =~ s/,$//;
     $chl =~ s/,$//;
+    $chl_stdev =~ s/,$//;
     $pigm =~ s/,$//;
+    $pigm_stdev =~ s/,$//;
     $pon =~ s/,$//;
+    $pon_stdev =~ s/,$//;
     $poc =~ s/,$//;
+    $poc_stdev =~ s/,$//;
+    $fpc =~ s/,$//;
 
-    # Dumpa to file
+    # Dump to file
     s/\+time/$timeunix/ for (@cdlout);
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
     s/\+depth/$z/ for (@cdlout);
     s/\+chl-a/$chl/ for (@cdlout);
+    s/\+chl-a_stdev/$chl_stdev/ for (@cdlout);
     s/\+pigm/$pigm/ for (@cdlout);
+    s/\+pigm_stdev/$pigm_stdev/ for (@cdlout);
     s/\+pon/$pon/ for (@cdlout);
+    s/\+pon_stdev/$pon_stdev/ for (@cdlout);
     s/\+poc/$poc/ for (@cdlout);
+    s/\+poc_stdev/$poc_stdev/ for (@cdlout);
+    s/\+fpc/$fpc/ for (@cdlout);
 
     return(@cdlout);
 }
