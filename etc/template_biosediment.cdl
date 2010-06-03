@@ -1,7 +1,7 @@
 netcdf template_biosediment {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_biosediment.cdl,v 1.2 2010-06-03 12:40:52 steingod Exp $
+// $Id: template_biosediment.cdl,v 1.3 2010-06-03 22:10:41 steingod Exp $
 
 dimensions:
     depth = +ndepths; 
@@ -116,7 +116,6 @@ variables:
 	:westernmost_longitude = +wlon;
 	:easternmost_longitude = +elon;
 	:quality_statement = "+qual";
-	//:CF\:pointFeature = "profile";
 
 data:
     time =  +time;

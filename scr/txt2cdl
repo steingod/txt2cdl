@@ -58,10 +58,12 @@
 # measurements.
 # Øystein Godøy, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
 # Øystein Godøy, METNO/FOU, 02.06.2010: Modified support for NFH BIO
-# format.
+# sediment data.
+# Øystein Godøy, METNO/FOU, 03.06.2010: Modified support for NFH BIO
+# stations.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.49 2010-06-02 22:11:37 steingod Exp $
+# $Id: txt2cdl,v 1.50 2010-06-03 22:10:41 steingod Exp $
 #  
 
 ########################################################### 
@@ -90,8 +92,8 @@ sub create_mooring_cdl_mooringgfi;
 sub create_mooring_cdl_ascii;
 sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
+sub create_cdl_nfhbiosed;
 sub create_cdl_nfhbio;
-sub create_cdl_nfhpigm;
 sub write_file;
 sub sort_matrix;
 
@@ -233,10 +235,10 @@ if ($fileformat eq "seabirdctd") {
     @cdloutput = create_trajectory_cdl_awiem(\@template,\@text);
 } elsif ($fileformat eq "metnoradflux") {
     @cdloutput = create_timeseries_cdl_radflux(\@template,\@text);
+} elsif ($fileformat eq "nfhbiosed") {
+    @cdloutput = create_cdl_nfhbiosed(\@template,\@text);
 } elsif ($fileformat eq "nfhbio") {
     @cdloutput = create_cdl_nfhbio(\@template,\@text);
-} elsif ($fileformat eq "nfhpigm") {
-    @cdloutput = create_cdl_nfhpigm(\@template,\@text);
 } else {
     die "Fileformat ($fileformat) is not supported\n";
 }
@@ -302,9 +304,9 @@ sub usage() {
     "o ITP-data from Woods Hole, daily updates - (format=itp)\n".
     "o METNO radiative flux measurements, continous stream -
     (format=metnoradflux)\n".
-    "o BIO-data from NFH, Norway - (format=nfhbio)\n".
-    "o PIGM-data from NFH, Norway - (format=nfhpigm)";
-    my $author = "Øystein Godøy, METNO/FOU, 24.10.2008";
+    "o BIO sediment data from UiT, Norway - (format=nfhbiosed)\n".
+    "o BIO data from UiT, Norway - (format=nfhbio)";
+    my $author = "Øystein Godøy, METNO/FOU, 03.06.2010";
 
     print "\n";
     print wrap("","\t","$0 -i <infile> -o <outfile> -f <format> -m
@@ -2059,9 +2061,10 @@ sub create_timeseries_cdl_radflux {
 }
 
 #
-# Decode and convert the NFH biological format.
+# Decode and convert the NFH biological format containing sediment data.
+# This is linked to template_biosediment.cdl
 #
-sub create_cdl_nfhbio {
+sub create_cdl_nfhbiosed {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
     my(@source,@mytmp,@mytmp1);
@@ -2291,15 +2294,295 @@ sub create_cdl_nfhbio {
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
     s/\+depth/$z/ for (@cdlout);
-    s/\+chl-a/$chl/ for (@cdlout);
     s/\+chl-a_stdev/$chl_stdev/ for (@cdlout);
-    s/\+pigm/$pigm/ for (@cdlout);
+    s/\+chl-a/$chl/ for (@cdlout);
     s/\+pigm_stdev/$pigm_stdev/ for (@cdlout);
-    s/\+pon/$pon/ for (@cdlout);
+    s/\+pigm/$pigm/ for (@cdlout);
     s/\+pon_stdev/$pon_stdev/ for (@cdlout);
-    s/\+poc/$poc/ for (@cdlout);
+    s/\+pon/$pon/ for (@cdlout);
     s/\+poc_stdev/$poc_stdev/ for (@cdlout);
+    s/\+poc/$poc/ for (@cdlout);
     s/\+fpc/$fpc/ for (@cdlout);
+
+    return(@cdlout);
+}
+
+#
+# Decode and convert the NFH biological format containing biological data.
+# This is linked to template_bio.cdl
+#
+sub create_cdl_nfhbio{
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my(@source,@mytmp,@mytmp1);
+    my($title,$abstract,$topiccategory);
+    my($southernmost_latitude,$northernmost_latitude);
+    my($keywords,$variables,$units);
+    my($westernmost_longitude,$easternmost_longitude,$start_date,$stop_date);
+    my($institution,$url,$PI_name,$contact,$platform,$distribution_statement);
+    my($quality_statement,$project_name);
+    my(@timearr,$timeunix,$timestr);
+    my($line,$norec);
+    my(@mystations, @mytimes, @mydepths, $mydate, @mylatlonpair, $ll, $tz);
+    my(%mydata, $sc, $lat, $lon, $z, $stid);
+    my($chl, $chl_stdev, $pigm, $pigm_stdev);
+    my($no3no2, $no3no2_stdev, $po4, $po4_stdev, $sioh4, $sioh4_stdev);
+    my($pon, $pon_stdev, $poc, $poc_stdev);
+    my($ndepths,$nstations,$match);
+    my $nfhbiovar = "CTD ID, date, time, latitude, longitude, sampling_depth, NO3+NO2, stdev_NO3+NO2, PO4, stdev_PO4, Si(OH)4, stdev_Si(OH)4, Chla, stdev_chla, Phaeo, stdev_Phaeo, POC, stdev_POC, PON, stdev_PON";
+    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_west, meter, µM, µM, µM, µM, µM, µM, µg_Chla_L, µg_Chla_L, µg_Phaeo_L, µg_Phaeo_L, µg_POC_L, µg_POC_L, µg_PON_L, µg_PON_L";
+    my $misvalin = -999;
+    my $misvalout = 9999.;
+    my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrate\nOceans > Ocean Chemistry > Nitrite\nOceans > Ocean Chemistry > Phosphate\nOceans > Ocean Chemistry > Silicate\nOceans > Ocean Chemistry > Organic Carbon\nOceans > Ocean Chemistry > Organic Matter";
+
+    ###########################################################
+    # Copy the template and the input stream
+    @cdlout = @$tempref;
+    @source = @$txtref;
+
+    ########################################################### 
+    # First the necessary global information is extracted from the input
+    # data stream
+    $title = (grep /#\s+title: /,@source)[0];
+    $title =~ s/#\s+title:\s*//;
+    $title =~ s/\s+$//;
+    $abstract = (grep /#\s+abstract: /,@source)[0];
+    $abstract =~ s/#\s+abstract:\s*//;
+    $abstract =~ s/\s+$//;
+    $topiccategory = (grep /#\s+topiccategory: /,@source)[0];
+    $topiccategory =~ s/#\s+topiccategory:\s*//;
+    $topiccategory =~ s/\s+$//;
+    $keywords = (grep /#\s+keywords: /,@source)[0];
+    $keywords =~ s/#\s+keywords:\s*//;
+    $keywords =~ s/\s+$//;
+    $area = (grep /#\s+area: /,@source)[0];
+    $area =~ s/#\s+area:\s*//;
+    $area =~ s/\s+$//;
+    $southernmost_latitude = (grep /#\s+southernmost_latitude: /,@source)[0];
+    $southernmost_latitude =~ s/#\s+southernmost_latitude:\s*//;
+    $southernmost_latitude =~ s/\s+$//;
+    $northernmost_latitude = (grep /#\s+northernmost_latitude: /,@source)[0];
+    $northernmost_latitude =~ s/#\s+northernmost_latitude:\s*//;
+    $northernmost_latitude =~ s/\s+$//;
+    $westernmost_longitude = (grep /#\s+westernmost_longitude: /,@source)[0];
+    $westernmost_longitude =~ s/#\s+westernmost_longitude:\s*//;
+    $westernmost_longitude =~ s/\s+$//;
+    $easternmost_longitude = (grep /#\s+easternmost_longitude: /,@source)[0];
+    $easternmost_longitude =~ s/#\s+easternmost_longitude:\s*//;
+    $easternmost_longitude =~ s/\s+$//;
+    $start_date = (grep /#\s+start_date: /,@source)[0];
+    $start_date =~ s/#\s+start_date:\s*//;
+    $start_date =~ s/\s+$//;
+    $stop_date = (grep /#\s+stop_date: /,@source)[0];
+    $stop_date =~ s/#\s+stop_date:\s*//;
+    $stop_date =~ s/\s+$//;
+    $institution = (grep /#\s+institution: /,@source)[0];
+    $institution =~ s/#\s+institution:\s*//;
+    $institution =~ s/\s+$//;
+    $url = (grep /#\s+url: /,@source)[0];
+    $url =~ s/#\s+url:\s*//;
+    $url =~ s/\s+$//;
+    $PI_name = (grep /#\s+PI_name: /,@source)[0];
+    $PI_name =~ s/#\s+PI_name:\s*//;
+    $PI_name =~ s/\s+$//;
+    $contact = (grep /#\s+contact: /,@source)[0];
+    $contact =~ s/#\s+contact:\s*//;
+    $contact =~ s/\s+$//;
+    $distribution_statement = (grep /#\s+distribution_statement: /,@source)[0];
+    $distribution_statement =~ s/#\s+distribution_statement:\s*//;
+    $distribution_statement =~ s/\s+$//;
+    $project_name = (grep /#\s+project_name: /,@source)[0];
+    $project_name =~ s/#\s+project_name:\s*//;
+    $project_name =~ s/\s+$//;
+    $quality_statement = (grep /#\s+quality_statement: /,@source)[0];
+    $quality_statement =~ s/#\s+quality_statement:\s*//;
+    $quality_statement =~ s/\s+$//;
+    $variables = (grep /#\s+variables: /,@source)[0];
+    $variables =~ s/#\s+variables:\s*//;
+    $variables =~ s/\s+$//;
+    $units = (grep /#\s+units: /,@source)[0];
+    $units =~ s/#\s+units:\s*//;
+    $units =~ s/\s+$//;
+
+    # Check that the file follows the expected outline
+    unless ($variables eq $nfhbiovar){
+	print ">>>$variables<<<\n";
+	print ">>>$nfhbiovar<<<\n";
+	die "Variables names does not match the expected" 
+    }
+    unless ($units eq $nfhbiounits){
+	print ">>>$units<<<\n";
+	print ">>>$nfhbiounits<<<\n";
+	die "Units names does not match the expected" 
+    }
+
+    ########################################################### 
+    # Then the actual data records are decoded and prepared for future use
+    #
+    foreach (@source) {
+	next if m/^#/;
+	##next if ($_ =~ m/^\t\s+\n$/); 
+	$_ =~ s/^\t//;
+	$_ =~ s/\s+/ /g;
+	#print "$_\n";
+	$_ =~ s/$misvalin/$misvalout/g;
+	@mytmp = split /\s+/,$_;
+	$mydate = $mytmp[1]." ".$mytmp[2]." UTC";
+	$tz = Date_TimeZone;
+	unless ($tz eq "UTC") {
+	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+	} else {
+	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+	}
+	unless (grep /$mydate/,@mytimes) {
+	    push @mytimes, $mydate; 
+	    $sc = 0;
+	}
+	$ll = $mytmp[3]." ".(-1*$mytmp[4]);
+	push @mydepths, $mytmp[5] unless grep /^$mytmp[5]$/,@mydepths;
+	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
+
+	$mydata{$mydate}{"stid"} = $mytmp[0];
+	$mydata{$mydate}{"lat"} = $mytmp[3];
+	$mydata{$mydate}{"lon"} = -1*$mytmp[4];
+	$mydata{$mydate}{"z"}[$sc] = $mytmp[5];
+	$mydata{$mydate}{"no3no2"}[$sc] = $mytmp[6];
+	$mydata{$mydate}{"no3no2_stdev"}[$sc] = $mytmp[7];
+	$mydata{$mydate}{"PO4"}[$sc] = $mytmp[8];
+	$mydata{$mydate}{"PO4_stdev"}[$sc] = $mytmp[9];
+	$mydata{$mydate}{"sioh4"}[$sc] = $mytmp[10];
+	$mydata{$mydate}{"sioh4_stdev"}[$sc] = $mytmp[11];
+	$mydata{$mydate}{"chl-a"}[$sc] = $mytmp[12];
+	$mydata{$mydate}{"chl-a_stdev"}[$sc] = $mytmp[13];
+	$mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[14];
+	$mydata{$mydate}{"phaoepigment_stdev"}[$sc] = $mytmp[15];
+	$mydata{$mydate}{"POC"}[$sc] = $mytmp[16];
+	$mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[17];
+	$mydata{$mydate}{"PON"}[$sc] = $mytmp[18];
+	$mydata{$mydate}{"PON_stdev"}[$sc] = $mytmp[19];
+	$mydata{$mydate}{"noobs"} = ($sc+1);
+	$sc++;
+    }
+    
+    ########################################################### 
+    # Dump data into CDL template
+    # Global attributes
+    s/\+title/$title/ for (@cdlout); # Actually a global variabel
+    s/\+abstract/$abstract/ for (@cdlout); # Actually a global variabel
+    s/\+keyw/$keywords/ for (@cdlout); # Actually a global variabel
+    s/\+gcmdkeyw/$gcmdkeyw/ for (@cdlout); # Actually a global variabel
+    s/\+topic/$topiccategory/ for (@cdlout); # Actually a global variabel
+    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+    s/\+slat/$southernmost_latitude/ for (@cdlout);
+    s/\+nlat/$northernmost_latitude/ for (@cdlout);
+    s/\+elon/$easternmost_longitude/ for (@cdlout);
+    s/\+wlon/$westernmost_longitude/ for (@cdlout);
+    s/\+start_date/$start_date/ for (@cdlout);
+    s/\+stop_date/$stop_date/ for (@cdlout);
+    s/\+area/$area/ for (@cdlout);
+    s/\+inst/$institution/ for (@cdlout);
+    s/\+piname/$PI_name/ for (@cdlout);
+    s/\+email/$contact/ for (@cdlout);
+    s/\+url/$url/ for (@cdlout);
+    s/\+distribution/$distribution_statement/ for (@cdlout);
+    s/\+qual/$quality_statement/ for (@cdlout);
+    s/\+project_name/$project_name/ for (@cdlout);
+    #s/\+product_name/$product_name/ for (@cdlout);
+    $ndepths = $#mydepths+1;
+    s/\+ndepths/$ndepths/ for (@cdlout);
+    $nstations = $#mylatlonpair+1;
+    s/\+nstations/$nstations/ for (@cdlout);
+
+    # Multi-dimensional array...
+    foreach (sort(keys(%mydata))) {
+	$timeunix .= UnixDate($_,"%s").",";
+	$lat .= $mydata{$_}{lat}.",";
+	$lon .= $mydata{$_}{lon}.",";
+	$stid .= "\"".$mydata{$_}{stid}."\"".",";
+	foreach $z (sort {$a <=> $b} @mydepths) {
+	    $match = 0;
+	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
+		if ($mydata{$_}{z}[$sc]==$z) {
+		    $no3no2 .= $mydata{$_}{'no3no2'}[$sc].",";
+		    $no3no2_stdev .= $mydata{$_}{'no3no2_stdev'}[$sc].",";
+		    $po4 .= $mydata{$_}{'PO4'}[$sc].",";
+		    $po4_stdev .= $mydata{$_}{'PO4_stdev'}[$sc].",";
+		    $sioh4 .= $mydata{$_}{'sioh4'}[$sc].",";
+		    $sioh4_stdev .= $mydata{$_}{'sioh4_stdev'}[$sc].",";
+		    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
+		    $chl_stdev .= $mydata{$_}{'chl-a_stdev'}[$sc].",";
+		    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
+		    $pigm_stdev .= $mydata{$_}{phaoepigment_stdev}[$sc].",";
+		    $pon .= $mydata{$_}{PON}[$sc].",";
+		    $pon_stdev .= $mydata{$_}{PON_stdev}[$sc].",";
+		    $poc .= $mydata{$_}{POC}[$sc].",";
+		    $poc_stdev .= $mydata{$_}{POC_stdev}[$sc].",";
+		    $match = 1;
+		    last;
+		}
+	    }
+	    unless ($match) {
+		$no3no2 .= "$misvalout,";
+		$no3no2_stdev .= "$misvalout,";
+		$po4 .= "$misvalout,";
+		$po4_stdev .= "$misvalout,";
+		$sioh4 .= "$misvalout,";
+		$sioh4_stdev .= "$misvalout,";
+		$chl .= "$misvalout,";
+		$chl_stdev .= "$misvalout,";
+		$pigm .= "$misvalout,";
+		$pigm_stdev .= "$misvalout,";
+		$pon .= "$misvalout,";
+		$pon_stdev .= "$misvalout,";
+		$poc .= "$misvalout,";
+		$poc_stdev .= "$misvalout,";
+	    }
+	}
+    }
+    $z = join ",",sort({$a <=> $b} @mydepths);
+
+    # Clean up records
+    $stid =~ s/,$//;
+    $timeunix =~ s/,$//;
+    $z =~ s/,$//;
+    $lat =~ s/,$//;
+    $lon =~ s/,$//;
+    $no3no2 =~ s/,$//;
+    $no3no2_stdev =~ s/,$//;
+    $po4 =~ s/,$//;
+    $po4_stdev =~ s/,$//;
+    $sioh4 =~ s/,$//;
+    $sioh4_stdev =~ s/,$//;
+    $chl =~ s/,$//;
+    $chl_stdev =~ s/,$//;
+    $pigm =~ s/,$//;
+    $pigm_stdev =~ s/,$//;
+    $pon =~ s/,$//;
+    $pon_stdev =~ s/,$//;
+    $poc =~ s/,$//;
+    $poc_stdev =~ s/,$//;
+
+    # Dump to file
+    s/\+stid/$stid/ for (@cdlout);
+    s/\+time/$timeunix/ for (@cdlout);
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+depth/$z/ for (@cdlout);
+    s/\+no3no2_stdev/$no3no2_stdev/ for (@cdlout);
+    s/\+no3no2/$no3no2/ for (@cdlout);
+    s/\+po4_stdev/$po4_stdev/ for (@cdlout);
+    s/\+po4/$po4/ for (@cdlout);
+    s/\+sioh4_stdev/$sioh4_stdev/ for (@cdlout);
+    s/\+sioh4/$sioh4/ for (@cdlout);
+    s/\+chl-a_stdev/$chl_stdev/ for (@cdlout);
+    s/\+chl-a/$chl/ for (@cdlout);
+    s/\+pigm_stdev/$pigm_stdev/ for (@cdlout);
+    s/\+pigm/$pigm/ for (@cdlout);
+    s/\+pon_stdev/$pon_stdev/ for (@cdlout);
+    s/\+pon/$pon/ for (@cdlout);
+    s/\+poc_stdev/$poc_stdev/ for (@cdlout);
+    s/\+poc/$poc/ for (@cdlout);
 
     return(@cdlout);
 }

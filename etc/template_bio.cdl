@@ -1,13 +1,16 @@
 netcdf template_bio {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_bio.cdl,v 1.5 2010-06-03 12:40:52 steingod Exp $
+// $Id: template_bio.cdl,v 1.6 2010-06-03 22:10:41 steingod Exp $
 
 dimensions:
     depth = +ndepths; 
     stations = +nstations;
+    str25 = 25;
 
 variables:
+    char stid(stations,str25);
+    	stid:long_name = "Station identifier";
     double time(stations);
 	time:long_name = "time in UTC the station was taken";
 	time:short_name = "time";
@@ -36,6 +39,7 @@ variables:
 	depth:valid_min = 0.;
 	depth:valid_max = 15000.;
 	depth:positive = "down";
+	depth:axis = "Y";
     float no3no2(stations,depth);
 	no3no2:standard_name = "mole_concentration_of_ phosphate_in_sea_water";
 	no3no2:long_name = "Nitrate plus nitrite concentration";
@@ -149,9 +153,9 @@ variables:
 	:westernmost_longitude = +wlon;
 	:easternmost_longitude = +elon;
 	:quality_statement = "+qual";
-	//:CF\:pointFeature = "profile";
 
 data:
+    stid = +stid;
     time =  +time;
     latitude = +lat;
     longitude = +lon;
