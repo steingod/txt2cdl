@@ -1,7 +1,7 @@
-netcdf template_ctd {
+netcdf template_biosediment {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_biosediment.cdl,v 1.1 2010-06-02 22:11:36 steingod Exp $
+// $Id: template_biosediment.cdl,v 1.2 2010-06-03 12:40:52 steingod Exp $
 
 dimensions:
     depth = +ndepths; 

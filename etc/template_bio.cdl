@@ -1,7 +1,7 @@
-netcdf template_ctd {
+netcdf template_bio {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_bio.cdl,v 1.4 2009-10-06 11:36:31 steingod Exp $
+// $Id: template_bio.cdl,v 1.5 2010-06-03 12:40:52 steingod Exp $
 
 dimensions:
     depth = +ndepths; 
@@ -36,30 +36,93 @@ variables:
 	depth:valid_min = 0.;
 	depth:valid_max = 15000.;
 	depth:positive = "down";
+    float no3no2(stations,depth);
+	no3no2:standard_name = "mole_concentration_of_ phosphate_in_sea_water";
+	no3no2:long_name = "Nitrate plus nitrite concentration";
+	no3no2:short_name = "no3no2";
+	no3no2:_FillValue = 9999.f;
+	no3no2:units = "micromol L-1";
+	no3no2:coordinates = "time longitude latitude depth";
+    float no3no2_stdev(stations,depth);
+	no3no2_stdev:long_name = "Phospate concentration standard deviation";
+	no3no2_stdev:short_name = "no3no2_stdev";
+	no3no2_stdev:_FillValue = 9999.f;
+	no3no2_stdev:units = "micromol L-1";
+	no3no2_stdev:coordinates = "time longitude latitude depth";
+    float PO4(stations,depth);
+	PO4:standard_name = "mole_concentration_of_ phosphate_in_sea_water";
+	PO4:long_name = "Phosphate concentration";
+	PO4:short_name = "PO4";
+	PO4:_FillValue = 9999.f;
+	PO4:units = "micromol L-1";
+	PO4:coordinates = "time longitude latitude depth";
+    float PO4_stdev(stations,depth);
+	PO4_stdev:long_name = "Phospate concentration standard deviation";
+	PO4_stdev:short_name = "PO4_stdev";
+	PO4_stdev:_FillValue = 9999.f;
+	PO4_stdev:units = "micromol L-1";
+	PO4_stdev:coordinates = "time longitude latitude depth";
+    float sioh4(stations,depth);
+	sioh4:standard_name = "mole_concentration_of_silicate_in_sea_water";
+	sioh4:long_name = "Silicate concentration";
+	sioh4:short_name = "sioh4";
+	sioh4:_FillValue = 9999.f;
+	sioh4:units = "micromol L-1";
+	sioh4:coordinates = "time longitude latitude depth";
+    float sioh4_stdev(stations,depth);
+	sioh4_stdev:long_name = "Silicate concentration standard deviation";
+	sioh4_stdev:short_name = "sioh4_stdev";
+	sioh4_stdev:_FillValue = 9999.f;
+	sioh4_stdev:units = "micromol L-1";
+	sioh4_stdev:coordinates = "time longitude latitude depth";
     float chl-a(stations,depth);
 	chl-a:long_name = "Chlorophyll-A";
 	chl-a:short_name = "chl-a";
 	chl-a:_FillValue = 9999.f;
-	chl-a:units = "microgram liter-1";
+	chl-a:units = "milligram liter-1";
 	chl-a:coordinates = "time longitude latitude depth";
+    float chl-a_stdev(stations,depth);
+	chl-a_stdev:long_name = "Chlorophyll-A standard deviation";
+	chl-a_stdev:short_name = "chl-a stdev";
+	chl-a_stdev:_FillValue = 9999.f;
+	chl-a_stdev:units = "milligram m-2 day-2";
+	chl-a_stdev:coordinates = "time longitude latitude depth";
     float phaeopigment(stations,depth);
 	phaeopigment:long_name = "Phaeopigment";
 	phaeopigment:short_name = "phaeopigment";
 	phaeopigment:_FillValue = 9999.f;
-	phaeopigment:units = "microgram liter-1";
+	phaeopigment:units = "milligram liter-1";
 	phaeopigment:coordinates = "time longitude latitude depth";
+    float phaeopigment_stdev(stations,depth);
+	phaeopigment_stdev:long_name = "Phaeopigment standard deviation";
+	phaeopigment_stdev:short_name = "phaeopigment stdev";
+	phaeopigment_stdev:_FillValue = 9999.f;
+	phaeopigment_stdev:units = "milligram liter-1";
+	phaeopigment_stdev:coordinates = "time longitude latitude depth";
     float POC(stations,depth);
 	POC:long_name = "Particulate Organic Carbon";
 	POC:short_name = "POC";
 	POC:_FillValue = 9999.f;
-	POC:units = "milligram m-3";
+	POC:units = "milligram liter-1";
 	POC:coordinates = "time longitude latitude depth";
+    float POC_stdev(stations,depth);
+	POC_stdev:long_name = "Particulate Organic Carbon standard deviation";
+	POC_stdev:short_name = "POC_stdev";
+	POC_stdev:_FillValue = 9999.f;
+	POC_stdev:units = "milligram liter-1";
+	POC_stdev:coordinates = "time longitude latitude depth";
     float PON(stations,depth);
 	PON:long_name = "Particulate Organic Nitrogen";
 	PON:short_name = "PON";
 	PON:_FillValue = 9999.f;
-	PON:units = "milligram m-3";
+	PON:units = "milligram liter-1";
 	PON:coordinates = "time longitude latitude depth";
+    float PON_stdev(stations,depth);
+	PON_stdev:long_name = "Particulate Organic Nitrogen standard deviation";
+	PON_stdev:short_name = "PON_stdev";
+	PON_stdev:_FillValue = 9999.f;
+	PON_stdev:units = "milligram liter-1";
+	PON_stdev:coordinates = "time longitude latitude depth";
 
 // global attributes
 	:Conventions = "CF-1.4";
@@ -93,8 +156,18 @@ data:
     latitude = +lat;
     longitude = +lon;
     depth = +depth;
+    no3no2 = +no3no2;
+    no3no2_stdev = +no3no2_stdev;
+    PO4 = +po4;
+    PO4_stdev = +po4_stdev;
+    sioh4 = +sioh4;
+    sioh4_stdev = +sioh4_stdev;
     chl-a = +chl-a;
+    chl-a_stdev = +chl-a_stdev;
     phaeopigment = +pigm;
+    phaeopigment_stdev = +pigm_stdev;
     POC = +poc;
+    POC_stdev = +poc_stdev;
     PON = +pon;
+    PON_stdev = +pon_stdev;
 }
