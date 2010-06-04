@@ -1,7 +1,7 @@
 netcdf template_bio {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_bio.cdl,v 1.6 2010-06-03 22:10:41 steingod Exp $
+// $Id: template_bio.cdl,v 1.7 2010-06-04 12:23:15 steingod Exp $
 
 dimensions:
     depth = +ndepths; 
@@ -137,7 +137,8 @@ variables:
 	:keywords = "+keyw"; 
 	:gcmd_keywords = "+gcmdkeyw"; 
 	:area = "+area"; 
-	:activity_type = "+activity_type";
+	:activity_type = "+activity";
+	:operational_status = "+opstatus";
 	:PI_name = "+piname";
 	:contact = "+email";
 	:institution = "+inst";

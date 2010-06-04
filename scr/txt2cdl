@@ -63,7 +63,7 @@
 # stations.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.50 2010-06-03 22:10:41 steingod Exp $
+# $Id: txt2cdl,v 1.51 2010-06-04 12:23:15 steingod Exp $
 #  
 
 ########################################################### 
@@ -2073,7 +2073,8 @@ sub create_cdl_nfhbiosed {
     my($keywords,$variables,$units);
     my($westernmost_longitude,$easternmost_longitude,$start_date,$stop_date);
     my($institution,$url,$PI_name,$contact,$platform,$distribution_statement);
-    my($quality_statement,$project_name);
+    my($quality_statement, $project_name);
+    my($activity_type, $operational_status);
     my(@timearr,$timeunix,$timestr);
     my($line,$norec);
     my(@mytimes, @mydepths, $mydate, @mylatlonpair, $ll, $tz);
@@ -2109,6 +2110,12 @@ sub create_cdl_nfhbiosed {
     $keywords = (grep /#\s+keywords: /,@source)[0];
     $keywords =~ s/#\s+keywords:\s*//;
     $keywords =~ s/\s+$//;
+    $activity_type = (grep /#\s+activity_type: /,@source)[0];
+    $activity_type =~ s/#\s+activity_type:\s*//;
+    $activity_type =~ s/\s+$//;
+    $operational_status = (grep /#\s+operational_status: /,@source)[0];
+    $operational_status =~ s/#\s+operational_status:\s*//;
+    $operational_status =~ s/\s+$//;
     $area = (grep /#\s+area: /,@source)[0];
     $area =~ s/#\s+area:\s*//;
     $area =~ s/\s+$//;
@@ -2228,7 +2235,8 @@ sub create_cdl_nfhbiosed {
     s/\+wlon/$westernmost_longitude/ for (@cdlout);
     s/\+start_date/$start_date/ for (@cdlout);
     s/\+stop_date/$stop_date/ for (@cdlout);
-    s/\+area/$area/ for (@cdlout);
+    s/\+activity/$activity_type/ for (@cdlout);
+    s/\+opstatus/$operational_status/ for (@cdlout);
     s/\+inst/$institution/ for (@cdlout);
     s/\+piname/$PI_name/ for (@cdlout);
     s/\+email/$contact/ for (@cdlout);
@@ -2321,6 +2329,7 @@ sub create_cdl_nfhbio{
     my($westernmost_longitude,$easternmost_longitude,$start_date,$stop_date);
     my($institution,$url,$PI_name,$contact,$platform,$distribution_statement);
     my($quality_statement,$project_name);
+    my($activity_type, $operational_status);
     my(@timearr,$timeunix,$timestr);
     my($line,$norec);
     my(@mystations, @mytimes, @mydepths, $mydate, @mylatlonpair, $ll, $tz);
@@ -2330,7 +2339,7 @@ sub create_cdl_nfhbio{
     my($pon, $pon_stdev, $poc, $poc_stdev);
     my($ndepths,$nstations,$match);
     my $nfhbiovar = "CTD ID, date, time, latitude, longitude, sampling_depth, NO3+NO2, stdev_NO3+NO2, PO4, stdev_PO4, Si(OH)4, stdev_Si(OH)4, Chla, stdev_chla, Phaeo, stdev_Phaeo, POC, stdev_POC, PON, stdev_PON";
-    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_west, meter, µM, µM, µM, µM, µM, µM, µg_Chla_L, µg_Chla_L, µg_Phaeo_L, µg_Phaeo_L, µg_POC_L, µg_POC_L, µg_PON_L, µg_PON_L";
+    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_west, meter, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µg_Chla_L-1, µg_Chla_L-1, µg_Phaeo_L-1, µg_Phaeo_L-1, µg_POC_L-1, µg_POC_L-1, µg_PON_L-1, µg_PON_L-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
     my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrate\nOceans > Ocean Chemistry > Nitrite\nOceans > Ocean Chemistry > Phosphate\nOceans > Ocean Chemistry > Silicate\nOceans > Ocean Chemistry > Organic Carbon\nOceans > Ocean Chemistry > Organic Matter";
@@ -2355,6 +2364,12 @@ sub create_cdl_nfhbio{
     $keywords = (grep /#\s+keywords: /,@source)[0];
     $keywords =~ s/#\s+keywords:\s*//;
     $keywords =~ s/\s+$//;
+    $activity_type = (grep /#\s+activity_type: /,@source)[0];
+    $activity_type =~ s/#\s+activity_type:\s*//;
+    $activity_type =~ s/\s+$//;
+    $operational_status = (grep /#\s+operational_status: /,@source)[0];
+    $operational_status =~ s/#\s+operational_status:\s*//;
+    $operational_status =~ s/\s+$//;
     $area = (grep /#\s+area: /,@source)[0];
     $area =~ s/#\s+area:\s*//;
     $area =~ s/\s+$//;
@@ -2480,6 +2495,8 @@ sub create_cdl_nfhbio{
     s/\+wlon/$westernmost_longitude/ for (@cdlout);
     s/\+start_date/$start_date/ for (@cdlout);
     s/\+stop_date/$stop_date/ for (@cdlout);
+    s/\+activity/$activity_type/ for (@cdlout);
+    s/\+opstatus/$operational_status/ for (@cdlout);
     s/\+area/$area/ for (@cdlout);
     s/\+inst/$institution/ for (@cdlout);
     s/\+piname/$PI_name/ for (@cdlout);
