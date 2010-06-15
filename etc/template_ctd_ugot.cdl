@@ -1,0 +1,102 @@
+netcdf template_ctd {
+
+// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
+// $Id: template_ctd_ugot.cdl,v 1.1 2010-06-15 14:32:52 steingod Exp $
+
+dimensions:
+    time = unlimited; //
+    n_levels = +ndepths; // maximum number of levels (depth)
+    stations = +nstations;
+    str25 = 25;
+
+variables:
+    char stid(stations,str25);
+    	stid:long_name = "Station identifier";
+    double time(time);
+	time:long_name = "time" ;
+	time:short_name = "time" ;
+	time:standard_name = "time" ;
+	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+	time:axis = "T";
+    float latitude(stations);
+	latitude:long_name = "latitude";
+	latitude:short_name = "latitude";
+	latitude:standard_name = "latitude";
+	latitude:units = "degree_north";
+	latitude:valid_min = -90.;
+	latitude:valid_max = 90.;
+    float longitude(stations);
+	longitude:long_name = "longitude";
+	longitude:short_name = "longitude";
+	longitude:standard_name = "longitude";
+	longitude:units = "degree_east";
+	longitude:valid_min = -180.;
+	longitude:valid_max = 180.;
+    float bdepth(stations);
+	bdepth:long_name = "Depth to ocean bottom";
+	bdepth:short_name = "bdepth";
+	bdepth:units = "m";
+	bdepth:valid_min = 0.;
+	bdepth:valid_max = 15000.;
+    float pres(stations,n_levels);
+	pres:long_name = "Sea Water Pressure";
+	pres:short_name = "Pressure";
+	pres:standard_name = "sea_water_pressure";
+	pres:units = "dbar";
+	pres:valid_min = 0.;
+	pres:valid_max = 15000.;
+	pres:axis = "Y";
+    float temp(stations,n_levels);
+	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
+	temp:short_name = "temperature";
+	temp:standard_name = "sea_water_temperature";
+	temp:_FillValue = 9999.f;
+	temp:units = "degrees Celsius";
+	temp:coordinates = "time pres";
+	temp:axis = "X";
+    float psal(stations,n_levels);
+	psal:long_name = "Practical salinity (PSU/sal00)";
+	psal:short_name = "salinity";
+	psal:standard_name = "sea_water_salinity";
+	psal:_FillValue = 9999.f;
+	psal:units = "";
+	psal:coordinates = "time pres";
+	psal:axis = "X";
+
+// global attributes
+	:Conventions = "CF-1.0";
+	:history = "+history";
+	:title = "+title";
+	:abstract = "+abstract"; // Add text if wanted
+	:topiccategory = "+topic"; // Blank separated list
+	:keywords = "+keyw"; // Blank separated list
+	:gcmd_keywords = "+gcmdkeyw"; // Newline separated list
+	:area = "+area"; // Comma separated list, see http://damocles.met.no/
+	:activity_type = "+activity_type";
+	:PI_name = "+piname";
+	:contact = "+email";
+	:institution = "+inst";
+	:url = "+url";
+	:product_name = "+pname";
+	:Platform_name = "+vessel";
+	:project_name = "+project_name";
+	:start_date = "+start_date";
+	:stop_date = "+stop_date";
+	:distribution_statement = "+distribution"; 
+	:southernmost_latitude = +slat;
+	:northernmost_latitude = +nlat;
+	:westernmost_longitude = +wlon;
+	:easternmost_longitude = +elon;
+	:quality_statement = "+qual";
+	:operational_status = "+opstatus";
+
+data:
+    stid = +stid;
+    time =  +time;
+    latitude = +lat;
+    longitude = +lon;
+    bdepth = +bdepth;
+    pres = +pres;
+    temp = +temp;
+    psal = +psal;
+}
