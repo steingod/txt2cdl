@@ -1,7 +1,7 @@
-netcdf template_ctd {
+netcdf template_ctd_ugot {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_ctd_ugot.cdl,v 1.2 2010-06-16 08:54:57 steingod Exp $
+// $Id: template_ctd_ugot.cdl,v 1.3 2010-06-16 18:39:52 steingod Exp $
 // This template is dedicated for the ISSS08 data delivered by UGOT, it
 // basically contains temperature, salinity (and turbidity) at pressure
 // levels accompanied by quality flags for each variable and bottom depth
