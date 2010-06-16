@@ -23,7 +23,11 @@
 # See function usage 
 #
 # NOTES:
-# NA
+# Handling of conversion between various timezones is implemented for some
+# of the file formats supported, some have also support for conversion
+# between character formats (UTF-8 -> ISO 8859-1), but this is still not
+# implemented in a fully generic fashion. Probably, the full system should
+# be rewritten in time...
 #
 # BUGS:
 # Input checking is yet not properly imeplemented, but baseline
@@ -61,9 +65,11 @@
 # sediment data.
 # Øystein Godøy, METNO/FOU, 03.06.2010: Modified support for NFH BIO
 # stations.
+# Øystein Godøy, METNO/FOU, 07.06.2010: Addition of UGOT CTD data
+# translation. Assumes UTF-8 encoding of these files.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.51 2010-06-04 12:23:15 steingod Exp $
+# $Id: txt2cdl,v 1.52 2010-06-16 08:54:40 steingod Exp $
 #  
 
 ########################################################### 
@@ -75,6 +81,7 @@ use Text::Wrap;
 use Date::Parse;
 use Date::Manip;
 use POSIX qw(strftime);
+use Encode;
 ##use Data::Table;
 ##use PDL::Basic;
 ##use PDL::Matrix;
@@ -94,6 +101,7 @@ sub create_trajectory_cdl_awiem;
 sub create_timeseries_cdl_radflux;
 sub create_cdl_nfhbiosed;
 sub create_cdl_nfhbio;
+sub create_cdl_ugotctd;
 sub write_file;
 sub sort_matrix;
 
@@ -239,6 +247,8 @@ if ($fileformat eq "seabirdctd") {
     @cdloutput = create_cdl_nfhbiosed(\@template,\@text);
 } elsif ($fileformat eq "nfhbio") {
     @cdloutput = create_cdl_nfhbio(\@template,\@text);
+} elsif ($fileformat eq "ugotctd") {
+    @cdloutput = create_cdl_ugotctd(\@template,\@text);
 } else {
     die "Fileformat ($fileformat) is not supported\n";
 }
@@ -296,7 +306,7 @@ sub usage() {
 
     my $text = "This software transforms various ASCII formats into CDL files which can be converted to netCDF by ncgen. The file formats supported may change.";
     my $formats = 
-    "o WOCE CTD ASCII format - (format=wocectd)\n".
+    "o WOCE CTD ASCII format - (format=wocectd) NA yet\n".
     "o SeaBird ASCII format (several versions) - (format=seabirdctd)\n".
     "o Current mooring format by GFI, Bergen, Norway - (format=mooringgfi)\n".
     "o Current mooring format in ASCII - (format=mooring)\n".
@@ -305,7 +315,8 @@ sub usage() {
     "o METNO radiative flux measurements, continous stream -
     (format=metnoradflux)\n".
     "o BIO sediment data from UiT, Norway - (format=nfhbiosed)\n".
-    "o BIO data from UiT, Norway - (format=nfhbio)";
+    "o BIO data from UiT, Norway - (format=nfhbio)\n".
+    "o CTD data from UGOT, Sweden - (format=ugotctd)";
     my $author = "Øystein Godøy, METNO/FOU, 03.06.2010";
 
     print "\n";
@@ -2600,6 +2611,288 @@ sub create_cdl_nfhbio{
     s/\+pon/$pon/ for (@cdlout);
     s/\+poc_stdev/$poc_stdev/ for (@cdlout);
     s/\+poc/$poc/ for (@cdlout);
+
+    return(@cdlout);
+}
+
+#
+# Decode and convert the UGOT CTD format.
+# This is linked to template_ctd_ugot.cdl
+# It is assumed (due to experience) that files are delivered in UTF-8
+# encoding and thus have to be decoded.
+#
+sub create_cdl_ugotctd {
+    my(@cdlout,@tmparr);
+    my($tempref,$txtref) = @_;
+    my(@source,@mytmp,@mytmp1);
+    my($title,$abstract,$topiccategory);
+    my($southernmost_latitude,$northernmost_latitude);
+    my($keywords,$variables,$units);
+    my($westernmost_longitude,$easternmost_longitude,$start_date,$stop_date);
+    my($institution,$url,$PI_name,$contact,$platform,$distribution_statement);
+    my($quality_statement, $project_name, $product_name);
+    my($activity_type, $operational_status);
+    my(@timearr,$timeunix,$timestr);
+    my($line,$norec);
+    my(@mytimes, @mystations, @mydepths, @mypres, $mydate, @mylatlonpair);
+    my($ll, $tz);
+    my(%mydata, $sc, $lat, $lon, $z);
+    my($stid, $pres, $turb, $temp, $psal);
+    my($pres_qf, $turb_qf, $temp_qf, $psal_qf);
+    my($ndepths,$nstations,$nrecords,$match);
+    my $ugotvars = "Cruise, Station, Type, mon/day/yr, hh:mm, Longitude, Latitude, Bottom_Depth, Pressure, QF, Temperature_[ITS-90], QF, WET-Labs_ECO_NTU, QF, Salinity, QF";
+    my $ugotunits = "No_unit, No_unit, No_unit, month/day/year, hour:minutes, degrees_east, degrees_north, meter, deci_bar, No_unit, degrees_C, No_unit, volts, No_unit, PSU, No_unit";
+    my $misvalin = -999;
+    my $misvalout = 9999.;
+    my $gcmdkeyw = "???";
+
+    ###########################################################
+    # Copy the template and the input stream
+    @cdlout = @$tempref;
+    @source = @$txtref;
+
+    ########################################################### 
+    # First the necessary global information is extracted from the input
+    # data stream
+    $title = (grep /#\s+title: /,@source)[0];
+    $title =~ s/#\s+title:\s*//;
+    $title =~ s/\s+$//;
+    $abstract = (grep /#\s+abstract: /,@source)[0];
+    $abstract =~ s/#\s+abstract:\s*//;
+    $abstract =~ s/\s+$//;
+    $topiccategory = (grep /#\s+topiccategory: /,@source)[0];
+    $topiccategory =~ s/#\s+topiccategory:\s*//;
+    $topiccategory =~ s/\s+$//;
+    $keywords = (grep /#\s+keywords: /,@source)[0];
+    $keywords =~ s/#\s+keywords:\s*//;
+    $keywords =~ s/\s+$//;
+    $gcmdkeyw = (grep /#\s+gcmd_keywords: /,@source)[0];
+    $gcmdkeyw =~ s/#\s+gcmd_keywords:\s*//;
+    $gcmdkeyw =~ s/\s+$//;
+    $gcmdkeyw =~ s/,/\n/g;
+    $activity_type = (grep /#\s+activity_type: /,@source)[0];
+    $activity_type =~ s/#\s+activity_type:\s*//;
+    $activity_type =~ s/\s+$//;
+    $operational_status = (grep /#\s+operational_status: /,@source)[0];
+    $operational_status =~ s/#\s+operational_status:\s*//;
+    $operational_status =~ s/\s+$//;
+    $area = (grep /#\s+area: /,@source)[0];
+    $area =~ s/#\s+area:\s*//;
+    $area =~ s/\s+$//;
+    $southernmost_latitude = (grep /#\s+southernmost_latitude: /,@source)[0];
+    $southernmost_latitude =~ s/#\s+southernmost_latitude:\s*//;
+    $southernmost_latitude =~ s/\s+$//;
+    $northernmost_latitude = (grep /#\s+northernmost_latitude: /,@source)[0];
+    $northernmost_latitude =~ s/#\s+northernmost_latitude:\s*//;
+    $northernmost_latitude =~ s/\s+$//;
+    $westernmost_longitude = (grep /#\s+westernmost_longitude: /,@source)[0];
+    $westernmost_longitude =~ s/#\s+westernmost_longitude:\s*//;
+    $westernmost_longitude =~ s/\s+$//;
+    $easternmost_longitude = (grep /#\s+easternmost_longitude: /,@source)[0];
+    $easternmost_longitude =~ s/#\s+easternmost_longitude:\s*//;
+    $easternmost_longitude =~ s/\s+$//;
+    $start_date = (grep /#\s+start_date: /,@source)[0];
+    $start_date =~ s/#\s+start_date:\s*//;
+    $start_date =~ s/\s+$//;
+    $stop_date = (grep /#\s+stop_date: /,@source)[0];
+    $stop_date =~ s/#\s+stop_date:\s*//;
+    $stop_date =~ s/\s+$//;
+    $institution = (grep /#\s+institution: /,@source)[0];
+    $institution =~ s/#\s+institution:\s*//;
+    $institution =~ s/\s+$//;
+    $url = (grep /#\s+url: /,@source)[0];
+    $url =~ s/#\s+url:\s*//;
+    $url =~ s/\s+$//;
+    $PI_name = (grep /#\s+PI_name: /,@source)[0];
+    $PI_name =~ s/#\s+PI_name:\s*//;
+    $PI_name =~ s/\s+$//;
+    $contact = (grep /#\s+contact: /,@source)[0];
+    $contact =~ s/#\s+contact:\s*//;
+    $contact =~ s/\s+$//;
+    $distribution_statement = (grep /#\s+distribution_statement: /,@source)[0];
+    $distribution_statement =~ s/#\s+distribution_statement:\s*//;
+    $distribution_statement =~ s/\s+$//;
+    $project_name = (grep /#\s+project_name: /,@source)[0];
+    $project_name =~ s/#\s+project_name:\s*//;
+    $project_name =~ s/\s+$//;
+    $quality_statement = (grep /#\s+quality_statement: /,@source)[0];
+    $quality_statement =~ s/#\s+quality_statement:\s*//;
+    $quality_statement =~ s/\s+$//;
+    $variables = (grep /#\s+variables: /,@source)[0];
+    $variables =~ s/#\s+variables:\s*//;
+    $variables =~ s/\s+$//;
+    $units = (grep /#\s+units: /,@source)[0];
+    $units =~ s/#\s+units:\s*//;
+    $units =~ s/\s+$//;
+
+    # Check that the file follows the expected outline
+    unless ($variables eq $ugotvars){
+	print ">>>$variables<<<\n";
+	print ">>>$ugotvars<<<\n";
+	die "Variables names does not match the expected" 
+    }
+    unless ($units eq $ugotunits){
+	print ">>>$units<<<\n";
+	print ">>>$ugotunits<<<\n";
+	die "Units names does not match the expected" 
+    }
+
+    ########################################################### 
+    # Then the actual data records are decoded and prepared for future use
+    #
+    $tz = Date_TimeZone;
+    print " This computer runs in timezone: $tz\n";
+    $nrecords = 0;
+    undef @mytimes;
+    foreach (@source) {
+	$line = decode_utf8($_);
+	next if ($line =~ m/^#/);
+	next if ($line =~ m/^\s+$/);
+	$line =~ s/^\s//;
+	$line =~ s/\s+/ /g;
+	$line =~ s/$misvalin/$misvalout/g;
+	@mytmp = split /\s+/,$line;
+	$mydate = $mytmp[3]." ".$mytmp[4]." UTC";
+	if ($tz eq "UTC") {
+	    #$timeunix = UnixDate($mydate,"%m/%d/%Y %H:%M UTC");
+	    #$timeunix = ParseDateString($mydate);
+	    $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+	} else {
+	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+	    $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+	    #$timeunix = ParseDateString($mydate);
+	}
+	unless (grep /$timeunix/,@mytimes) {
+	    push @mytimes, $timeunix; 
+	    $sc = 0;
+	}
+	$ll = $mytmp[6]." ".$mytmp[5];
+	#push @mydepths, $mytmp[7] unless grep /^$mytmp[7]$/,@mydepths;
+	push @mypres, $mytmp[8] unless grep /^$mytmp[8]$/,@mypres;
+	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
+	push @mystations, $mytmp[1] unless grep /^$mytmp[1]$/,@mystations;
+
+	$mydata{$mydate}{"lat"} = $mytmp[6];
+	$mydata{$mydate}{"lon"} = $mytmp[5];
+	$mydata{$mydate}{"z"} = $mytmp[7];
+	$mydata{$mydate}{"p"}[$sc] = $mytmp[8];
+	$mydata{$mydate}{"p_qf"}[$sc] = $mytmp[9];
+	$mydata{$mydate}{"t"}[$sc] = $mytmp[10];
+	$mydata{$mydate}{"t_qf"}[$sc] = $mytmp[11];
+	$mydata{$mydate}{"wl"}[$sc] = $mytmp[12];
+	$mydata{$mydate}{"wl_qf"}[$sc] = $mytmp[13];
+	$mydata{$mydate}{"s"}[$sc] = $mytmp[14];
+	$mydata{$mydate}{"s_qf"}[$sc] = $mytmp[15];
+	$mydata{$mydate}{"noobs"} = ($sc+1);
+	$sc++;
+	$nrecords++;
+    }
+    $nrecords += 1;
+    print " $nrecords data records processed...\n";
+    undef $timeunix;
+    
+    ########################################################### 
+    # Dump data into CDL template
+    # Global attributes
+    s/\+title/$title/ for (@cdlout); # Actually a global variabel
+    s/\+abstract/$abstract/ for (@cdlout); # Actually a global variabel
+    s/\+keyw/$keywords/ for (@cdlout); # Actually a global variabel
+    s/\+gcmdkeyw/$gcmdkeyw/ for (@cdlout); # Actually a global variabel
+    s/\+topic/$topiccategory/ for (@cdlout); # Actually a global variabel
+    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+    s/\+slat/$southernmost_latitude/ for (@cdlout);
+    s/\+nlat/$northernmost_latitude/ for (@cdlout);
+    s/\+elon/$easternmost_longitude/ for (@cdlout);
+    s/\+wlon/$westernmost_longitude/ for (@cdlout);
+    s/\+start_date/$start_date/ for (@cdlout);
+    s/\+stop_date/$stop_date/ for (@cdlout);
+    s/\+activity/$activity_type/ for (@cdlout);
+    s/\+opstatus/$operational_status/ for (@cdlout);
+    s/\+inst/$institution/ for (@cdlout);
+    s/\+piname/$PI_name/ for (@cdlout);
+    s/\+email/$contact/ for (@cdlout);
+    s/\+url/$url/ for (@cdlout);
+    s/\+distribution/$distribution_statement/ for (@cdlout);
+    s/\+qual/$quality_statement/ for (@cdlout);
+    s/\+project_name/$project_name/ for (@cdlout);
+    s/\+product_name/$product_name/ for (@cdlout);
+    #$ndepths = $#mydepths+1;
+    $ndepths = $#mypres+1;
+    s/\+ndepths/$ndepths/ for (@cdlout);
+    $nstations = $#mylatlonpair+1;
+    s/\+nstations/$nstations/ for (@cdlout);
+
+    # Multi-dimensional array...
+    # The search performed below is not efficient, but it works for the
+    # datasets processed so far, especially since they are not too large.
+    foreach (sort(keys(%mydata))) {
+	$timeunix .= UnixDate($_,"%s").",";
+	$lat .= $mydata{$_}{lat}.",";
+	$lon .= $mydata{$_}{lon}.",";
+	$z .= $mydata{$_}{z}.",";
+	#foreach $z (sort {$a <=> $b} @mydepths) {
+	foreach $pres (sort {$a <=> $b} @mypres) {
+	    $match = 0;
+	    #print "$pres - $mydata{$_}{noobs}\n";
+	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
+		#if ($mydata{$_}{z}[$sc]==$z) {
+		#print "\t$sc - $mydata{$_}{p}[$sc]\n";
+		if ($mydata{$_}{p}[$sc]==$pres) {
+		    #print "\t\t$mydata{$_}{p}[$sc] matched\n";
+		    $temp .= $mydata{$_}{'t'}[$sc].",";
+		    $temp_qf .= $mydata{$_}{'t_qf'}[$sc].",";
+		    $turb .= $mydata{$_}{'wl'}[$sc].",";
+		    $turb_qf .= $mydata{$_}{'wl_qf'}[$sc].",";
+		    $psal .= $mydata{$_}{'s'}[$sc].",";
+		    $psal_qf .= $mydata{$_}{'s_qf'}[$sc].",";
+		    $match = 1;
+		    last;
+		}
+	    }
+	    unless ($match) {
+		$temp .= "$misvalout,";
+		$temp_qf .= "$misvalout,";
+		$turb .= "$misvalout,";
+		$turb_qf .= "$misvalout,";
+		$psal .= "$misvalout,";
+		$psal_qf .= "$misvalout,";
+	    }
+	}
+    }
+    undef $pres;
+    #$z = join ",",sort({$a <=> $b} @mydepths);
+    $pres = join ",",sort({$a <=> $b} @mypres);
+    $stid = "\"";
+    $stid .= join "\",\"",@mystations;
+    $stid .= "\"";
+
+    # Clean up records
+    $timeunix =~ s/,$//;
+    $stid =~ s/,$//;
+    $z =~ s/,$//;
+    $pres =~ s/,$//;
+    $lat =~ s/,$//;
+    $lon =~ s/,$//;
+    $temp =~ s/,$//;
+    $temp_qf =~ s/,$//;
+    $turb =~ s/,$//;
+    $turb_qf =~ s/,$//;
+    $psal =~ s/,$//;
+    $psal_qf =~ s/,$//;
+
+    # Dump to file
+    s/\+time/$timeunix/ for (@cdlout);
+    s/\+stid/$stid/ for (@cdlout);
+    s/\+lat/$lat/ for (@cdlout);
+    s/\+lon/$lon/ for (@cdlout);
+    s/\+bdepth/$z/ for (@cdlout);
+    s/\+pres/$pres/ for (@cdlout);
+    s/\+temp_qf/$temp_qf/ for (@cdlout);
+    s/\+temp/$temp/ for (@cdlout);
+    s/\+turb_qf/$turb_qf/ for (@cdlout);
+    s/\+turb/$turb/ for (@cdlout);
+    s/\+psal_qf/$psal_qf/ for (@cdlout);
+    s/\+psal/$psal/ for (@cdlout);
 
     return(@cdlout);
 }
