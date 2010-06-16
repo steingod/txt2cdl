@@ -29,6 +29,11 @@
 # implemented in a fully generic fashion. Probably, the full system should
 # be rewritten in time...
 #
+# Handling of CTD data as a single file should be rewritten to dump the
+# data in separate files. Separate files improves useability for users
+# searching a specific area, especially when the shopping basket is
+# implemented.
+#
 # BUGS:
 # Input checking is yet not properly imeplemented, but baseline
 # functionality for the formats supported are implemented.
@@ -69,7 +74,7 @@
 # translation. Assumes UTF-8 encoding of these files.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.52 2010-06-16 08:54:40 steingod Exp $
+# $Id: txt2cdl,v 1.53 2010-06-16 18:39:30 steingod Exp $
 #  
 
 ########################################################### 
@@ -934,7 +939,8 @@ sub create_itp_cdl {
 	"33" => "Beaufort Gyre Observing System (BGOS)",
 	"34" => "Beaufort Gyre Observing System (BGOS)",
 	"36" => "Nansen and Amundsen Basins Observational System (NABOS)",
-	"37" => "Nansen and Amundsen Basins Observational System (NABOS)"
+	"37" => "Nansen and Amundsen Basins Observational System (NABOS)",
+	"38" => "North Pole Environmental Observatory (NPEO)"
     );
     @witho2 = (6,13,23,29);
 
@@ -2621,6 +2627,13 @@ sub create_cdl_nfhbio{
 # It is assumed (due to experience) that files are delivered in UTF-8
 # encoding and thus have to be decoded.
 #
+# This function use a single template and removes fields not used with
+# some of the datasets delivered.
+#
+# This should be rewritten in the future to generate one file per cast
+# which makes it easier to download the data needed when the shopping
+# basket works, it also saves disk...
+#
 sub create_cdl_ugotctd {
     my(@cdlout,@tmparr);
     my($tempref,$txtref) = @_;
@@ -2633,15 +2646,17 @@ sub create_cdl_ugotctd {
     my($quality_statement, $project_name, $product_name);
     my($activity_type, $operational_status);
     my(@timearr,$timeunix,$timestr);
-    my($line,$norec);
+    my($line,$norec, $filetype);
     my(@mytimes, @mystations, @mydepths, @mypres, $mydate, @mylatlonpair);
     my($ll, $tz);
     my(%mydata, $sc, $lat, $lon, $z);
     my($stid, $pres, $turb, $temp, $psal);
     my($pres_qf, $turb_qf, $temp_qf, $psal_qf);
     my($ndepths,$nstations,$nrecords,$match);
-    my $ugotvars = "Cruise, Station, Type, mon/day/yr, hh:mm, Longitude, Latitude, Bottom_Depth, Pressure, QF, Temperature_[ITS-90], QF, WET-Labs_ECO_NTU, QF, Salinity, QF";
-    my $ugotunits = "No_unit, No_unit, No_unit, month/day/year, hour:minutes, degrees_east, degrees_north, meter, deci_bar, No_unit, degrees_C, No_unit, volts, No_unit, PSU, No_unit";
+    my $ugotvars1 = "Cruise, Station, Type, mon/day/yr, hh:mm, Longitude, Latitude, Bottom_Depth, Pressure, QF, Temperature_[ITS-90], QF, WET-Labs_ECO_NTU, QF, Salinity, QF";
+    my $ugotvars2 = "Cruise, Station, mon/day/yr, hh:mm_[UTC], Longitude, Latitude, Pressure, QF, Temperature_[ITS-90], QF, Salinity, QF";
+    my $ugotunits1 = "No_unit, No_unit, No_unit, month/day/year, hour:minutes, degrees_east, degrees_north, meter, deci_bar, No_unit, degrees_C, No_unit, volts, No_unit, PSU, No_unit";
+    my $ugotunits2 = "No_unit, No_unit, month/day/year, hour:minutes, degrees_east, degrees_north, deci_bar, No_unit, degrees_C, No_unit, PSU, No_unit";
     my $misvalin = -999;
     my $misvalout = 9999.;
     my $gcmdkeyw = "???";
@@ -2726,15 +2741,28 @@ sub create_cdl_ugotctd {
     $units =~ s/\s+$//;
 
     # Check that the file follows the expected outline
-    unless ($variables eq $ugotvars){
-	print ">>>$variables<<<\n";
-	print ">>>$ugotvars<<<\n";
+    if ($variables eq $ugotvars1){
+	$filetype = "ISSS08";
+    } elsif ($variables eq $ugotvars2) {
+	$filetype = "LOMROG07";
+	foreach (@cdlout) {
+	    push @mytmp, $_ unless m/(turb)|(turb_qf)|(bdepth)/;
+	}
+	@cdlout = @mytmp;
+	undef @mytmp;
+    } else {
+	print "\n";
+	print "Incorrect variables...\n";
+	print "Found: $variables\n";
+	print "Supported: $ugotvars1\n";
+	print "Supported: $ugotvars2\n";
 	die "Variables names does not match the expected" 
     }
-    unless ($units eq $ugotunits){
-	print ">>>$units<<<\n";
-	print ">>>$ugotunits<<<\n";
-	die "Units names does not match the expected" 
+    unless ($units eq $ugotunits1 || $units eq $ugotunits2) {
+	print "Found: $units\n";
+	print "Supported: $ugotunits1\n";
+	print "Supported: $ugotunits2\n";
+	die "Units does not match the expected" 
     }
 
     ########################################################### 
@@ -2752,37 +2780,50 @@ sub create_cdl_ugotctd {
 	$line =~ s/\s+/ /g;
 	$line =~ s/$misvalin/$misvalout/g;
 	@mytmp = split /\s+/,$line;
-	$mydate = $mytmp[3]." ".$mytmp[4]." UTC";
+	if ($filetype eq "ISSS08") {
+	    $mydate = $mytmp[3]." ".$mytmp[4]." UTC";
+	} else {
+	    $mydate = $mytmp[2]." ".$mytmp[3]." UTC";
+	}
 	if ($tz eq "UTC") {
-	    #$timeunix = UnixDate($mydate,"%m/%d/%Y %H:%M UTC");
-	    #$timeunix = ParseDateString($mydate);
 	    $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
 	} else {
 	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
 	    $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	    #$timeunix = ParseDateString($mydate);
 	}
 	unless (grep /$timeunix/,@mytimes) {
 	    push @mytimes, $timeunix; 
 	    $sc = 0;
 	}
-	$ll = $mytmp[6]." ".$mytmp[5];
-	#push @mydepths, $mytmp[7] unless grep /^$mytmp[7]$/,@mydepths;
-	push @mypres, $mytmp[8] unless grep /^$mytmp[8]$/,@mypres;
+	if ($filetype eq "ISSS08") {
+	    $ll = $mytmp[6]." ".$mytmp[5];
+	    $mydata{$mydate}{"lat"} = $mytmp[6];
+	    $mydata{$mydate}{"lon"} = $mytmp[5];
+	    push @mypres, $mytmp[8] unless grep /^$mytmp[8]$/,@mypres;
+	    $mydata{$mydate}{"z"} = $mytmp[7];
+	    $mydata{$mydate}{"p"}[$sc] = $mytmp[8];
+	    $mydata{$mydate}{"p_qf"}[$sc] = $mytmp[9];
+	    $mydata{$mydate}{"t"}[$sc] = $mytmp[10];
+	    $mydata{$mydate}{"t_qf"}[$sc] = $mytmp[11];
+	    $mydata{$mydate}{"wl"}[$sc] = $mytmp[12];
+	    $mydata{$mydate}{"wl_qf"}[$sc] = $mytmp[13];
+	    $mydata{$mydate}{"s"}[$sc] = $mytmp[14];
+	    $mydata{$mydate}{"s_qf"}[$sc] = $mytmp[15];
+	} else {
+	    $ll = $mytmp[5]." ".$mytmp[4];
+	    $mydata{$mydate}{"lat"} = $mytmp[5];
+	    $mydata{$mydate}{"lon"} = $mytmp[4];
+	    push @mypres, $mytmp[6] unless grep /^$mytmp[6]$/,@mypres;
+	    $mydata{$mydate}{"p"}[$sc] = $mytmp[6];
+	    $mydata{$mydate}{"p_qf"}[$sc] = $mytmp[7];
+	    $mydata{$mydate}{"t"}[$sc] = $mytmp[8];
+	    $mydata{$mydate}{"t_qf"}[$sc] = $mytmp[9];
+	    $mydata{$mydate}{"s"}[$sc] = $mytmp[10];
+	    $mydata{$mydate}{"s_qf"}[$sc] = $mytmp[11];
+	}
 	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 	push @mystations, $mytmp[1] unless grep /^$mytmp[1]$/,@mystations;
 
-	$mydata{$mydate}{"lat"} = $mytmp[6];
-	$mydata{$mydate}{"lon"} = $mytmp[5];
-	$mydata{$mydate}{"z"} = $mytmp[7];
-	$mydata{$mydate}{"p"}[$sc] = $mytmp[8];
-	$mydata{$mydate}{"p_qf"}[$sc] = $mytmp[9];
-	$mydata{$mydate}{"t"}[$sc] = $mytmp[10];
-	$mydata{$mydate}{"t_qf"}[$sc] = $mytmp[11];
-	$mydata{$mydate}{"wl"}[$sc] = $mytmp[12];
-	$mydata{$mydate}{"wl_qf"}[$sc] = $mytmp[13];
-	$mydata{$mydate}{"s"}[$sc] = $mytmp[14];
-	$mydata{$mydate}{"s_qf"}[$sc] = $mytmp[15];
 	$mydata{$mydate}{"noobs"} = ($sc+1);
 	$sc++;
 	$nrecords++;
@@ -2829,20 +2870,19 @@ sub create_cdl_ugotctd {
 	$timeunix .= UnixDate($_,"%s").",";
 	$lat .= $mydata{$_}{lat}.",";
 	$lon .= $mydata{$_}{lon}.",";
-	$z .= $mydata{$_}{z}.",";
-	#foreach $z (sort {$a <=> $b} @mydepths) {
+	if ($filetype eq "ISSS08") {
+	    $z .= $mydata{$_}{z}.",";
+	}
 	foreach $pres (sort {$a <=> $b} @mypres) {
 	    $match = 0;
-	    #print "$pres - $mydata{$_}{noobs}\n";
 	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
-		#if ($mydata{$_}{z}[$sc]==$z) {
-		#print "\t$sc - $mydata{$_}{p}[$sc]\n";
 		if ($mydata{$_}{p}[$sc]==$pres) {
-		    #print "\t\t$mydata{$_}{p}[$sc] matched\n";
 		    $temp .= $mydata{$_}{'t'}[$sc].",";
 		    $temp_qf .= $mydata{$_}{'t_qf'}[$sc].",";
-		    $turb .= $mydata{$_}{'wl'}[$sc].",";
-		    $turb_qf .= $mydata{$_}{'wl_qf'}[$sc].",";
+		    if ($filetype eq "ISSS08") {
+			$turb .= $mydata{$_}{'wl'}[$sc].",";
+			$turb_qf .= $mydata{$_}{'wl_qf'}[$sc].",";
+		    }
 		    $psal .= $mydata{$_}{'s'}[$sc].",";
 		    $psal_qf .= $mydata{$_}{'s_qf'}[$sc].",";
 		    $match = 1;
@@ -2852,15 +2892,16 @@ sub create_cdl_ugotctd {
 	    unless ($match) {
 		$temp .= "$misvalout,";
 		$temp_qf .= "$misvalout,";
-		$turb .= "$misvalout,";
-		$turb_qf .= "$misvalout,";
+		if ($filetype eq "ISSS08") {
+		    $turb .= "$misvalout,";
+		    $turb_qf .= "$misvalout,";
+		}
 		$psal .= "$misvalout,";
 		$psal_qf .= "$misvalout,";
 	    }
 	}
     }
     undef $pres;
-    #$z = join ",",sort({$a <=> $b} @mydepths);
     $pres = join ",",sort({$a <=> $b} @mypres);
     $stid = "\"";
     $stid .= join "\",\"",@mystations;
@@ -2869,14 +2910,18 @@ sub create_cdl_ugotctd {
     # Clean up records
     $timeunix =~ s/,$//;
     $stid =~ s/,$//;
-    $z =~ s/,$//;
+    if ($filetype eq "ISSS08") {
+	$z =~ s/,$//;
+    }
     $pres =~ s/,$//;
     $lat =~ s/,$//;
     $lon =~ s/,$//;
     $temp =~ s/,$//;
     $temp_qf =~ s/,$//;
-    $turb =~ s/,$//;
-    $turb_qf =~ s/,$//;
+    if ($filetype eq "ISSS08") {
+	$turb =~ s/,$//;
+	$turb_qf =~ s/,$//;
+    }
     $psal =~ s/,$//;
     $psal_qf =~ s/,$//;
 
@@ -2885,12 +2930,16 @@ sub create_cdl_ugotctd {
     s/\+stid/$stid/ for (@cdlout);
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
-    s/\+bdepth/$z/ for (@cdlout);
+    if ($filetype eq "ISSS08") {
+	s/\+bdepth/$z/ for (@cdlout);
+    }
     s/\+pres/$pres/ for (@cdlout);
     s/\+temp_qf/$temp_qf/ for (@cdlout);
     s/\+temp/$temp/ for (@cdlout);
-    s/\+turb_qf/$turb_qf/ for (@cdlout);
-    s/\+turb/$turb/ for (@cdlout);
+    if ($filetype eq "ISSS08") {
+	s/\+turb_qf/$turb_qf/ for (@cdlout);
+	s/\+turb/$turb/ for (@cdlout);
+    }
     s/\+psal_qf/$psal_qf/ for (@cdlout);
     s/\+psal/$psal/ for (@cdlout);
 
