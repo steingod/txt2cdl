@@ -1,7 +1,11 @@
 netcdf template_ctd {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_ctd_ugot.cdl,v 1.1 2010-06-15 14:32:52 steingod Exp $
+// $Id: template_ctd_ugot.cdl,v 1.2 2010-06-16 08:54:57 steingod Exp $
+// This template is dedicated for the ISSS08 data delivered by UGOT, it
+// basically contains temperature, salinity (and turbidity) at pressure
+// levels accompanied by quality flags for each variable and bottom depth
+// at the station.
 
 dimensions:
     time = unlimited; //
@@ -37,14 +41,16 @@ variables:
 	bdepth:short_name = "bdepth";
 	bdepth:units = "m";
 	bdepth:valid_min = 0.;
-	bdepth:valid_max = 15000.;
-    float pres(stations,n_levels);
+	bdepth:valid_max = 3000.;
+	bdepth:_FillValue = 9999.f;
+    float pres(n_levels);
 	pres:long_name = "Sea Water Pressure";
 	pres:short_name = "Pressure";
 	pres:standard_name = "sea_water_pressure";
 	pres:units = "dbar";
 	pres:valid_min = 0.;
-	pres:valid_max = 15000.;
+	pres:valid_max = 5000.;
+	pres:_FillValue = 9999.f;
 	pres:axis = "Y";
     float temp(stations,n_levels);
 	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
@@ -54,6 +60,27 @@ variables:
 	temp:units = "degrees Celsius";
 	temp:coordinates = "time pres";
 	temp:axis = "X";
+    float temp_qf(stations,n_levels);
+	temp_qf:long_name = "Ocean temperature quality flag (0=OK)";
+	temp_qf:short_name = "temperature quality flag";
+	temp_qf:_FillValue = 9999.f;
+	temp_qf:units = "";
+	temp_qf:coordinates = "time pres";
+	temp_qf:axis = "X";
+    float turb(stations,n_levels);
+	turb:long_name = "WET-Labs_ECO_NTU/Turbidity sensor output [V]";
+	turb:short_name = "turb";
+	turb:_FillValue = 9999.f;
+	turb:units = "Volt";
+	turb:coordinates = "time pres";
+	turb:axis = "X";
+    float turb_qf(stations,n_levels);
+	turb_qf:long_name = "Ocean turbidity quality flag (0=OK)";
+	turb_qf:short_name = "turbidity quality flag";
+	turb_qf:_FillValue = 9999.f;
+	turb_qf:units = "";
+	turb_qf:coordinates = "time pres";
+	turb_qf:axis = "X";
     float psal(stations,n_levels);
 	psal:long_name = "Practical salinity (PSU/sal00)";
 	psal:short_name = "salinity";
@@ -62,6 +89,13 @@ variables:
 	psal:units = "";
 	psal:coordinates = "time pres";
 	psal:axis = "X";
+    float psal_qf(stations,n_levels);
+	psal_qf:long_name = "Ocean salinity quality flag (0=OK)";
+	psal_qf:short_name = "salinity quality flag";
+	psal_qf:_FillValue = 9999.f;
+	psal_qf:units = "";
+	psal_qf:coordinates = "time pres";
+	psal_qf:axis = "X";
 
 // global attributes
 	:Conventions = "CF-1.0";
@@ -72,7 +106,7 @@ variables:
 	:keywords = "+keyw"; // Blank separated list
 	:gcmd_keywords = "+gcmdkeyw"; // Newline separated list
 	:area = "+area"; // Comma separated list, see http://damocles.met.no/
-	:activity_type = "+activity_type";
+	:activity_type = "+activity";
 	:PI_name = "+piname";
 	:contact = "+email";
 	:institution = "+inst";
@@ -98,5 +132,9 @@ data:
     bdepth = +bdepth;
     pres = +pres;
     temp = +temp;
+    temp_qf = +temp_qf;
+    turb = +turb;
+    turb_qf = +turb_qf;
     psal = +psal;
+    psal_qf = +psal_qf;
 }
