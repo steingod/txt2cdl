@@ -72,9 +72,12 @@
 # stations.
 # Øystein Godøy, METNO/FOU, 07.06.2010: Addition of UGOT CTD data
 # translation. Assumes UTF-8 encoding of these files.
+# Øystein Godøy, METNO/FOU, 17.09.2010: Changed iAOOS biological data
+# conversion due to typo discovered concerning degrees_west versus
+# degrees_east.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.53 2010-06-16 18:39:30 steingod Exp $
+# $Id: txt2cdl,v 1.54 2010-09-17 12:35:43 steingod Exp $
 #  
 
 ########################################################### 
@@ -2102,7 +2105,7 @@ sub create_cdl_nfhbiosed {
     #my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
     my $nfhbiovar = "date, time, latitude, longitude, sampling_depth, POC, stdev_POC, PON, stdev_PON, FPC, Chla, stdev_Chla, Phaeo, stdev_Phaeo";
     #my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
-    my $nfhbiounits = "year_month_day, hours(hh:mm UTC), degrees_north, degrees_west, meter, mg_POC_m-2_d-1,  mg_POC_m-2_d-1,  mg_PON_m-2_d-1, mg_PON_m-2_d-1, mg_FPC_m-2_d-1, mg_Chla_m-2_d-1, mg_Chla_m-2_d-1, mg_Phaeo_m-2_d-1, mg_Phaeo_m-2_d-1";
+    my $nfhbiounits = "year_month_day, hours(hh:mm UTC), degrees_north, degrees_east, meter, mg_POC_m-2_d-1,  mg_POC_m-2_d-1,  mg_PON_m-2_d-1, mg_PON_m-2_d-1, mg_FPC_m-2_d-1, mg_Chla_m-2_d-1, mg_Chla_m-2_d-1, mg_Phaeo_m-2_d-1, mg_Phaeo_m-2_d-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
     my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrogen";
@@ -2217,12 +2220,12 @@ sub create_cdl_nfhbiosed {
 	    push @mytimes, $mydate; 
 	    $sc = 0;
 	}
-	$ll = $mytmp[2]." ".(-1*$mytmp[3]);
+	$ll = $mytmp[2]." ".$mytmp[3];
 	push @mydepths, $mytmp[4] unless grep /^$mytmp[4]$/,@mydepths;
 	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
 	$mydata{$mydate}{"lat"} = $mytmp[2];
-	$mydata{$mydate}{"lon"} = -1*$mytmp[3];
+	$mydata{$mydate}{"lon"} = $mytmp[3];
 	$mydata{$mydate}{"z"}[$sc] = $mytmp[4];
 	$mydata{$mydate}{"POC"}[$sc] = $mytmp[5];
 	$mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[6];
@@ -2356,7 +2359,7 @@ sub create_cdl_nfhbio{
     my($pon, $pon_stdev, $poc, $poc_stdev);
     my($ndepths,$nstations,$match);
     my $nfhbiovar = "CTD ID, date, time, latitude, longitude, sampling_depth, NO3+NO2, stdev_NO3+NO2, PO4, stdev_PO4, Si(OH)4, stdev_Si(OH)4, Chla, stdev_chla, Phaeo, stdev_Phaeo, POC, stdev_POC, PON, stdev_PON";
-    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_west, meter, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µg_Chla_L-1, µg_Chla_L-1, µg_Phaeo_L-1, µg_Phaeo_L-1, µg_POC_L-1, µg_POC_L-1, µg_PON_L-1, µg_PON_L-1";
+    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_east, meter, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µg_Chla_L-1, µg_Chla_L-1, µg_Phaeo_L-1, µg_Phaeo_L-1, µg_POC_L-1, µg_POC_L-1, µg_PON_L-1, µg_PON_L-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
     my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrate\nOceans > Ocean Chemistry > Nitrite\nOceans > Ocean Chemistry > Phosphate\nOceans > Ocean Chemistry > Silicate\nOceans > Ocean Chemistry > Organic Carbon\nOceans > Ocean Chemistry > Organic Matter";
@@ -2471,13 +2474,13 @@ sub create_cdl_nfhbio{
 	    push @mytimes, $mydate; 
 	    $sc = 0;
 	}
-	$ll = $mytmp[3]." ".(-1*$mytmp[4]);
+	$ll = $mytmp[3]." ".$mytmp[4];
 	push @mydepths, $mytmp[5] unless grep /^$mytmp[5]$/,@mydepths;
 	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
 	$mydata{$mydate}{"stid"} = $mytmp[0];
 	$mydata{$mydate}{"lat"} = $mytmp[3];
-	$mydata{$mydate}{"lon"} = -1*$mytmp[4];
+	$mydata{$mydate}{"lon"} = $mytmp[4];
 	$mydata{$mydate}{"z"}[$sc] = $mytmp[5];
 	$mydata{$mydate}{"no3no2"}[$sc] = $mytmp[6];
 	$mydata{$mydate}{"no3no2_stdev"}[$sc] = $mytmp[7];
