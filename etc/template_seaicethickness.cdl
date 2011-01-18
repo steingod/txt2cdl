@@ -1,7 +1,7 @@
 netcdf template_bio {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_seaicethickness.cdl,v 1.1 2011-01-18 14:37:00 steingod Exp $
+// $Id: template_seaicethickness.cdl,v 1.2 2011-01-18 14:44:28 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -31,7 +31,7 @@ variables:
 	longitude:units = "degree_east";
 	longitude:valid_min = -180.;
 	longitude:valid_max = 180.;
-    float icet(time);
+    float icet(time, stations);
 	icet:standard_name = "sea_ice_thickness";
 	icet:long_name = "sea_ice_thickness_in_meter";
 	icet:short_name = "icet";
@@ -45,8 +45,8 @@ variables:
 	:title = "+title";
 	:abstract = "+abstract"; 
 	:topiccategory = "+topic"; 
-	:keywords = "+keyw"; 
-	:gcmd_keywords = "+gcmdkeyw"; 
+	:keywords = "+keyw"; // Free choice 
+	:gcmd_keywords = "Cryosphere > Sea Ice > Ice Depth/Thickness"; 
 	:area = "+area"; 
 	:activity_type = "+activity";
 	:operational_status = "+opstatus";
