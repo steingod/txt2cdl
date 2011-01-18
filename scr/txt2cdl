@@ -78,7 +78,7 @@
 # Øystein Godøy, METNO/FOU, 2011-01-17: Added biomass support.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.55 2011-01-17 20:43:12 steingod Exp $
+# $Id: txt2cdl,v 1.56 2011-01-18 13:53:09 steingod Exp $
 #  
 
 ########################################################### 
@@ -2632,6 +2632,8 @@ sub create_cdl_nfhbio{
 #
 # Decode and convert the NFH biological format containing biological data.
 # This is linked to template_biomassmeso.cdl
+# This data is based upon integration over a water column and the date and
+# time is used for identification.
 #
 sub create_cdl_nfhbiomass{
     my(@cdlout,@tmparr);
@@ -2773,8 +2775,8 @@ sub create_cdl_nfhbiomass{
 	$mydata{$mydate}{"stid"} = $mytmp[0];
 	$mydata{$mydate}{"lat"} = $mytmp[3];
 	$mydata{$mydate}{"lon"} = $mytmp[4];
-	$mydata{$mydate}{"z"}[$sc] = $mytmp[5];
-	$mydata{$mydate}{"biomass"}[$sc] = $mytmp[6];
+	$mydata{$mydate}{"z"} = $mytmp[5];
+	$mydata{$mydate}{"biomass"} = $mytmp[6];
 	$mydata{$mydate}{"noobs"} = ($sc+1);
 	$sc++;
     }
@@ -2815,22 +2817,10 @@ sub create_cdl_nfhbiomass{
 	$timeunix .= UnixDate($_,"%s").",";
 	$lat .= $mydata{$_}{lat}.",";
 	$lon .= $mydata{$_}{lon}.",";
+	$z .= $mydata{$_}{z}.",";
 	$stid .= "\"".$mydata{$_}{stid}."\"".",";
-	foreach $z (sort {$a <=> $b} @mydepths) {
-	    $match = 0;
-	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
-		if ($mydata{$_}{z}[$sc]==$z) {
-		    $biomass .= $mydata{$_}{'biomass'}[$sc].",";
-		    $match = 1;
-		    last;
-		}
-	    }
-	    unless ($match) {
-		$biomass .= "$misvalout,";
-	    }
-	}
+        $biomass .= $mydata{$_}{'biomass'}.",";
     }
-    $z = join ",",sort({$a <=> $b} @mydepths);
 
     # Clean up records
     $stid =~ s/,$//;

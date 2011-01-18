@@ -1,10 +1,9 @@
 netcdf template_bio {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_biomassmeso.cdl,v 1.1 2011-01-17 20:43:12 steingod Exp $
+// $Id: template_biomassmeso.cdl,v 1.2 2011-01-18 13:53:09 steingod Exp $
 
 dimensions:
-    depth = +ndepths; 
     stations = +nstations;
     str25 = 25;
 
@@ -31,22 +30,21 @@ variables:
 	longitude:units = "degree_east";
 	longitude:valid_min = -180.;
 	longitude:valid_max = 180.;
-    float depth(depth);
-	depth:long_name = "Depth_below_sea_surface_in_meter";
-	depth:short_name = "depth";
-	depth:standard_name = "depth";
-	depth:units = "m";
-	depth:valid_min = 0.;
-	depth:valid_max = 15000.;
-	depth:positive = "down";
-	depth:axis = "Y";
-    float biomass(stations,depth);
+    float intdepth(stations);
+	intdepth:long_name = "integration_depth_below_sea_surface_in_meter";
+	intdepth:short_name = "intdepth";
+	intdepth:units = "m";
+	intdepth:valid_min = 0.;
+	intdepth:valid_max = 15000.;
+	intdepth:positive = "down";
+	intdepth:axis = "Y";
+    float biomass(stations);
 	//biomass:standard_name = "";
 	biomass:long_name = "integrated_mesozooplankton_biomass_expressed_as_Carbon";
 	biomass:short_name = "biomass";
 	biomass:_FillValue = 9999.f;
 	biomass:units = "microgram meter-2";
-	biomass:coordinates = "time longitude latitude depth";
+	biomass:coordinates = "time longitude latitude";
 
 // global attributes
 	:Conventions = "CF-1.4";
@@ -80,6 +78,6 @@ data:
     time =  +time;
     latitude = +lat;
     longitude = +lon;
-    depth = +depth;
+    intdepth = +depth;
     biomass = +biomass;
 }
