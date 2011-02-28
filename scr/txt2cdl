@@ -78,7 +78,7 @@
 # Øystein Godøy, METNO/FOU, 2011-01-17: Added biomass support.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.56 2011-01-18 13:53:09 steingod Exp $
+# $Id: txt2cdl,v 1.57 2011-02-28 11:29:08 steingod Exp $
 #  
 
 ########################################################### 
@@ -1814,7 +1814,7 @@ sub create_timeseries_cdl_radflux {
 	    "contact" => "o.godoy\@met.no",
 	    "distribution_statement" => "Restricted to iAOOS-Norway",
 	    "quality_statement" => "Quality controlled by visual inspection",
-	    "quality_removals" => "5",
+	    "quality_removals" => "6",
 	    "quality_keys" => {
 	    	"0" => {
 		"par" => "dli",
@@ -1840,6 +1840,11 @@ sub create_timeseries_cdl_radflux {
 		"par" => "dli",
 		"start" => str2time("2009-01-31 15:04:00","UTC"), 
 		"end" => str2time("2009-02-11 00:00:00","UTC"),
+		},
+	    	"5" => {
+		"par" => "dli",
+		"start" => str2time("2011-01-11 09:30:00","UTC"), 
+		"end" => str2time("2011-01-21 12:30:00","UTC"),
 		},
 	    },
 	},
