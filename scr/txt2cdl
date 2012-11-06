@@ -77,10 +77,10 @@
 # degrees_east.
 # Øystein Godøy, METNO/FOU, 2011-01-17: Added biomass support.
 # Øystein Godøy, METNO/FOU, 09.05.2012: Added support for new gliders.
-# Øystein Godøy, METNO/FOU, 2012-11-06: Added support for 3 new gliders.
+# Øystein Godøy, METNO/FOU, 2012-11-06: Added support for 7 new gliders.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.59 2012-11-06 12:51:07 steingod Exp $
+# $Id: txt2cdl,v 1.60 2012-11-06 13:07:59 steingod Exp $
 #  
 
 ########################################################### 
@@ -966,6 +966,10 @@ sub create_itp_cdl {
 	"54" => "Beaufort Gyre Observing System (BGOS)",
 	"55" => "Beaufort Gyre Observing System (BGOS)",
 	"56" => "North Pole Environmental Observatory (NPEO)",
+	"57" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+	"58" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+	"60" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+	"62" => "Beaufort Gyre Observing System (BGOS)",
 	"63" => "NP-39 drifting ice station (no project specified)",
 	"64" => "Beaufort Gyre Observing System (BGOS)",
 	"65" => "Beaufort Gyre Observing System (BGOS)",
