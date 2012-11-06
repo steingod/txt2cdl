@@ -77,9 +77,10 @@
 # degrees_east.
 # Øystein Godøy, METNO/FOU, 2011-01-17: Added biomass support.
 # Øystein Godøy, METNO/FOU, 09.05.2012: Added support for new gliders.
+# Øystein Godøy, METNO/FOU, 2012-11-06: Added support for 3 new gliders.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.58 2012-05-09 15:57:27 steingod Exp $
+# $Id: txt2cdl,v 1.59 2012-11-06 12:51:07 steingod Exp $
 #  
 
 ########################################################### 
@@ -966,6 +967,9 @@ sub create_itp_cdl {
 	"55" => "Beaufort Gyre Observing System (BGOS)",
 	"56" => "North Pole Environmental Observatory (NPEO)",
 	"63" => "NP-39 drifting ice station (no project specified)",
+	"64" => "Beaufort Gyre Observing System (BGOS)",
+	"65" => "Beaufort Gyre Observing System (BGOS)",
+	"66" => "Beaufort Gyre Observing System (BGOS)",
     );
     #@witho2 = (6,13,23,29);
 
@@ -1867,7 +1871,7 @@ sub create_timeseries_cdl_radflux {
 	},
 	"Jan Mayen" => {
 	    "title" => "Downwelling surface radiative fluxes at Jan Mayen",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
+	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
 	    "product_name" => "radiative fluxes",
 	    "history" => "2008-11-23 creation",
 	    "project_name" => "iAOOS-Norway",
@@ -1892,7 +1896,7 @@ sub create_timeseries_cdl_radflux {
 	"Hopen" => {
 	    "title" => "Downwelling surface radiative fluxes at Hopen",
 	    "abstract" => "Downwelling surface radiative fluxes observed
-	    at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
+	    at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
 	    "product_name" => "radiative fluxes",
 	    "history" => "2009-11-03 creation",
 	    "project_name" => "iAOOS-Norway",
