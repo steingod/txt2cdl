@@ -35,9 +35,10 @@
 # oxygen as well...
 # Øystein Godøy, METNO/FOU, 09.05.2012: Added ITPs measuring oxygen.
 # Øystein Godøy, METNO/FOU, 2012-11-06: Added new ITPs measuring oxygen.
+# Modified behaviour according to ncgen behaviour.
 #
 # CVS_ID:
-# $Id: itpdir2nc,v 1.5 2012-11-06 13:23:47 steingod Exp $
+# $Id: itpdir2nc,v 1.6 2012-11-06 13:53:30 steingod Exp $
 #
 
 use strict;
@@ -88,7 +89,7 @@ foreach $file (sort(@files)) {
     print "Converting $file to $ncfile\n";
     $status = system("$txt2cdl -i $ifd/$file -o $ofd/$newfile -m $template -f $format;");
     next if ($status);
-    $status = system("$ncgen -b $ofd/$newfile;rm $ofd/$newfile");
+    $status = system("$ncgen -b $ofd/$newfile -o $ofd/$ncfile;rm $ofd/$newfile");
     warn "Could not manage $newfile" if ($status);
     push @files2tar,"$ncfile";
 }
