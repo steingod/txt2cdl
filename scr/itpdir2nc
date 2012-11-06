@@ -34,9 +34,10 @@
 # Øystein Godøy, METNO/FOU, 06.10.2009: Updated for files containing
 # oxygen as well...
 # Øystein Godøy, METNO/FOU, 09.05.2012: Added ITPs measuring oxygen.
+# Øystein Godøy, METNO/FOU, 2012-11-06: Added new ITPs measuring oxygen.
 #
 # CVS_ID:
-# $Id: itpdir2nc,v 1.4 2012-05-09 15:57:27 steingod Exp $
+# $Id: itpdir2nc,v 1.5 2012-11-06 13:23:47 steingod Exp $
 #
 
 use strict;
@@ -54,8 +55,7 @@ my $template2 = "../etc/template_ctd_oxygen.cdl";
 my $format = "itp";
 my $ncgen = "/usr/bin/ncgen -b";
 my $tarcmd = "/bin/tar";
-my @witho2 =
-("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54");
+my @witho2 = ("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54","itp57","itp58","itp60","itp64","itp65");
 
 usage if !getopts('i:o:');
 usage if ((! $opt_i));
