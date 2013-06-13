@@ -1,7 +1,7 @@
 netcdf template_itp {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_itp.cdl,v 1.6 2009-01-21 12:51:12 steingod Exp $
+// $Id: template_itp.cdl,v 1.7 2013-06-13 19:40:09 steingod Exp $
 
 dimensions:
     time = UNLIMITED; //
@@ -10,49 +10,50 @@ dimensions:
 
 variables:
     double time(time);
-	time:long_name = "time of the observation" ;
-	time:short_name = "time" ;
-	time:standard_name = "time" ;
-	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
-	time:axis = "T";
+        time:long_name = "time of the observation" ;
+        time:short_name = "time" ;
+        time:standard_name = "time" ;
+        time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+        time:axis = "T";
     float latitude(stations);
-	latitude:long_name = "latitude";
-	latitude:short_name = "latitude";
-	latitude:standard_name = "latitude";
-	latitude:units = "degree_north";
-	latitude:valid_min = -90.;
-	latitude:valid_max = 90.;
+        latitude:long_name = "latitude";
+        latitude:short_name = "latitude";
+        latitude:standard_name = "latitude";
+        latitude:units = "degree_north";
+        latitude:valid_min = -90.;
+        latitude:valid_max = 90.;
     float longitude(stations);
-	longitude:long_name = "longitude";
-	longitude:short_name = "longitude";
-	longitude:standard_name = "longitude";
-	longitude:units = "degree_east";
-	longitude:valid_min = -180.;
-	longitude:valid_max = 180.;
+        longitude:long_name = "longitude";
+        longitude:short_name = "longitude";
+        longitude:standard_name = "longitude";
+        longitude:units = "degree_east";
+        longitude:valid_min = -180.;
+        longitude:valid_max = 180.;
     float pres(pres);
-	pres:long_name = "Sea Water Pressure";
-	pres:short_name = "Pressure";
-	pres:standard_name = "sea_water_pressure";
-	pres:units = "dbar";
-	pres:valid_min = 0.;
-	pres:valid_max = 15000.;
-	//pres:axis = "y";
+        pres:long_name = "Sea Water Pressure";
+        pres:short_name = "Pressure";
+        pres:standard_name = "sea_water_pressure";
+        pres:units = "dbar";
+        pres:valid_min = 0.;
+        pres:valid_max = 15000.;
+        pres:axis = "Z";
+        pres:positive = "down";
     float temp(pres);
-	temp:long_name = "Ocean temperature (ITS-90 deg. C)";
-	temp:short_name = "temperature";
-	temp:_FillValue = 9999.f;
-	temp:units = "degrees Celsius";
-	temp:axis = "x";
+        temp:long_name = "Ocean temperature (ITS-90 deg. C)";
+        temp:short_name = "temperature";
+        temp:_FillValue = 9999.f;
+        temp:units = "degrees Celsius";
+        temp:axis = "x";
     float psal(pres);
-	psal:long_name = "Practical salinity (PSU/sal00)";
-	psal:short_name = "salinity";
-	psal:standard_name = "sea_water_salinity";
-	psal:_FillValue = 9999.f;
-	psal:units = "";
-	psal:axis = "x";
+        psal:long_name = "Practical salinity (PSU/sal00)";
+        psal:short_name = "salinity";
+        psal:standard_name = "sea_water_salinity";
+        psal:_FillValue = 9999.f;
+        psal:units = "";
+        psal:axis = "x";
 
 // global attributes
-	:Conventions = "CF-1.0";
+	:Conventions = "CF-1.6";
 	:history = "+history";
 	:title = "+title";
 	:abstract = "+abstract"; 
@@ -75,6 +76,7 @@ variables:
 	:westernmost_longitude = +lon;
 	:easternmost_longitude = +lon;
 	:quality_statement = "+qual";
+    :featureType = "profile"; 
 
 data:
     time =  +time;
