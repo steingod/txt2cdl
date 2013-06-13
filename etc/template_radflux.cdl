@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.11 2009-02-10 16:37:53 steingod Exp $
+// $Id: template_radflux.cdl,v 1.12 2013-06-13 13:30:52 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -9,62 +9,63 @@ dimensions:
 
 variables:
     double time(time);
-	time:long_name = "time of the observation" ;
-	time:short_name = "time" ;
-	time:standard_name = "time" ;
-	time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
-	time:axis = "T";
+        time:long_name = "time of the observation" ;
+        time:short_name = "time" ;
+        time:standard_name = "time" ;
+        time:units = "seconds since 1970-01-01 00:00:00 UTC" ;
+        time:axis = "T";
     char stationid(strlen25);
-	stationid:long_name = "name and/or stationnumber used as identifier";
+        stationid:long_name = "name and/or stationnumber used as identifier";
+        stationid:cf_role = "timeseries_id";
     float latitude;
-	latitude:long_name = "latitude";
-	latitude:short_name = "latitude";
-	latitude:standard_name = "latitude";
-	latitude:units = "degree_north";
-	latitude:valid_min = -90.f;
-	latitude:valid_max = 90.f;
+        latitude:long_name = "latitude";
+        latitude:short_name = "latitude";
+        latitude:standard_name = "latitude";
+        latitude:units = "degree_north";
+        latitude:valid_min = -90.f;
+        latitude:valid_max = 90.f;
     float longitude;
-	longitude:long_name = "longitude";
-	longitude:short_name = "longitude";
-	longitude:standard_name = "longitude";
-	longitude:units = "degree_east";
-	longitude:valid_min = -180.f;
-	longitude:valid_max = 180.f;
+        longitude:long_name = "longitude";
+        longitude:short_name = "longitude";
+        longitude:standard_name = "longitude";
+        longitude:units = "degree_east";
+        longitude:valid_min = -180.f;
+        longitude:valid_max = 180.f;
     float ssi(time);
-	ssi:long_name = "shortwave irradiation at the surface";
-	ssi:short_name = "ssi";
-	ssi:standard_name = "surface_downwelling_shortwave_flux";
-	ssi:_FillValue = -999.f;
-	ssi:units = "watts/meter2";
-	ssi:cell_method = "time: mean (last minute)";
+        ssi:long_name = "shortwave irradiation at the surface";
+        ssi:short_name = "ssi";
+        ssi:standard_name = "surface_downwelling_shortwave_flux";
+        ssi:_FillValue = -999.f;
+        ssi:units = "watts/meter2";
+        ssi:cell_method = "time: mean (last minute)";
     float ssisenstemp(time);
-	ssisenstemp:long_name = "temperature of the surface shortwave irradiation sensor";
-	ssisenstemp:short_name = "ssisenstemp";
-	ssisenstemp:_FillValue = -999.f;
-	ssisenstemp:units = "degC";
-	ssisenstemp:cell_method = "time: mean (last minute)";
+        ssisenstemp:long_name = "temperature of the surface shortwave irradiation sensor";
+        ssisenstemp:short_name = "ssisenstemp";
+        ssisenstemp:_FillValue = -999.f;
+        ssisenstemp:units = "degC";
+        ssisenstemp:cell_method = "time: mean (last minute)";
     float dli(time);
-	dli:long_name = "difference between downward atmospheric longwave irradiation and emitted CGR4 irradiance";
-	dli:short_name = "dli";
-	dli:standard_name = "surface_net_downward_longwave_flux";
-	dli:_FillValue = -999.f;
-	dli:units = "watts/meter2";
-	dli:cell_method = "time: mean (last minute)";
+        dli:long_name = "difference between downward atmospheric longwave irradiation and emitted CGR4 irradiance";
+        dli:short_name = "dli";
+        dli:standard_name = "surface_net_downward_longwave_flux";
+        dli:_FillValue = -999.f;
+        dli:units = "watts/meter2";
+        dli:cell_method = "time: mean (last minute)";
     float dlisenstemp(time);
-	dlisenstemp:long_name = "temperature of the surface longwave irradiation sensor";
-	dlisenstemp:short_name = "dlisenstemp";
-	dlisenstemp:_FillValue = -999.f;
-	dlisenstemp:units = "degC";
-	dlisenstemp:cell_method = "time: mean (last minute)";
+        dlisenstemp:long_name = "temperature of the surface longwave irradiation sensor";
+        dlisenstemp:short_name = "dlisenstemp";
+        dlisenstemp:_FillValue = -999.f;
+        dlisenstemp:units = "degC";
+        dlisenstemp:cell_method = "time: mean (last minute)";
     float battery(time);
-	battery:long_name = "minimum battery voltage";
-	battery:short_name = "battery";
-	battery:_FillValue = -999.f;
-	battery:units = "V";
-	battery:cell_method = "time: min (last minute)";
+        battery:long_name = "minimum battery voltage";
+        battery:short_name = "battery";
+        battery:_FillValue = -999.f;
+        battery:units = "V";
+        battery:cell_method = "time: min (last minute)";
 
 // global attributes
-	:Conventions = "CF-1.0";
+	:Conventions = "CF-1.6";
 	:history = "+history";
 	:title = "+title";
 	:abstract = "+abstract"; // Add text if wanted
@@ -87,7 +88,8 @@ variables:
 	:northernmost_latitude = +lat;
 	:westernmost_longitude = +lon;
 	:easternmost_longitude = +lon;
-	:quality_statement = "+qual";
+	:quality_statement = "+radflux_bjornoya.ncqual";
+    :featureType = "timeSeries";
 
 data:
     time =  +time;
