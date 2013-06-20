@@ -39,48 +39,49 @@
 # functionality for the formats supported are implemented.
 #
 # AUTHOR:
-# Øystein Godøy, METNO/FOU, 09.05.2007 
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 09.05.2007 
 #
 # MODIFIED:
-# Øystein Godøy, METNO/FOU, 11.05.2007
-# Øystein Godøy, METNO/FOU, 11.03.2008: Added support for WOCE CTD-format.
-# Øystein Godøy, METNO/FOU, 17.10.2008: Added support for AWI Helicopter
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 11.05.2007
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 11.03.2008: Added support for WOCE CTD-format.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 17.10.2008: Added support for AWI Helicopter
 # Ice Thickness measurements.
-# Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
-# Øystein Godøy, METNO/FOU, 24.10.2008: Adding conversion of radiation
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 19.10.2008: Adding ITP conversion
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 24.10.2008: Adding conversion of radiation
 # flux data from Bear Island.
-# Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
-# Øystein Godøy, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
-# Øystein Godøy, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
-# Øystein Godøy, METNO/FOU, 27.12.2008: Added quality control of DLI
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 27.12.2008: Added quality control of DLI
 # measurements at Bear Island. Manual inspection and time windows are
 # being used as well as inverting the signal between April and
 # December 
-# Øystein Godøy, METNO/FOU, 14.02.2009: Added support for Vagabond CTD
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 14.02.2009: Added support for Vagabond CTD
 # data and started rewrite of CTD handling of SeaBird profiles. These need
 # special care as they measure both downwards and upwards. Implementation
 # is yet not finished.
-# Øystein Godøy, METNO/FOU, 06.10.2009: Biological data from NDF/Tromsø is
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 06.10.2009: Biological data from NDF/TromsÃƒÂ¸ is
 # now supported through ASCII dump of Excel.
-# Øystein Godøy, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
-# Øystein Godøy, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
 # measurements.
-# Øystein Godøy, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
-# Øystein Godøy, METNO/FOU, 02.06.2010: Modified support for NFH BIO
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 02.06.2010: Modified support for NFH BIO
 # sediment data.
-# Øystein Godøy, METNO/FOU, 03.06.2010: Modified support for NFH BIO
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 03.06.2010: Modified support for NFH BIO
 # stations.
-# Øystein Godøy, METNO/FOU, 07.06.2010: Addition of UGOT CTD data
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 07.06.2010: Addition of UGOT CTD data
 # translation. Assumes UTF-8 encoding of these files.
-# Øystein Godøy, METNO/FOU, 17.09.2010: Changed iAOOS biological data
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 17.09.2010: Changed iAOOS biological data
 # conversion due to typo discovered concerning degrees_west versus
 # degrees_east.
-# Øystein Godøy, METNO/FOU, 2011-01-17: Added biomass support.
-# Øystein Godøy, METNO/FOU, 09.05.2012: Added support for new gliders.
-# Øystein Godøy, METNO/FOU, 2012-11-06: Added support for 7 new gliders.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 2011-01-17: Added biomass support.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 09.05.2012: Added support for new gliders.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 2012-11-06: Added support for 7 new gliders.
+# ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 2013-06-20: Modification for radiative fluxes.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.60 2012-11-06 13:07:59 steingod Exp $
+# $Id: txt2cdl,v 1.61 2013-06-20 12:24:47 steingod Exp $
 #  
 
 ########################################################### 
@@ -332,7 +333,7 @@ sub usage() {
     "o BIOmass data from UiT, Norway - (format=nfhbiomass)\n".
     "o BIO data from UiT, Norway - (format=nfhbio)\n".
     "o CTD data from UGOT, Sweden - (format=ugotctd)";
-    my $author = "Øystein Godøy, METNO/FOU, 03.06.2010";
+    my $author = "ÃƒÂ˜ystein GodÃƒÂ¸y, METNO/FOU, 03.06.2010";
 
     print "\n";
     print wrap("","\t","$0 -i <infile> -o <outfile> -f <format> -m
@@ -512,7 +513,7 @@ sub create_ctd_cdl_woce {
 }
 
 #
-# Decode and convert a specific SEABIRD format used by NFH/Tromsø
+# Decode and convert a specific SEABIRD format used by NFH/TromsÃƒÂ¸
 #
 sub create_ctd_cdl_seabird {
     my(@cdlout,@tmparr);
@@ -1825,8 +1826,17 @@ sub create_timeseries_cdl_radflux {
     my %stationinfo = 
     (
 	"Bjørnøya" => {
-	    "title" => "Downwelling surface radiative fluxes at Bear Island",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bear Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.", 
+	    "title" => "Downwelling surface radiative fluxes at Bjørnøya",
+	    "abstract" => "Downwelling surface radiative fluxes observed at
+        the meteorological station at Bjørnøya in the Barents Sea.
+        Measurements are made using Kipp and Zonen CMP21 and CGR4
+        pyranometers and pyrgeometers. Daily maintenance is performed by
+        the meteorological personnel at the station. Data are averaged
+        over the last minute and the time is set to UTC. This data set was
+        originally supported by the Norwegian Research Council but is now
+        continued by the Norwegian Meteorological Institute. The quality
+        control performed is by visual inspection and by comparison of
+        clear sky values against RTM simulations.", 
 	    "product_name" => "radiative fluxes",
 	    "history" => "2008-10-23 creation",
 	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
@@ -1837,41 +1847,41 @@ sub create_timeseries_cdl_radflux {
 	    "PI_name" => "Øystein Godøy",
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Restricted to iAOOS-Norway",
-	    "quality_statement" => "Quality controlled by visual inspection",
+	    "distribution_statement" => "Free",
+	    "quality_statement" => "Quality controlled by visual inspection and RTM comparison",
 	    "quality_removals" => "6",
 	    "quality_keys" => {
-	    	"0" => {
-		"par" => "dli",
-		"start" => str2time("2008-01-01 00:00:00","UTC"), 
-		"end" => str2time("2008-04-08 12:22:00","UTC"),
-		},
-	    	"1" => {
-		"par" => "dli",
-		"start" => str2time("2008-11-15 11:04:00","UTC"), 
-		"end" => str2time("2008-11-18 10:24:00","UTC"),
-		},
-	    	"2" => {
-		"par" => "dli",
-		"start" => str2time("2008-11-21 09:36:00","UTC"), 
-		"end" => str2time("2008-11-21 09:38:00","UTC"),
-		},
-	    	"3" => {
-		"par" => "ssi",
-		"start" => str2time("2008-11-21 09:55:00","UTC"), 
-		"end" => str2time("2008-11-21 09:58:00","UTC"),
-		},
-	    	"4" => {
-		"par" => "dli",
-		"start" => str2time("2009-01-31 15:04:00","UTC"), 
-		"end" => str2time("2009-02-11 00:00:00","UTC"),
-		},
-	    	"5" => {
-		"par" => "dli",
-		"start" => str2time("2011-01-11 09:30:00","UTC"), 
-		"end" => str2time("2011-01-21 12:30:00","UTC"),
-		},
-	    },
+            "0" => {
+                "par" => "dli",
+                "start" => str2time("2008-01-01 00:00:00","UTC"), 
+                "end" => str2time("2008-04-08 12:22:00","UTC"),
+            },
+            "1" => {
+                "par" => "dli",
+                "start" => str2time("2008-11-15 11:04:00","UTC"), 
+                "end" => str2time("2008-11-18 10:24:00","UTC"),
+            },
+            "2" => {
+                "par" => "dli",
+                "start" => str2time("2008-11-21 09:36:00","UTC"), 
+                "end" => str2time("2008-11-21 09:38:00","UTC"),
+            },
+            "3" => {
+                "par" => "ssi",
+                "start" => str2time("2008-11-21 09:55:00","UTC"), 
+                "end" => str2time("2008-11-21 09:58:00","UTC"),
+            },
+            "4" => {
+                "par" => "dli",
+                "start" => str2time("2009-01-31 15:04:00","UTC"), 
+                "end" => str2time("2009-02-11 00:00:00","UTC"),
+            },
+            "5" => {
+                "par" => "dli",
+                "start" => str2time("2011-01-11 09:30:00","UTC"), 
+                "end" => str2time("2011-01-21 12:30:00","UTC"),
+            },
+        },
 	},
 	"Jan Mayen" => {
 	    "title" => "Downwelling surface radiative fluxes at Jan Mayen",
@@ -1886,16 +1896,16 @@ sub create_timeseries_cdl_radflux {
 	    "PI_name" => "Øystein Godøy",
 	    "url" => "http://www.met.no/",
 	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Restricted to iAOOS-Norway",
+	    "distribution_statement" => "Polar Information Commons (http://polarcommons.org/)/CCBY",
 	    "quality_statement" => "Quality controlled by visual inspection",
 	    "quality_removals" => "1",
-	    "quality_keys" => {
-	    	"0" => {
-		"par" => "ssi&dli",
-		"start" => str2time("2008-11-01 00:00:00","UTC"), 
-		"end" => str2time("2008-12-03 18:00:00","UTC"),
-		},
-	    },
+        "quality_keys" => {
+            "0" => {
+                "par" => "ssi&dli",
+                "start" => str2time("2008-11-01 00:00:00","UTC"), 
+                "end" => str2time("2008-12-03 18:00:00","UTC"),
+            },
+        },
 	},
 	"Hopen" => {
 	    "title" => "Downwelling surface radiative fluxes at Hopen",
@@ -1914,12 +1924,12 @@ sub create_timeseries_cdl_radflux {
 	    "distribution_statement" => "Restricted to iAOOS-Norway",
 	    "quality_statement" => "Quality controlled by visual inspection",
 	    "quality_removals" => "1",
-	    "quality_keys" => {
-	    	"0" => {
-		"par" => "ssi&dli",
-		"start" => str2time("2009-07-21 00:00:00","UTC"), 
-		"end" => str2time("2009-11-01 00:00:00","UTC"),
-		},
+        "quality_keys" => {
+            "0" => {
+                "par" => "ssi&dli",
+                "start" => str2time("2009-07-21 00:00:00","UTC"), 
+                "end" => str2time("2009-11-01 00:00:00","UTC"),
+            },
 	    },
 	},
 	"unknown" => {
@@ -1973,8 +1983,8 @@ sub create_timeseries_cdl_radflux {
 	if ($norec == 0) {
 	    @tmparr = split /,/,$line;
 	    $stationname = $tmparr[1];
-	    $stationname =~ s/ Strålingsstasjon//;
-	    $stationname =~ s/_Strålingsmåler//;
+	    $stationname =~ s/ StrÃƒÂ¥lingsstasjon//;
+	    $stationname =~ s/_StrÃƒÂ¥lingsmÃƒÂ¥ler//;
 	    $datalogger = $tmparr[2];
 	}
 	if ($norec==1) {
@@ -2019,8 +2029,8 @@ sub create_timeseries_cdl_radflux {
 	$timestr_start = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime)) if ($norec==5);
 	$timestr_end = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime));
 	$nvalues = $tmparr[1];
-	# Corrections at Bjørnøya
-	if ($stationname eq "Bjørnøya") {
+	# Corrections at BjÃƒÂ¸rnÃƒÂ¸ya
+	if ($stationname eq "BjÃƒÂ¸rnÃƒÂ¸ya") {
 	    if ($unixtime >= $invertbidlistart && $unixtime <= $invertbidliend && $tmparr[4] ne $misvalin) {
 		$tmparr[4] *= -1;
 	    }
@@ -2139,7 +2149,7 @@ sub create_cdl_nfhbiosed {
     my($ndepths,$nstations,$match);
     #my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
     my $nfhbiovar = "date, time, latitude, longitude, sampling_depth, POC, stdev_POC, PON, stdev_PON, FPC, Chla, stdev_Chla, Phaeo, stdev_Phaeo";
-    #my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, µg_chl-a_l-1, µg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
+    #my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, Ã‚Âµg_chl-a_l-1, Ã‚Âµg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
     my $nfhbiounits = "year_month_day, hours(hh:mm UTC), degrees_north, degrees_east, meter, mg_POC_m-2_d-1,  mg_POC_m-2_d-1,  mg_PON_m-2_d-1, mg_PON_m-2_d-1, mg_FPC_m-2_d-1, mg_Chla_m-2_d-1, mg_Chla_m-2_d-1, mg_Phaeo_m-2_d-1, mg_Phaeo_m-2_d-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
@@ -2394,7 +2404,7 @@ sub create_cdl_nfhbio{
     my($pon, $pon_stdev, $poc, $poc_stdev);
     my($ndepths,$nstations,$match);
     my $nfhbiovar = "CTD ID, date, time, latitude, longitude, sampling_depth, NO3+NO2, stdev_NO3+NO2, PO4, stdev_PO4, Si(OH)4, stdev_Si(OH)4, Chla, stdev_chla, Phaeo, stdev_Phaeo, POC, stdev_POC, PON, stdev_PON";
-    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_east, meter, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µg_Chla_L-1, µg_Chla_L-1, µg_Phaeo_L-1, µg_Phaeo_L-1, µg_POC_L-1, µg_POC_L-1, µg_PON_L-1, µg_PON_L-1";
+    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_east, meter, Ã‚Âµmol_L-1, Ã‚Âµmol_L-1, Ã‚Âµmol_L-1, Ã‚Âµmol_L-1, Ã‚Âµmol_L-1, Ã‚Âµmol_L-1, Ã‚Âµg_Chla_L-1, Ã‚Âµg_Chla_L-1, Ã‚Âµg_Phaeo_L-1, Ã‚Âµg_Phaeo_L-1, Ã‚Âµg_POC_L-1, Ã‚Âµg_POC_L-1, Ã‚Âµg_PON_L-1, Ã‚Âµg_PON_L-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
     my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrate\nOceans > Ocean Chemistry > Nitrite\nOceans > Ocean Chemistry > Phosphate\nOceans > Ocean Chemistry > Silicate\nOceans > Ocean Chemistry > Organic Carbon\nOceans > Ocean Chemistry > Organic Matter";

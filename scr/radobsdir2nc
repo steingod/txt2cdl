@@ -1,7 +1,7 @@
 #!/usr/bin/perl -w
 #
 # NAME:
-# itpdir2nc
+# radobsdir2nc
 #
 # PURPOSE:
 # To generate NetCDF files for a directory full of ASCII files. NetCDF
@@ -18,27 +18,16 @@
 # NA
 #
 # NOTES:
-# Thsi was originally developed to handle ITP data from WHOI, and is
-# yet not fully flexible and handling commandline configuration for other
-# file formats.
 #
 # BUGS:
-# When applied to ITP data, some profiles seem to generate incorrect
-# NetCDF files. The reason for this is yet not known as they look OK as do
-# the CDL files.
 #
 # AUTHOR:
-# Øystein Godøy, METNO/FOU, 15.02.2009
+# Øystein Godøy, METNO/FOU, 2013-06-20 
 #
 # MODIFIED:
-# Øystein Godøy, METNO/FOU, 06.10.2009: Updated for files containing
-# oxygen as well...
-# Øystein Godøy, METNO/FOU, 09.05.2012: Added ITPs measuring oxygen.
-# Øystein Godøy, METNO/FOU, 2012-11-06: Added new ITPs measuring oxygen.
-# Modified behaviour according to ncgen behaviour.
 #
 # CVS_ID:
-# $Id: itpdir2nc,v 1.7 2013-06-20 12:24:47 steingod Exp $
+# $Id: radobsdir2nc,v 1.1 2013-06-20 12:24:47 steingod Exp $
 #
 
 use strict;
@@ -49,14 +38,13 @@ use vars qw($opt_i $opt_o);
 sub usage;
 
 my($ifd,$ofd,$dirname,@tmp,$tgzfile,$ncfile);
-my(@files,$file,$newfile,@files2tar,$status,$template); 
+my(@files,$file,$newfile,@files2tar,$status); 
 my $txt2cdl = "./txt2cdl";
-my $template1 = "../etc/template_ctd.cdl";
-my $template2 = "../etc/template_ctd_oxygen.cdl";
-my $format = "itp";
+my $template = "../etc/template_radflux.cdl";
+my $format = "metnoradflux";
 my $ncgen = "/usr/bin/ncgen -b";
+my $ncrcat = "/usr/bin/ncrcat";
 my $tarcmd = "/bin/tar";
-my @witho2 = ("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54","itp57","itp58","itp60","itp64","itp65");
 
 usage if !getopts('i:o:');
 usage if ((! $opt_i));
@@ -67,13 +55,7 @@ $dirname = $ofd;
 @tmp = split /\//,$dirname;
 $dirname = $tmp[$#tmp];
 
-if (grep /$dirname/,@witho2) {
-    $template = $template2;
-} else {
-    $template = $template1;
-}
-
-$tgzfile = "$dirname"."_"."$dirname"."ctd.tgz";
+$tgzfile = "radflux"."_"."$dirname".".tgz";
 
 opendir(DIR, $ifd) || die "can't open $ifd $!";
 @files = readdir(DIR);
@@ -81,8 +63,9 @@ closedir(DIR);
 
 foreach $file (sort(@files)) {
     $status = 0;
-    next if ($file !~ /grd.+dat$/);
-    $newfile = $dirname."_".$file;
+    next if ($file !~ /\.dat$/);
+    ##$newfile = $dirname."_".$file;
+    $newfile = $file;
     $newfile =~ s/\.dat/\.cdl/;
     $ncfile = $newfile;
     $ncfile =~ s/\.cdl/\.nc/;
@@ -96,10 +79,12 @@ foreach $file (sort(@files)) {
 
 system("cd $ofd;$tarcmd -cvzf $ofd/$tgzfile @files2tar");
 
+system("cd $ofd;$ncrcat @files2tar radflux_$dirname.nc");
+
 exit;
 
 sub usage {
-    print "itpdir2nc -i <idir>\n";
+    print "$0 -i <idir>\n";
     print "\tidir: input directory\n";
     exit;
 }

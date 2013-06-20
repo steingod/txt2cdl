@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
-// Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.12 2013-06-13 13:30:52 steingod Exp $
+// Template created by Ã˜ystein GodÃ¸y, METNO/FOU, 07.05.2007 
+// $Id: template_radflux.cdl,v 1.13 2013-06-20 12:24:47 steingod Exp $
 
 dimensions:
     time = unlimited;
