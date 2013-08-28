@@ -39,49 +39,51 @@
 # functionality for the formats supported are implemented.
 #
 # AUTHOR:
-# Ãystein GodÃ¸y, METNO/FOU, 09.05.2007 
+# Øystein Godøy, METNO/FOU, 09.05.2007 
 #
 # MODIFIED:
-# Ãystein GodÃ¸y, METNO/FOU, 11.05.2007
-# Ãystein GodÃ¸y, METNO/FOU, 11.03.2008: Added support for WOCE CTD-format.
-# Ãystein GodÃ¸y, METNO/FOU, 17.10.2008: Added support for AWI Helicopter
+# Øystein Godøy, METNO/FOU, 11.05.2007
+# Øystein Godøy, METNO/FOU, 11.03.2008: Added support for WOCE CTD-format.
+# Øystein Godøyy, METNO/FOU, 17.10.2008: Added support for AWI Helicopter
 # Ice Thickness measurements.
-# Ãystein GodÃ¸y, METNO/FOU, 19.10.2008: Adding ITP conversion
-# Ãystein GodÃ¸y, METNO/FOU, 24.10.2008: Adding conversion of radiation
+# Øystein Godøy, METNO/FOU, 19.10.2008: Adding ITP conversion
+# Øystein Godøy, METNO/FOU, 24.10.2008: Adding conversion of radiation
 # flux data from Bear Island.
-# Ãystein GodÃ¸y, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
-# Ãystein GodÃ¸y, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
-# Ãystein GodÃ¸y, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
-# Ãystein GodÃ¸y, METNO/FOU, 27.12.2008: Added quality control of DLI
+# Øystein Godøy, METNO/FOU, 25.10.2008: Bug fix ITP-handling.
+# Øystein Godøy, METNO/FOU, 30.10.2008: Bug fix on AWIEM-handling.
+# Øystein Godøy, METNO/FOU, 26.11.2008: Added ASCII-format for moorings.
+# Øystein Godøy, METNO/FOU, 27.12.2008: Added quality control of DLI
 # measurements at Bear Island. Manual inspection and time windows are
 # being used as well as inverting the signal between April and
 # December 
-# Ãystein GodÃ¸y, METNO/FOU, 14.02.2009: Added support for Vagabond CTD
+# Øystein Godøy, METNO/FOU, 14.02.2009: Added support for Vagabond CTD
 # data and started rewrite of CTD handling of SeaBird profiles. These need
 # special care as they measure both downwards and upwards. Implementation
 # is yet not finished.
-# Ãystein GodÃ¸y, METNO/FOU, 06.10.2009: Biological data from NDF/TromsÃ¸ is
+# Øystein Godøy, METNO/FOU, 06.10.2009: Biological data from NDF/Tromsø¸ is
 # now supported through ASCII dump of Excel.
-# Ãystein GodÃ¸y, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
-# Ãystein GodÃ¸y, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
+# Øystein Godøy, METNO/FOU, 06.10.2009: Added Oxygen support for ITPs.
+# Øystein Godøy, METNO/FOU, 03.11.2009: Added Hopen to radiative flux
 # measurements.
-# Ãystein GodÃ¸y, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
-# Ãystein GodÃ¸y, METNO/FOU, 02.06.2010: Modified support for NFH BIO
+# Øystein Godøy, METNO/FOU, 24.03.2010: Modified quality control of Hopen.
+# Øystein Godøy, METNO/FOU, 02.06.2010: Modified support for NFH BIO
 # sediment data.
-# Ãystein GodÃ¸y, METNO/FOU, 03.06.2010: Modified support for NFH BIO
+# Øystein Godøy, METNO/FOU, 03.06.2010: Modified support for NFH BIO
 # stations.
-# Ãystein GodÃ¸y, METNO/FOU, 07.06.2010: Addition of UGOT CTD data
+# Øystein Godøy, METNO/FOU, 07.06.2010: Addition of UGOT CTD data
 # translation. Assumes UTF-8 encoding of these files.
-# Ãystein GodÃ¸y, METNO/FOU, 17.09.2010: Changed iAOOS biological data
+# Øystein Godøy, METNO/FOU, 17.09.2010: Changed iAOOS biological data
 # conversion due to typo discovered concerning degrees_west versus
 # degrees_east.
-# Ãystein GodÃ¸y, METNO/FOU, 2011-01-17: Added biomass support.
-# Ãystein GodÃ¸y, METNO/FOU, 09.05.2012: Added support for new gliders.
-# Ãystein GodÃ¸y, METNO/FOU, 2012-11-06: Added support for 7 new gliders.
-# Ãystein GodÃ¸y, METNO/FOU, 2013-06-20: Modification for radiative fluxes.
+# Øystein Godøy, METNO/FOU, 2011-01-17: Added biomass support.
+# Øystein Godøy, METNO/FOU, 09.05.2012: Added support for new gliders.
+# Øystein Godøy, METNO/FOU, 2012-11-06: Added support for 7 new gliders.
+# Øystein Godøy, METNO/FOU, 2013-06-20: Modification for radiative fluxes.
+# Øystein Godøy, METNO/FOU, 2013-08-28: Added support for change in
+# character encoding.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.61 2013-06-20 12:24:47 steingod Exp $
+# $Id: txt2cdl,v 1.62 2013-08-28 15:03:47 steingod Exp $
 #  
 
 ########################################################### 
@@ -94,9 +96,8 @@ use Date::Parse;
 use Date::Manip;
 use POSIX qw(strftime);
 use Encode;
-##use Data::Table;
-##use PDL::Basic;
-##use PDL::Matrix;
+use Encode::Detect::Detector;
+use encoding "utf-8";
 use vars qw($opt_i $opt_o $opt_a $opt_m $opt_t $opt_e $opt_k $opt_v $opt_r $opt_c $opt_g $opt_b $opt_p $opt_h $opt_u $opt_f $opt_n $opt_q $opt_v $opt_z $opt_y);
 
 ########################################################### 
@@ -267,11 +268,12 @@ if ($fileformat eq "seabirdctd") {
 } else {
     die "Fileformat ($fileformat) is not supported\n";
 }
+print "So far so good...\n";
 
 ########################################################### 
 # Add header information
 unless ($fileformat eq "awiem" or $fileformat eq "metnoradflux" or
-$fileformat eq "mooring") {
+    $fileformat eq "mooring") {
     s/\+title/$title/ for (@cdloutput);
     s/\+abstract/$abstract/ for (@cdloutput);
     s/\+topic/$topic/ for (@cdloutput);
@@ -333,19 +335,19 @@ sub usage() {
     "o BIOmass data from UiT, Norway - (format=nfhbiomass)\n".
     "o BIO data from UiT, Norway - (format=nfhbio)\n".
     "o CTD data from UGOT, Sweden - (format=ugotctd)";
-    my $author = "Ãystein GodÃ¸y, METNO/FOU, 03.06.2010";
+    my $author = "Øystein Godøy, METNO/FOU, 03.06.2010";
 
     print "\n";
     print wrap("","\t","$0 -i <infile> -o <outfile> -f <format> -m
-    <template>\n [-a <author> -e <email> -g <institution> -u <url>\n -t
-    <title> -b <abstract> -v <platform> -n <product_name>\n -p <topic> -k
-    <keywords> -v <gcmdkeywords>\n -r <area_covered> -c <distribution> -h
-    <history>\n -q <quality> -y <activity> -z <project> -v <gcmdkw>]\n");
+        <template>\n [-a <author> -e <email> -g <institution> -u <url>\n -t
+        <title> -b <abstract> -v <platform> -n <product_name>\n -p <topic> -k
+        <keywords> -v <gcmdkeywords>\n -r <area_covered> -c <distribution> -h
+        <history>\n -q <quality> -y <activity> -z <project> -v <gcmdkw>]\n");
     print "\n";
     print "\t<infile>: Some supported ASCII file,\n".
-	"\t\tif a directory it tries to process contents\n";
+    "\t\tif a directory it tries to process contents\n";
     print "\t<outfile>: CDL file according to CF standard,\n".
-	"\t\tif infile is a directory this should be a directory\n";
+    "\t\tif infile is a directory this should be a directory\n";
     print "\t<format>: Input file format, se below\n";
     print "\t<template>: CDL template file according to CF standard\n";
     print "\t<author>: PI name\n";
@@ -400,9 +402,16 @@ sub year_and_day2epoch($$) {
 sub read_file($) {
 
     my($filename) = @_;
-    my(@text);
+    my(@text, $enc);
 
     open FH, "<$filename" or die " Could not open file $filename\n";
+    @text = <FH>;
+    close FH;
+
+    $enc = Encode::Detect::Detector::detect(join('',@text));
+    print "File has encoding: $enc\n";
+
+    open FH, "<encoding($enc)","$filename" or die " Could not open file $filename\n";
     @text = <FH>;
     close FH;
 
@@ -417,9 +426,9 @@ sub write_file($@) {
     my($filename,@text) = @_;
     my($line);
 
-    open FH, ">$filename" or die " Could not open file $filename\n";
+    open FH, ">:encoding(UTF-8)","$filename" or die " Could not open file $filename\n";
     foreach $line (@text) {
-	print FH "$line";
+        print FH "$line";
     }
     close FH;
 
@@ -463,7 +472,7 @@ sub create_ctd_cdl_woce {
     $hh = substr $mytmp[0],0,2;
     $ii = substr $mytmp[0],2,2;
     $timestr = sprintf("%4d-%02d-%02d %02d:%02d:%02d UTC", 
-	    $yy, $mm, $dd, $hh, $ii, 0);
+        $yy, $mm, $dd, $hh, $ii, 0);
     $timeunix = str2time($timestr);
 
     # Latitude
@@ -481,14 +490,14 @@ sub create_ctd_cdl_woce {
     s/[\n\r]//g for (@mytmp);
     $norec = 0;
     foreach $line (@mytmp) {
-	@tmparr = split /,/,$line;
-	$pres .= "$tmparr[0],";
-	$pres_flg .= "$tmparr[1],";
-	$temp .= "$tmparr[2],";
-	$temp_flg .= "$tmparr[3],";
-	$psal .= "$tmparr[4],";
-	$psal_flg .= "$tmparr[5],";
-	$norec++;
+        @tmparr = split /,/,$line;
+        $pres .= "$tmparr[0],";
+        $pres_flg .= "$tmparr[1],";
+        $temp .= "$tmparr[2],";
+        $temp_flg .= "$tmparr[3],";
+        $psal .= "$tmparr[4],";
+        $psal_flg .= "$tmparr[5],";
+        $norec++;
     }
     print "$norec pressure levels found in file, abort if incorrect...\n";
     $nvalues = $norec;
@@ -513,7 +522,7 @@ sub create_ctd_cdl_woce {
 }
 
 #
-# Decode and convert a specific SEABIRD format used by NFH/TromsÃ¸
+# Decode and convert a specific SEABIRD format used by NFH/TromsÃÂ¸
 #
 sub create_ctd_cdl_seabird {
     my(@cdlout,@tmparr);
@@ -537,72 +546,72 @@ sub create_ctd_cdl_seabird {
     $pname =~ s/[\n\r]//g;
 
     if (grep /Vagabond/,@$txtref) {
-	# Time
-	@mytmp = grep /^\# start_time = /,@$txtref;
-	@timearr = split /=/,$mytmp[0];
-	$timestr = $timearr[1];
-	$timestr =~ s/^\s+//;
-	$timestr =~ s/\n$//;
-	##$timestr = substr $mytmp[0],11,21;
-	$timeunix = str2time($timestr."UTC");
-	die "\n\tThe time specification of this dataset is obviously incorrect...\n\n" if ($timeunix > time || $timeunix < 86400);
-	$timeunixcast = $timeunix;
-	undef(@timearr);
-	@timearr = gmtime($timeunix);
-	$timestr = strftime("%F %T UTC",@timearr);
+        # Time
+        @mytmp = grep /^\# start_time = /,@$txtref;
+        @timearr = split /=/,$mytmp[0];
+        $timestr = $timearr[1];
+        $timestr =~ s/^\s+//;
+        $timestr =~ s/\n$//;
+        ##$timestr = substr $mytmp[0],11,21;
+        $timeunix = str2time($timestr."UTC");
+        die "\n\tThe time specification of this dataset is obviously incorrect...\n\n" if ($timeunix > time || $timeunix < 86400);
+        $timeunixcast = $timeunix;
+        undef(@timearr);
+        @timearr = gmtime($timeunix);
+        $timestr = strftime("%F %T UTC",@timearr);
 
-	if (grep /Vagabond/,@$txtref) {
-	    @mytmp = grep /^\*\* Vagabond/,@$txtref;
-	    $tmpstr = $mytmp[0];
-	    @mytmp =  split /-/,$tmpstr;
-	    $vessel = "Vagabond";
-	    if ($mytmp[1] =~ m/\d+/) {
-		$lat = (substr $mytmp[1],1,2)+((substr $mytmp[1],4,2)+(substr $mytmp[1],7,2)/100.)/60.;
-		$lon = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
-	    } elsif ($mytmp[2] =~ m/\d+/) {
-		$lat = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
-		$lon = (substr $mytmp[3],1,2)+((substr $mytmp[3],4,2)+(substr $mytmp[3],7,2)/100.)/60.;
-	    } else {
-		$lat = (substr $mytmp[3],1,2)+((substr $mytmp[3],4,2)+(substr $mytmp[3],7,2)/100.)/60.;
-		$lon = (substr $mytmp[4],1,2)+((substr $mytmp[4],4,2)+(substr $mytmp[4],7,2)/100.)/60.;
-	    }
-	} else {
-	    die "Cannot interprete this format...\n";
-	}
-	
+        if (grep /Vagabond/,@$txtref) {
+            @mytmp = grep /^\*\* Vagabond/,@$txtref;
+            $tmpstr = $mytmp[0];
+            @mytmp =  split /-/,$tmpstr;
+            $vessel = "Vagabond";
+            if ($mytmp[1] =~ m/\d+/) {
+                $lat = (substr $mytmp[1],1,2)+((substr $mytmp[1],4,2)+(substr $mytmp[1],7,2)/100.)/60.;
+                $lon = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
+            } elsif ($mytmp[2] =~ m/\d+/) {
+                $lat = (substr $mytmp[2],1,2)+((substr $mytmp[2],4,2)+(substr $mytmp[2],7,2)/100.)/60.;
+                $lon = (substr $mytmp[3],1,2)+((substr $mytmp[3],4,2)+(substr $mytmp[3],7,2)/100.)/60.;
+            } else {
+                $lat = (substr $mytmp[3],1,2)+((substr $mytmp[3],4,2)+(substr $mytmp[3],7,2)/100.)/60.;
+                $lon = (substr $mytmp[4],1,2)+((substr $mytmp[4],4,2)+(substr $mytmp[4],7,2)/100.)/60.;
+            }
+        } else {
+            die "Cannot interprete this format...\n";
+        }
+
     } elsif ($pname =~ "Sea-Bird SBE 9 Data File") {
 # Time
-	@mytmp = grep /^\* NMEA UTC \(Time\) = /,@$txtref;
-	$timestr = (split /=/,$mytmp[0])[1];
-	$timestr =~ s/[\n\r]//g;
-	$timestr =~ s/\s+/ /g;
-	$timeunix = str2time($timestr);
-	@timearr = gmtime($timeunix);
-	$timestr = strftime("%F %T UTC",@timearr);
+        @mytmp = grep /^\* NMEA UTC \(Time\) = /,@$txtref;
+        $timestr = (split /=/,$mytmp[0])[1];
+        $timestr =~ s/[\n\r]//g;
+        $timestr =~ s/\s+/ /g;
+        $timeunix = str2time($timestr);
+        @timearr = gmtime($timeunix);
+        $timestr = strftime("%F %T UTC",@timearr);
 
 # Vessel
-	@mytmp = grep /^\*\* Ship: /,@$txtref;
-	$vessel = (split /:/,$mytmp[0])[1];
-	$vessel =~ s/^(\s+)//;
-	$vessel =~ s/[\n\r]//g;
+        @mytmp = grep /^\*\* Ship: /,@$txtref;
+        $vessel = (split /:/,$mytmp[0])[1];
+        $vessel =~ s/^(\s+)//;
+        $vessel =~ s/[\n\r]//g;
 
 # Latitude
-	@mytmp = grep /^\* NMEA Latitude = /,@$txtref;
-	$lat = (split /=/,$mytmp[0])[1];
-	$lat =~ s/^ //;
-	@mytmp = split / /,$lat,3;
-	$lat = $mytmp[0]+($mytmp[1]/60.);
-	$mytmp[2] =~ s/[\n\r]//g;
-	$lat *= (-1.) if ($mytmp[2] eq "S");
+        @mytmp = grep /^\* NMEA Latitude = /,@$txtref;
+        $lat = (split /=/,$mytmp[0])[1];
+        $lat =~ s/^ //;
+        @mytmp = split / /,$lat,3;
+        $lat = $mytmp[0]+($mytmp[1]/60.);
+        $mytmp[2] =~ s/[\n\r]//g;
+        $lat *= (-1.) if ($mytmp[2] eq "S");
 
 # Longitude
-	@mytmp = grep /^\* NMEA Longitude = /,@$txtref;
-	$lon = (split /=/,$mytmp[0])[1];
-	$lon =~ s/^ //;
-	@mytmp = split / /,$lon,3;
-	$lon = $mytmp[0]+($mytmp[1]/60.);
-	$mytmp[2] =~ s/[\n\r]//g;
-	$lon *= (-1.) if ($mytmp[2] eq "W");
+        @mytmp = grep /^\* NMEA Longitude = /,@$txtref;
+        $lon = (split /=/,$mytmp[0])[1];
+        $lon =~ s/^ //;
+        @mytmp = split / /,$lon,3;
+        $lon = $mytmp[0]+($mytmp[1]/60.);
+        $mytmp[2] =~ s/[\n\r]//g;
+        $lon *= (-1.) if ($mytmp[2] eq "W");
     }
 
     # Number of columns
@@ -623,69 +632,69 @@ sub create_ctd_cdl_seabird {
     undef @mytmp2;
     $i = 0;
     foreach $line (@mytmp) {
-	my @columns = split /\s+/,$line;
-	$mytmp2[$i++] = \@columns;
+        my @columns = split /\s+/,$line;
+        $mytmp2[$i++] = \@columns;
+}
+@mytmp = sort { $a->[2] <=> $b->[2] } @mytmp2;
+#map { print join(" ", @$_),"\n";} @mytmp;
+#$norec = 0;
+if ($vessel =~ /Vagabond/) {
+    undef($timeunix);
+    for ($i=0;$i<=$#mytmp;$i++) {
+        $timeunix .= "$mytmp[$i][1],";
+        $depth .= "$mytmp[$i][2],";
+        $temp .= "$mytmp[$i][3],";
+        $cond .= "$mytmp[$i][5],";
+        $psal .= "$mytmp[$i][4],";
     }
-    @mytmp = sort { $a->[2] <=> $b->[2] } @mytmp2;
-    #map { print join(" ", @$_),"\n";} @mytmp;
-    #$norec = 0;
-    if ($vessel =~ /Vagabond/) {
-	undef($timeunix);
-	for ($i=0;$i<=$#mytmp;$i++) {
-	    $timeunix .= "$mytmp[$i][1],";
-	    $depth .= "$mytmp[$i][2],";
-	    $temp .= "$mytmp[$i][3],";
-	    $cond .= "$mytmp[$i][5],";
-	    $psal .= "$mytmp[$i][4],";
-	}
-    } else {
-	for ($i=0;$i<=$#mytmp;$i++) {
-	    $pres .= "$mytmp[$i][1],";
-	    $temp .= "$mytmp[$i][2],";
-	    $cond .= "$mytmp[$i][3],";
-	    $psal .= "$mytmp[$i][4],";
-	    #$norec++;
-	}
+} else {
+    for ($i=0;$i<=$#mytmp;$i++) {
+        $pres .= "$mytmp[$i][1],";
+        $temp .= "$mytmp[$i][2],";
+        $cond .= "$mytmp[$i][3],";
+        $psal .= "$mytmp[$i][4],";
+        #$norec++;
     }
-    #warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
-    if ($vessel =~ /Vagabond/) {
-	$timeunix =~s/,$//;
-	$depth =~s/,$//;
-	$temp =~s/,$//;
-	$cond =~s/,$//;
-	$psal =~s/,$//;
-    } else {
-	$pres =~s/,$//;
-	$temp =~s/,$//;
-	$cond =~s/,$//;
-	$psal =~s/,$//;
-    }
+}
+#warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
+if ($vessel =~ /Vagabond/) {
+    $timeunix =~s/,$//;
+    $depth =~s/,$//;
+    $temp =~s/,$//;
+    $cond =~s/,$//;
+    $psal =~s/,$//;
+} else {
+    $pres =~s/,$//;
+    $temp =~s/,$//;
+    $cond =~s/,$//;
+    $psal =~s/,$//;
+}
 
-    ########################################################### 
-    # Then this information is substituted into the CDL template
+########################################################### 
+# Then this information is substituted into the CDL template
 
-    s/\+nvalues/$nvalues/ for (@cdlout);
-    s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
-    s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
-    s/\+lat/$lat/ for (@cdlout);
-    s/\+lon/$lon/ for (@cdlout);
-    s/\+time/$timeunixcast/ for (@cdlout);
-    if ($vessel =~ /Vagabond/) {
-	s/\+sampletime/$timeunix/ for (@cdlout);
-	s/time:units = "seconds since 1970-01-01 00:00:00 UTC"/time:units = "seconds since $timestr"/ for (@cdlout);
-    }
-    s/\+start_date/$timestr/ for (@cdlout);
-    s/\+stop_date/$timestr/ for (@cdlout);
-    if ($vessel =~ /Vagabond/) {
-	s/\+depth/$depth/ for (@cdlout);
-    } else {
-	s/\+pres/$pres/ for (@cdlout);
-    }
-    s/\+temp/$temp/ for (@cdlout);
-    s/\+cond/$cond/ for (@cdlout);
-    s/\+psal/$psal/ for (@cdlout);
+s/\+nvalues/$nvalues/ for (@cdlout);
+s/\+pname/$pname/ for (@cdlout); # Actually a global variabel
+s/\+vessel/$vessel/ for (@cdlout); # Actually a global variabel
+s/\+lat/$lat/ for (@cdlout);
+s/\+lon/$lon/ for (@cdlout);
+s/\+time/$timeunixcast/ for (@cdlout);
+if ($vessel =~ /Vagabond/) {
+    s/\+sampletime/$timeunix/ for (@cdlout);
+    s/time:units = "seconds since 1970-01-01 00:00:00 UTC"/time:units = "seconds since $timestr"/ for (@cdlout);
+}
+s/\+start_date/$timestr/ for (@cdlout);
+s/\+stop_date/$timestr/ for (@cdlout);
+if ($vessel =~ /Vagabond/) {
+    s/\+depth/$depth/ for (@cdlout);
+} else {
+    s/\+pres/$pres/ for (@cdlout);
+}
+s/\+temp/$temp/ for (@cdlout);
+s/\+cond/$cond/ for (@cdlout);
+s/\+psal/$psal/ for (@cdlout);
 
-    return(@cdlout);
+return(@cdlout);
 }
 
 #
@@ -744,12 +753,12 @@ sub create_mooring_cdl_mooringgfi {
 
     # Date of deployment
     $timestr = sprintf("%4d-%02d-%02d %02d:%02d:%02d UTC",
-	    (2000+substr($tmparr[3],0,2)),
-	    substr($tmparr[3],2,2),
-	    substr($tmparr[3],4,2),
-	    substr($tmparr[3],7,2),
-	    substr($tmparr[3],9,2),
-	    0);
+        (2000+substr($tmparr[3],0,2)),
+        substr($tmparr[3],2,2),
+        substr($tmparr[3],4,2),
+        substr($tmparr[3],7,2),
+        substr($tmparr[3],9,2),
+        0);
     $start_date = $timestr;
 
     # Depth
@@ -759,12 +768,12 @@ sub create_mooring_cdl_mooringgfi {
     # Latitude
     $tmpstr = $tmparr[5];
     $lat = substr($tmpstr,1,2)+
-	(substr($tmpstr,3,2)+(substr($tmpstr,5,2)/100.))/60.;
+    (substr($tmpstr,3,2)+(substr($tmpstr,5,2)/100.))/60.;
     $lat *= -1. if ($tmpstr =~ /S/);
 
     # Longitude
     $lon= substr($tmpstr,8,3)+
-	(substr($tmpstr,11,2)+(substr($tmpstr,13,2)/100.))/60.;
+    (substr($tmpstr,11,2)+(substr($tmpstr,13,2)/100.))/60.;
     $lon *= -1. if ($tmpstr =~ /W/);
 
     # Data records
@@ -774,24 +783,24 @@ sub create_mooring_cdl_mooringgfi {
     s/[\n\r]//g for (@mytmp);
     $norec = 0;
     foreach $line (@mytmp) {
-	@tmparr = split / /,$line;
-	$timearr[0] = 0;
-	$timearr[1] = $tmparr[4];
-	$timearr[2] = $tmparr[3];
-	$timearr[3] = $tmparr[2];
-	$timearr[4] = $tmparr[1]-1;
-	$timearr[5] = $tmparr[0]+100;
-	$timestr = strftime("%F %T UTC",@timearr);
-	$timeunix = timegm(@timearr);
-	$timeline .= "$timeunix,";
-	$speed .= "$tmparr[5]," if ($sflg);
-	$direction .= "$tmparr[6]," if ($dflg);
-	$u .= "$tmparr[7]," if ($uflg);
-	$v .= "$tmparr[8]," if ($vflg);
-	$temp .= "$tmparr[9]," if ($tflg);
-	$psal .= "$tmparr[10]," if ($aflg);
-	$pres .= "$tmparr[11]," if ($pflg);
-	$norec++;
+        @tmparr = split / /,$line;
+        $timearr[0] = 0;
+        $timearr[1] = $tmparr[4];
+        $timearr[2] = $tmparr[3];
+        $timearr[3] = $tmparr[2];
+        $timearr[4] = $tmparr[1]-1;
+        $timearr[5] = $tmparr[0]+100;
+        $timestr = strftime("%F %T UTC",@timearr);
+        $timeunix = timegm(@timearr);
+        $timeline .= "$timeunix,";
+        $speed .= "$tmparr[5]," if ($sflg);
+        $direction .= "$tmparr[6]," if ($dflg);
+        $u .= "$tmparr[7]," if ($uflg);
+        $v .= "$tmparr[8]," if ($vflg);
+        $temp .= "$tmparr[9]," if ($tflg);
+        $psal .= "$tmparr[10]," if ($aflg);
+        $pres .= "$tmparr[11]," if ($pflg);
+        $norec++;
     }
     $stop_date = $timestr;
     $timeline =~s/,$//;
@@ -808,32 +817,32 @@ sub create_mooring_cdl_mooringgfi {
 
     # First remove variables not supported
     if ($sflg == 0) {
-	@tmparr = grep(!/speed/,@cdlout);
-	@cdlout = @tmparr;
+        @tmparr = grep(!/speed/,@cdlout);
+        @cdlout = @tmparr;
     }
     unless ($dflg) {
-	@tmparr = grep !/direction/,@cdlout;
-	@cdlout = @tmparr;
+        @tmparr = grep !/direction/,@cdlout;
+        @cdlout = @tmparr;
     }
     unless ($uflg) {
-	@tmparr = grep !/ucomp/,@cdlout;
-	@cdlout = @tmparr;
+        @tmparr = grep !/ucomp/,@cdlout;
+        @cdlout = @tmparr;
     }
     unless ($vflg) {
-	@tmparr = grep !/vcomp/,@cdlout;
-	@cdlout = @tmparr;
+        @tmparr = grep !/vcomp/,@cdlout;
+        @cdlout = @tmparr;
     }
     unless ($tflg) {
-	@tmparr = grep !/temp/,@cdlout;
-	@cdlout = @tmparr;
+        @tmparr = grep !/temp/,@cdlout;
+        @cdlout = @tmparr;
     }
     unless ($pflg) {
-	@tmparr = grep !/pres/,@cdlout;
-	@cdlout = @tmparr;
+        @tmparr = grep !/pres/,@cdlout;
+        @cdlout = @tmparr;
     }
     unless ($aflg) {
-	@tmparr = grep !/psal/,@cdlout;
-	@cdlout = @tmparr;
+        @tmparr = grep !/psal/,@cdlout;
+        @cdlout = @tmparr;
     }
 
     s/\+nlevels/$nlevels/ for (@cdlout);
@@ -844,25 +853,25 @@ sub create_mooring_cdl_mooringgfi {
     s/\+depth/$depth/ for (@cdlout);
     s/\+time/$timeline/ for (@cdlout);
     if ($pflg) {
-	s/\+pres/$pres/ for (@cdlout);
+        s/\+pres/$pres/ for (@cdlout);
     }
     if ($sflg) {
-	s/\+speed/$speed/ for (@cdlout);
+        s/\+speed/$speed/ for (@cdlout);
     }
     if ($dflg) { 
-	s/\+direction/$direction/ for (@cdlout);
+        s/\+direction/$direction/ for (@cdlout);
     }
     if ($uflg) { 
-	s/\+ucomp/$u/ for (@cdlout);
+        s/\+ucomp/$u/ for (@cdlout);
     }
     if ($vflg) { 
-	s/\+vcomp/$v/ for (@cdlout);
+        s/\+vcomp/$v/ for (@cdlout);
     }
     if ($tflg) {
-	s/\+temp/$temp/ for (@cdlout);
+        s/\+temp/$temp/ for (@cdlout);
     }
     if ($aflg) { 
-	s/\+psal/$psal/ for (@cdlout);
+        s/\+psal/$psal/ for (@cdlout);
     }
 
     return(@cdlout);
@@ -915,66 +924,66 @@ sub create_itp_cdl {
     $stop_date = "";
     $quality = "Level 2 data";
     %projectnames = (
-    	"1" => "Beaufort Gyre Observing System (BGOS)",
-	"2" => "Beaufort Gyre Freshwater Experiment (BGFE)",
-	"3" => "Beaufort Gyre Observing System (BGOS)",
-	"4" => "Beaufort Gyre Observing System (BGOS)",
-	"5" => "Beaufort Gyre Observing System (BGOS)",
-	"6" => "Beaufort Gyre Observing System (BGOS)",
-	"7" => "North Pole Environmental Observatory (NPEO)",
-	"8" => "Beaufort Gyre Observing System (BGOS)",
-	"9" => "Damocles",
-	"10" => "Damocles",
-	"11" => "Damocles",
-	"12" => "Damocles",
-	"13" => "Beaufort Gyre Observing System (BGOS)",
-	"14" => "Damocles",
-	"15" => "Damocles",
-	"16" => "Damocles",
-	"17" => "Damocles",
-	"18" => "Beaufort Gyre Observing System (BGOS)",
-	"19" => "North Pole Environmental Observatory (NPEO)",
-	"20" => "Beaufort Gyre Observing System (BGOS)",
-	"21" => "Beaufort Gyre Observing System (BGOS)",
-	"22" => "Beaufort Gyre Observing System (BGOS)",
-	"23" => "Beaufort Gyre Observing System (BGOS)",
-	"24" => "Damocles",
-	"25" => "Damocles",
-	"26" => "Damocles",
-	"27" => "Damocles",
-	"28" => "Damocles",
-	"29" => "Damocles",
-	"30" => "Beaufort Gyre Observing System (BGOS)",
-	"31" => "Not available",
-	"32" => "Beaufort Gyre Observing System (BGOS)",
-	"33" => "Beaufort Gyre Observing System (BGOS)",
-	"34" => "Beaufort Gyre Observing System (BGOS)",
-	"36" => "Nansen and Amundsen Basins Observational System (NABOS)",
-	"37" => "Nansen and Amundsen Basins Observational System (NABOS)",
-	"38" => "North Pole Environmental Observatory (NPEO)",
-	"40" => "National Institute of Water and Atmospheric Research (NIWA)",
-	"41" => "Beaufort Gyre Observing System (BGOS)",
-	"42" => "Beaufort Gyre Observing System (BGOS)",
-	"43" => "Beaufort Gyre Observing System (BGOS)",
-	"44" => "Beaufort Gyre Observing System (BGOS)",
-	"47" => "North Pole Environmental Observatory (NPEO)",
-	"48" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"49" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"50" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"51" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"52" => "Beaufort Gyre Observing System (BGOS)",
-	"53" => "Beaufort Gyre Observing System (BGOS)",
-	"54" => "Beaufort Gyre Observing System (BGOS)",
-	"55" => "Beaufort Gyre Observing System (BGOS)",
-	"56" => "North Pole Environmental Observatory (NPEO)",
-	"57" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"58" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"60" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
-	"62" => "Beaufort Gyre Observing System (BGOS)",
-	"63" => "NP-39 drifting ice station (no project specified)",
-	"64" => "Beaufort Gyre Observing System (BGOS)",
-	"65" => "Beaufort Gyre Observing System (BGOS)",
-	"66" => "Beaufort Gyre Observing System (BGOS)",
+        "1" => "Beaufort Gyre Observing System (BGOS)",
+        "2" => "Beaufort Gyre Freshwater Experiment (BGFE)",
+        "3" => "Beaufort Gyre Observing System (BGOS)",
+        "4" => "Beaufort Gyre Observing System (BGOS)",
+        "5" => "Beaufort Gyre Observing System (BGOS)",
+        "6" => "Beaufort Gyre Observing System (BGOS)",
+        "7" => "North Pole Environmental Observatory (NPEO)",
+        "8" => "Beaufort Gyre Observing System (BGOS)",
+        "9" => "Damocles",
+        "10" => "Damocles",
+        "11" => "Damocles",
+        "12" => "Damocles",
+        "13" => "Beaufort Gyre Observing System (BGOS)",
+        "14" => "Damocles",
+        "15" => "Damocles",
+        "16" => "Damocles",
+        "17" => "Damocles",
+        "18" => "Beaufort Gyre Observing System (BGOS)",
+        "19" => "North Pole Environmental Observatory (NPEO)",
+        "20" => "Beaufort Gyre Observing System (BGOS)",
+        "21" => "Beaufort Gyre Observing System (BGOS)",
+        "22" => "Beaufort Gyre Observing System (BGOS)",
+        "23" => "Beaufort Gyre Observing System (BGOS)",
+        "24" => "Damocles",
+        "25" => "Damocles",
+        "26" => "Damocles",
+        "27" => "Damocles",
+        "28" => "Damocles",
+        "29" => "Damocles",
+        "30" => "Beaufort Gyre Observing System (BGOS)",
+        "31" => "Not available",
+        "32" => "Beaufort Gyre Observing System (BGOS)",
+        "33" => "Beaufort Gyre Observing System (BGOS)",
+        "34" => "Beaufort Gyre Observing System (BGOS)",
+        "36" => "Nansen and Amundsen Basins Observational System (NABOS)",
+        "37" => "Nansen and Amundsen Basins Observational System (NABOS)",
+        "38" => "North Pole Environmental Observatory (NPEO)",
+        "40" => "National Institute of Water and Atmospheric Research (NIWA)",
+        "41" => "Beaufort Gyre Observing System (BGOS)",
+        "42" => "Beaufort Gyre Observing System (BGOS)",
+        "43" => "Beaufort Gyre Observing System (BGOS)",
+        "44" => "Beaufort Gyre Observing System (BGOS)",
+        "47" => "North Pole Environmental Observatory (NPEO)",
+        "48" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "49" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "50" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "51" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "52" => "Beaufort Gyre Observing System (BGOS)",
+        "53" => "Beaufort Gyre Observing System (BGOS)",
+        "54" => "Beaufort Gyre Observing System (BGOS)",
+        "55" => "Beaufort Gyre Observing System (BGOS)",
+        "56" => "North Pole Environmental Observatory (NPEO)",
+        "57" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "58" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "60" => "Hybrid Arctic/Antarctic Float Observation System (HAFOS)",
+        "62" => "Beaufort Gyre Observing System (BGOS)",
+        "63" => "NP-39 drifting ice station (no project specified)",
+        "64" => "Beaufort Gyre Observing System (BGOS)",
+        "65" => "Beaufort Gyre Observing System (BGOS)",
+        "66" => "Beaufort Gyre Observing System (BGOS)",
     );
     #@witho2 = (6,13,23,29);
 
@@ -988,78 +997,78 @@ sub create_itp_cdl {
     s/^\ |\ $// for (@mytmp);
     s/[\n\r]//g for (@mytmp);
     if ($variables1 eq $mytmp[2]) {
-	$ftype = "level 2";
+        $ftype = "level 2";
     } elsif ($variables2 eq $mytmp[2]) {
-	$ftype = "level 3";
+        $ftype = "level 3";
     } elsif ($variables3 eq $mytmp[2]) {
-	$ftype = "level 4";
+        $ftype = "level 4";
     } else {
-	die "Could not recognise file type.";
+        die "Could not recognise file type.";
     }
     $norec = 0;
     foreach $line (@mytmp) {
-	if ($norec == 0){
-	    $line =~ s/^\%//;
-	    @tmparr = (split /,/,$line);
-	    $itpid = $tmparr[0];
-	    $itpid =~ s/\D*//;
-	    $profileid = (split /:/,$tmparr[1])[0];
-	    $profileid =~ s/\D*//;
-	    $norec++;
-	    next;
-	}
-	if ($norec == 1) {
-	    $line =~ s/^\ +/ /g;
-	    @tmparr = (split / /,$line);
-	    $myyear = $tmparr[0];
-	    $myday = $tmparr[1];
-	    $timeunix = year_and_day2epoch($myyear,$myday);
-	    @timearr = gmtime($timeunix);
-	    $timestr_start = strftime("%F %T UTC",@timearr);
-	    $timestr_end = $timestr_start;
-	    $lon = $tmparr[2];
-	    $lat = $tmparr[3];
-	    $nvalues = $tmparr[4];
-	    @tmparr = gmtime(time);
-	    if ($myyear > ($tmparr[5]+1901)) {
-		die "Year of observation is out of scope!";
-	    }
-	    if ($lat > 90. || $lat < -90. || $lon > 360. || $lon < -360) {
-		die "Geographical position out of scope!";
-	    }
-	    $norec++;
-	    next;
-	}
-	if ($line =~ m/^\%/){
-	    $norec++;
-	    next;
-	}
-	@tmparr = split / /,$line;
-	if ($ftype eq "level 2") {
-	    $myyear = $tmparr[0];
-	    $myday = $tmparr[1];
-	    $timeunix = year_and_day2epoch($myyear,$myday);
-	}
-	$timeofdata .= $timeunix.",";
-	if ($norec == 3) {
-	    @timearr = gmtime($timeunix);
-	    $timestr_end = strftime("%F %T UTC",@timearr);
-	}
-	if ($ftype eq "level 3") {
-	    $pressure .= $tmparr[0].",";
-	    $temperature .= $tmparr[1].",";
-	    $salinity .= $tmparr[2].",";
-	} elsif ($ftype eq "level 4") {
-	    $pressure .= $tmparr[2].",";
-	    $temperature .= $tmparr[3].",";
-	    $salinity .= $tmparr[4].",";
-	    $oxygen .= $tmparr[5].",";
-	} else {
-	    $pressure .= $tmparr[2].",";
-	    $temperature .= $tmparr[3].",";
-	    $salinity .= $tmparr[4].",";
-	}
-	$norec++;
+        if ($norec == 0){
+            $line =~ s/^\%//;
+            @tmparr = (split /,/,$line);
+            $itpid = $tmparr[0];
+            $itpid =~ s/\D*//;
+            $profileid = (split /:/,$tmparr[1])[0];
+            $profileid =~ s/\D*//;
+            $norec++;
+            next;
+        }
+        if ($norec == 1) {
+            $line =~ s/^\ +/ /g;
+            @tmparr = (split / /,$line);
+            $myyear = $tmparr[0];
+            $myday = $tmparr[1];
+            $timeunix = year_and_day2epoch($myyear,$myday);
+            @timearr = gmtime($timeunix);
+            $timestr_start = strftime("%F %T UTC",@timearr);
+            $timestr_end = $timestr_start;
+            $lon = $tmparr[2];
+            $lat = $tmparr[3];
+            $nvalues = $tmparr[4];
+            @tmparr = gmtime(time);
+            if ($myyear > ($tmparr[5]+1901)) {
+                die "Year of observation is out of scope!";
+            }
+            if ($lat > 90. || $lat < -90. || $lon > 360. || $lon < -360) {
+                die "Geographical position out of scope!";
+            }
+            $norec++;
+            next;
+        }
+        if ($line =~ m/^\%/){
+            $norec++;
+            next;
+        }
+        @tmparr = split / /,$line;
+        if ($ftype eq "level 2") {
+            $myyear = $tmparr[0];
+            $myday = $tmparr[1];
+            $timeunix = year_and_day2epoch($myyear,$myday);
+        }
+        $timeofdata .= $timeunix.",";
+        if ($norec == 3) {
+            @timearr = gmtime($timeunix);
+            $timestr_end = strftime("%F %T UTC",@timearr);
+        }
+        if ($ftype eq "level 3") {
+            $pressure .= $tmparr[0].",";
+            $temperature .= $tmparr[1].",";
+            $salinity .= $tmparr[2].",";
+        } elsif ($ftype eq "level 4") {
+            $pressure .= $tmparr[2].",";
+            $temperature .= $tmparr[3].",";
+            $salinity .= $tmparr[4].",";
+            $oxygen .= $tmparr[5].",";
+        } else {
+            $pressure .= $tmparr[2].",";
+            $temperature .= $tmparr[3].",";
+            $salinity .= $tmparr[4].",";
+        }
+        $norec++;
     }
     warn "Data records: nvalues ($nvalues) and norec ($norec-4) differ\n" if ($nvalues != $norec-4);
     $timeofdata =~ s/,$//;
@@ -1108,7 +1117,7 @@ sub create_itp_cdl {
     s/\+psal/$salinity/ for (@cdlout);
     s/\+pres/$pressure/ for (@cdlout);
     if ($ftype eq "level 4") {
-	s/\+oxygen/$oxygen/ for (@cdlout); 
+        s/\+oxygen/$oxygen/ for (@cdlout); 
     }
     s/\+qual/$quality/ for (@cdlout);
     splice @cdlout,10,1,"variables:\n\t:profile_number = $profileid;\n";
@@ -1170,145 +1179,145 @@ sub create_mooring_cdl_ascii {
     # title
     @mytmp = grep /^# title: /,@$txtref;
     unless ($#mytmp == -1) {
-	$title = (split /:/,$mytmp[0])[1];
-	$title =~ s/[\n\r]//g;
-	$title =~ s/^\ //;
+        $title = (split /:/,$mytmp[0])[1];
+        $title =~ s/[\n\r]//g;
+        $title =~ s/^\ //;
     }
 
     # abstract
     @mytmp = grep /^# abstract: /,@$txtref;
     unless ($#mytmp == -1) {
-	$abstract = (split /:/,$mytmp[0])[1];
-	$abstract =~ s/[\n\r]//g;
-	$abstract =~ s/^\ //;
+        $abstract = (split /:/,$mytmp[0])[1];
+        $abstract =~ s/[\n\r]//g;
+        $abstract =~ s/^\ //;
     }
 
     # topiccatergory
     @mytmp = grep /^# topiccategory: /,@$txtref;
     unless ($#mytmp == -1) {
-	$topiccategory = (split /:/,$mytmp[0])[1];
-	$topiccategory =~ s/[\n\r]//g;
-	$topiccategory =~ s/,\ */ /g;
-	$topiccategory =~ s/^\s//g;
+        $topiccategory = (split /:/,$mytmp[0])[1];
+        $topiccategory =~ s/[\n\r]//g;
+        $topiccategory =~ s/,\ */ /g;
+        $topiccategory =~ s/^\s//g;
     }
 
     # keywords
     @mytmp = grep /^# keywords: /,@$txtref;
     unless ($#mytmp == -1) {
-	$mykeywords = (split /:/,$mytmp[0])[1];
-	$mykeywords =~ s/^\s//g;
-	$mykeywords =~ s/[\n\r]//g;
-	$mykeywords =~ s/,/ /g;
+        $mykeywords = (split /:/,$mytmp[0])[1];
+        $mykeywords =~ s/^\s//g;
+        $mykeywords =~ s/[\n\r]//g;
+        $mykeywords =~ s/,/ /g;
     }
 
     # gcmd_keywords
     @mytmp = grep /^# gcmd_keywords: /,@$txtref;
     unless ($#mytmp == -1) {
-	$mygcmdkeywords = (split /:/,$mytmp[0])[1];
-	$mygcmdkeywords =~ s/^\s//g;
-	$mygcmdkeywords =~ s/[\n\r]//g;
-	$mygcmdkeywords =~ s/,/ /g;
+        $mygcmdkeywords = (split /:/,$mytmp[0])[1];
+        $mygcmdkeywords =~ s/^\s//g;
+        $mygcmdkeywords =~ s/[\n\r]//g;
+        $mygcmdkeywords =~ s/,/ /g;
     }
 
     # activity_type
     @mytmp = grep /^# activity_type: /,@$txtref;
     unless ($#mytmp == -1) {
-	$activity_type = (split /:/,$mytmp[0])[1];
-	$activity_type =~ s/[\n\r]//g;
-	$activity_type =~ s/^\s//g;
+        $activity_type = (split /:/,$mytmp[0])[1];
+        $activity_type =~ s/[\n\r]//g;
+        $activity_type =~ s/^\s//g;
     }
 
     # Conventions
     @mytmp = grep /^# Conventions: /,@$txtref;
     unless ($#mytmp == -1) {
-	$conventions = (split /:/,$mytmp[0])[1];
-	$conventions =~ s/[\n\r]//g;
+        $conventions = (split /:/,$mytmp[0])[1];
+        $conventions =~ s/[\n\r]//g;
     }
 
     # product_name
     @mytmp = grep /^# product_name: /,@$txtref;
     unless ($#mytmp == -1) {
-	$productname = (split /:/,$mytmp[0])[1];
-	$productname =~ s/[\n\r]//g;
-	$productname =~ s/^\s//g;
+        $productname = (split /:/,$mytmp[0])[1];
+        $productname =~ s/[\n\r]//g;
+        $productname =~ s/^\s//g;
     }
 
     # platform_name
     @mytmp = grep /^# platform: /,@$txtref;
     unless ($#mytmp == -1) {
-	$platformname = (split /:/,$mytmp[0])[1];
-	$platformname =~ s/[\n\r]//g;
-	$platformname =~ s/^\s//;
+        $platformname = (split /:/,$mytmp[0])[1];
+        $platformname =~ s/[\n\r]//g;
+        $platformname =~ s/^\s//;
     }
 
     # Measurement level
     @mytmp = grep /^# measurement_level: /,@$txtref;
     unless ($#mytmp == -1) {
-	$depth = (split /:/,$mytmp[0])[1];
-	$depth =~ s/[\n\r]//g;
-	die "Measurement level has to specified in meter" unless $depth =~ m/meter/;
-	$depth =~ s/^\s//g;
-	$depth =~ s/meter//g;
+        $depth = (split /:/,$mytmp[0])[1];
+        $depth =~ s/[\n\r]//g;
+        die "Measurement level has to specified in meter" unless $depth =~ m/meter/;
+        $depth =~ s/^\s//g;
+        $depth =~ s/meter//g;
     }
 
     # history
     @mytmp = grep /^# history: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myhistory = (split /:/,$mytmp[0])[1];
-	$myhistory =~ s/^\s//g;
-	$myhistory =~ s/[\n\r]//g;
-	$myhistory =~ s/,\s*/\n/g;
+        $myhistory = (split /:/,$mytmp[0])[1];
+        $myhistory =~ s/^\s//g;
+        $myhistory =~ s/[\n\r]//g;
+        $myhistory =~ s/,\s*/\n/g;
     }
 
     # area
     @mytmp = grep /^# area: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myarea = (split /:/,$mytmp[0])[1];
-	$myarea =~ s/[\n\r]//g;
-	$myarea =~ s/^\s//g;
+        $myarea = (split /:/,$mytmp[0])[1];
+        $myarea =~ s/[\n\r]//g;
+        $myarea =~ s/^\s//g;
     }
 
     # northernmost_latitude
     @mytmp = grep /^# northernmost_latitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$lat = (split /:/,$mytmp[0])[1];
-	$lat =~ s/^ //;
-	$lat =~ s/[\n\r]//g;
+        $lat = (split /:/,$mytmp[0])[1];
+        $lat =~ s/^ //;
+        $lat =~ s/[\n\r]//g;
     }
 
     # southernmost_latitude
     @mytmp = grep /^# southernmost_latitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$lat = (split /:/,$mytmp[0])[1];
-	$lat =~ s/^ //;
-	$lat =~ s/[\n\r]//g;
+        $lat = (split /:/,$mytmp[0])[1];
+        $lat =~ s/^ //;
+        $lat =~ s/[\n\r]//g;
     }
 
     # westernmost_longitude
     @mytmp = grep /^# westernmost_longitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$lon = (split /:/,$mytmp[0])[1];
-	$lon =~ s/^ //;
-	$lon =~ s/[\n\r]//g;
+        $lon = (split /:/,$mytmp[0])[1];
+        $lon =~ s/^ //;
+        $lon =~ s/[\n\r]//g;
     }
 
     # easternmost_longitude
     @mytmp = grep /^# easternmost_longitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$lon = (split /:/,$mytmp[0])[1];
-	$lon =~ s/^ //;
-	$lon =~ s/[\n\r]//g;
+        $lon = (split /:/,$mytmp[0])[1];
+        $lon =~ s/^ //;
+        $lon =~ s/[\n\r]//g;
     }
 
     # start_date
     @mytmp = grep /^# start_date: /,@$txtref;
     unless ($#mytmp == -1) {
-	$start_date = (split /:/,$mytmp[0])[1];
-	$start_date =~ s/[\n\r]//g;
-	$timeunix = str2time($start_date,"UTC");
-	$timeunixref = $timeunix;
-	@timearr = gmtime($timeunix);
-	$timestr_start = strftime("%F %T UTC",@timearr);
+        $start_date = (split /:/,$mytmp[0])[1];
+        $start_date =~ s/[\n\r]//g;
+        $timeunix = str2time($start_date,"UTC");
+        $timeunixref = $timeunix;
+        @timearr = gmtime($timeunix);
+        $timestr_start = strftime("%F %T UTC",@timearr);
     }
     $timeunixref2007 = str2time("2007-01-01 00:00:00 UTC");
     $timeunixref -= $timeunixref2007;
@@ -1316,93 +1325,93 @@ sub create_mooring_cdl_ascii {
     # stop_date
     @mytmp = grep /^# stop_date: /,@$txtref;
     unless ($#mytmp == -1) {
-	$stop_date = (split /:/,$mytmp[0])[1];
-	$stop_date =~ s/[\r\n]//g;
-	$timeunix = str2time($stop_date,"UTC");
-	@timearr = gmtime($timeunix);
-	$timestr_end = strftime("%F %T UTC",@timearr);
+        $stop_date = (split /:/,$mytmp[0])[1];
+        $stop_date =~ s/[\r\n]//g;
+        $timeunix = str2time($stop_date,"UTC");
+        @timearr = gmtime($timeunix);
+        $timestr_end = strftime("%F %T UTC",@timearr);
     }
 
     # institution
     @mytmp = grep /^# institution: /,@$txtref;
     unless ($#mytmp == -1) {
-	$institution = (split /:/,$mytmp[0])[1];
-	$institution =~ s/[\n\r]//g;
-	$institution =~ s/^\s//g;
+        $institution = (split /:/,$mytmp[0])[1];
+        $institution =~ s/[\n\r]//g;
+        $institution =~ s/^\s//g;
     }
 
     # url
     @mytmp = grep /^# url: /,@$txtref;
     unless ($#mytmp == -1) {
-	@tmparr = (split /:/,$mytmp[0]);
-	$myurl = $tmparr[1].":".$tmparr[2];
-	$myurl =~ s/[\n\r]//g;
-	$myurl =~ s/^\s//g;
+        @tmparr = (split /:/,$mytmp[0]);
+        $myurl = $tmparr[1].":".$tmparr[2];
+        $myurl =~ s/[\n\r]//g;
+        $myurl =~ s/^\s//g;
     }
 
     # PI_name
     @mytmp = grep /^# PI_name: /,@$txtref;
     unless ($#mytmp == -1) {
-	$PI_name = (split /:/,$mytmp[0])[1];
-	$PI_name =~ s/[\n\r]//g;
-	$PI_name =~ s/^\s//g;
+        $PI_name = (split /:/,$mytmp[0])[1];
+        $PI_name =~ s/[\n\r]//g;
+        $PI_name =~ s/^\s//g;
     }
 
     # contact
     @mytmp = grep /^# contact: /,@$txtref;
     unless ($#mytmp == -1) {
-	$contact = (split /:/,$mytmp[0])[1];
-	$contact =~ s/[\s]//g;
+        $contact = (split /:/,$mytmp[0])[1];
+        $contact =~ s/[\s]//g;
     }
 
     # distribution_statement
     @mytmp = grep /^# distribution_statement: /,@$txtref;
     unless ($#mytmp == -1) {
-	$distribution_statement = (split /:/,$mytmp[0])[1];
-	$distribution_statement =~ s/[\n\r]//g;
-	$distribution_statement =~ s/[\s]//;
+        $distribution_statement = (split /:/,$mytmp[0])[1];
+        $distribution_statement =~ s/[\n\r]//g;
+        $distribution_statement =~ s/[\s]//;
     }
 
     # project_name
     @mytmp = grep /^# project_name: /,@$txtref;
     unless ($#mytmp == -1) {
-	$project_name = (split /:/,$mytmp[0])[1];
-	$project_name =~ s/[\s]//g;
+        $project_name = (split /:/,$mytmp[0])[1];
+        $project_name =~ s/[\s]//g;
     }
 
     # quality statement
     @mytmp = grep /^# quality_statement: /,@$txtref;
     unless ($#mytmp == -1) {
-	$quality_statement = (split /:/,$mytmp[0])[1];
-	$quality_statement =~ s/^\s//g;
-	$quality_statement =~ s/[\n\r]//g;
+        $quality_statement = (split /:/,$mytmp[0])[1];
+        $quality_statement =~ s/^\s//g;
+        $quality_statement =~ s/[\n\r]//g;
     }
 
     # variables
     @mytmp = grep /^# variables: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myvariables = (split /:/,$mytmp[0])[1];
-	$myvariables =~ s/[\s]//g;
-	die "Incorrect variables for this format specification" unless ($myvariables eq "year,month,day,hour,speed,dir,temp,salt,pres");
+        $myvariables = (split /:/,$mytmp[0])[1];
+        $myvariables =~ s/[\s]//g;
+        die "Incorrect variables for this format specification" unless ($myvariables eq "year,month,day,hour,speed,dir,temp,salt,pres");
     }
 
     # units
     @mytmp = grep /^# units: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myunits = (split /:/,$mytmp[0])[1];
-	$myunits =~ s/[\s]//;
-	$myunits =~ s/[\r\n]//;
-	unless ($myunits eq "NA,NA,NA,NA,cm/s,degrees from north,celsius,PSU,dbar") {
-	print "$myunits\n";
-	die "Incorrect unit specification for this format" 
-	}
+        $myunits = (split /:/,$mytmp[0])[1];
+        $myunits =~ s/[\s]//;
+        $myunits =~ s/[\r\n]//;
+        unless ($myunits eq "NA,NA,NA,NA,cm/s,degrees from north,celsius,PSU,dbar") {
+            print "$myunits\n";
+            die "Incorrect unit specification for this format" 
+        }
     }
 
     # Nvalues
     @mytmp = grep /^\# number of observations: /,@$txtref;
     unless ($#mytmp == -1) {
-	$nvalues = (split /:/,$mytmp[0])[1];
-	$nvalues =~ s/[\s\n\r]//g;
+        $nvalues = (split /:/,$mytmp[0])[1];
+        $nvalues =~ s/[\s\n\r]//g;
     }
 
     # Data records
@@ -1412,20 +1421,20 @@ sub create_mooring_cdl_ascii {
     s/[\n\r]//g for (@mytmp);
     $norec = 0;
     foreach $line (@mytmp) {
-	next if (length($line) == 0);
-	@tmparr = split / /,$line;
-	$year = $tmparr[0];
-	$month = $tmparr[1];
-	$day = $tmparr[2];
-	$hour = $tmparr[3];
-	$timeunix = str2time(sprintf("%4d-%02d-%02d %02d:00:00 UTC",$year,$month,$day,$hour),"UTC");
-	$timeofdata .= "$timeunix,"; 
-	$speed .= "$tmparr[4],";
-	$direction .= "$tmparr[5],";
-	$temperature .= "$tmparr[6],";
-	$salinity .= "$tmparr[7],";
-	$pressure .= "$tmparr[8],";
-	$norec++;
+        next if (length($line) == 0);
+        @tmparr = split / /,$line;
+        $year = $tmparr[0];
+        $month = $tmparr[1];
+        $day = $tmparr[2];
+        $hour = $tmparr[3];
+        $timeunix = str2time(sprintf("%4d-%02d-%02d %02d:00:00 UTC",$year,$month,$day,$hour),"UTC");
+        $timeofdata .= "$timeunix,"; 
+        $speed .= "$tmparr[4],";
+        $direction .= "$tmparr[5],";
+        $temperature .= "$tmparr[6],";
+        $salinity .= "$tmparr[7],";
+        $pressure .= "$tmparr[8],";
+        $norec++;
     }
     warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
     $timeofdata =~ s/,$//;
@@ -1530,127 +1539,127 @@ sub create_trajectory_cdl_awiem {
     # title
     @mytmp = grep /^# title: /,@$txtref;
     unless ($#mytmp == -1) {
-	$title = (split /:/,$mytmp[0])[1];
-	$title =~ s/[\n\r]//g;
-	$title =~ s/^\ //;
+        $title = (split /:/,$mytmp[0])[1];
+        $title =~ s/[\n\r]//g;
+        $title =~ s/^\ //;
     }
 
     # abstract
     @mytmp = grep /^# abstract: /,@$txtref;
     unless ($#mytmp == -1) {
-	$abstract = (split /:/,$mytmp[0])[1];
-	$abstract =~ s/[\n\r]//g;
-	$abstract =~ s/^\ //;
+        $abstract = (split /:/,$mytmp[0])[1];
+        $abstract =~ s/[\n\r]//g;
+        $abstract =~ s/^\ //;
     }
 
     # topiccatergory
     @mytmp = grep /^# topiccategory: /,@$txtref;
     unless ($#mytmp == -1) {
-	$topiccategory = (split /:/,$mytmp[0])[1];
-	$topiccategory =~ s/[\n\r]//g;
-	$topiccategory =~ s/,\ */ /g;
-	$topiccategory =~ s/^\s//g;
+        $topiccategory = (split /:/,$mytmp[0])[1];
+        $topiccategory =~ s/[\n\r]//g;
+        $topiccategory =~ s/,\ */ /g;
+        $topiccategory =~ s/^\s//g;
     }
 
     # keywords
     @mytmp = grep /^# keywords: /,@$txtref;
     unless ($#mytmp == -1) {
-	$mykeywords = (split /:/,$mytmp[0])[1];
-	$mykeywords =~ s/^\s//g;
-	$mykeywords =~ s/[\n\r]//g;
-	$mykeywords =~ s/,/ /g;
+        $mykeywords = (split /:/,$mytmp[0])[1];
+        $mykeywords =~ s/^\s//g;
+        $mykeywords =~ s/[\n\r]//g;
+        $mykeywords =~ s/,/ /g;
     }
 
     # gcmd_keywords
     @mytmp = grep /^# gcmd_keywords: /,@$txtref;
     unless ($#mytmp == -1) {
-	$mygcmdkeywords = (split /:/,$mytmp[0])[1];
-	$mygcmdkeywords =~ s/^\s//g;
-	$mygcmdkeywords =~ s/[\n\r]//g;
-	$mygcmdkeywords =~ s/,/ /g;
+        $mygcmdkeywords = (split /:/,$mytmp[0])[1];
+        $mygcmdkeywords =~ s/^\s//g;
+        $mygcmdkeywords =~ s/[\n\r]//g;
+        $mygcmdkeywords =~ s/,/ /g;
     }
 
     # activity_type
     @mytmp = grep /^# activity_type: /,@$txtref;
     unless ($#mytmp == -1) {
-	$activity_type = (split /:/,$mytmp[0])[1];
-	$activity_type =~ s/[\n\r]//g;
-	$activity_type =~ s/^\s//g;
+        $activity_type = (split /:/,$mytmp[0])[1];
+        $activity_type =~ s/[\n\r]//g;
+        $activity_type =~ s/^\s//g;
     }
 
     # Conventions
     @mytmp = grep /^# Conventions: /,@$txtref;
     unless ($#mytmp == -1) {
-	$conventions = (split /:/,$mytmp[0])[1];
-	$conventions =~ s/[\n\r]//g;
+        $conventions = (split /:/,$mytmp[0])[1];
+        $conventions =~ s/[\n\r]//g;
     }
 
     # product_name
     @mytmp = grep /^# product_name: /,@$txtref;
     unless ($#mytmp == -1) {
-	$productname = (split /:/,$mytmp[0])[1];
-	$productname =~ s/[\n\r]//g;
-	$productname =~ s/^\s//g;
+        $productname = (split /:/,$mytmp[0])[1];
+        $productname =~ s/[\n\r]//g;
+        $productname =~ s/^\s//g;
     }
 
     # history
     @mytmp = grep /^# history: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myhistory = (split /:/,$mytmp[0])[1];
-	$myhistory =~ s/^\s//g;
-	$myhistory =~ s/[\n\r]//g;
-	$myhistory =~ s/,\s*/\n/g;
+        $myhistory = (split /:/,$mytmp[0])[1];
+        $myhistory =~ s/^\s//g;
+        $myhistory =~ s/[\n\r]//g;
+        $myhistory =~ s/,\s*/\n/g;
     }
 
     # area
     @mytmp = grep /^# area: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myarea = (split /:/,$mytmp[0])[1];
-	$myarea =~ s/[\n\r]//g;
-	$myarea =~ s/^\s//g;
+        $myarea = (split /:/,$mytmp[0])[1];
+        $myarea =~ s/[\n\r]//g;
+        $myarea =~ s/^\s//g;
     }
 
     # northernmost_latitude
     @mytmp = grep /^# northernmost_latitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$nlat = (split /:/,$mytmp[0])[1];
-	$nlat =~ s/^ //;
-	$nlat =~ s/[\n\r]//g;
+        $nlat = (split /:/,$mytmp[0])[1];
+        $nlat =~ s/^ //;
+        $nlat =~ s/[\n\r]//g;
     }
 
     # southernmost_latitude
     @mytmp = grep /^# southernmost_latitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$slat = (split /:/,$mytmp[0])[1];
-	$slat =~ s/^ //;
-	$slat =~ s/[\n\r]//g;
+        $slat = (split /:/,$mytmp[0])[1];
+        $slat =~ s/^ //;
+        $slat =~ s/[\n\r]//g;
     }
 
     # westernmost_longitude
     @mytmp = grep /^# westernmost_longitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$wlon = (split /:/,$mytmp[0])[1];
-	$wlon =~ s/^ //;
-	$wlon =~ s/[\n\r]//g;
+        $wlon = (split /:/,$mytmp[0])[1];
+        $wlon =~ s/^ //;
+        $wlon =~ s/[\n\r]//g;
     }
 
     # easternmost_longitude
     @mytmp = grep /^# easternmost_longitude: /,@$txtref;
     unless ($#mytmp == -1) {
-	$elon = (split /:/,$mytmp[0])[1];
-	$elon =~ s/^ //;
-	$elon =~ s/[\n\r]//g;
+        $elon = (split /:/,$mytmp[0])[1];
+        $elon =~ s/^ //;
+        $elon =~ s/[\n\r]//g;
     }
 
     # start_date
     @mytmp = grep /^# start_date: /,@$txtref;
     unless ($#mytmp == -1) {
-	$start_date = (split /:/,$mytmp[0])[1];
-	$start_date =~ s/[\n\r]//g;
-	$timeunix = str2time($start_date,"UTC");
-	$timeunixref = $timeunix;
-	@timearr = gmtime($timeunix);
-	$timestr_start = strftime("%F %T UTC",@timearr);
+        $start_date = (split /:/,$mytmp[0])[1];
+        $start_date =~ s/[\n\r]//g;
+        $timeunix = str2time($start_date,"UTC");
+        $timeunixref = $timeunix;
+        @timearr = gmtime($timeunix);
+        $timestr_start = strftime("%F %T UTC",@timearr);
     }
     $timeunixref2007 = str2time("2007-01-01 00:00:00 UTC");
     $timeunixref -= $timeunixref2007;
@@ -1658,88 +1667,88 @@ sub create_trajectory_cdl_awiem {
     # stop_date
     @mytmp = grep /^# stop_date: /,@$txtref;
     unless ($#mytmp == -1) {
-	$stop_date = (split /:/,$mytmp[0])[1];
-	$stop_date =~ s/[\r\n]//g;
-	$timeunix = str2time($stop_date,"UTC");
-	@timearr = gmtime($timeunix);
-	$timestr_end = strftime("%F %T UTC",@timearr);
+        $stop_date = (split /:/,$mytmp[0])[1];
+        $stop_date =~ s/[\r\n]//g;
+        $timeunix = str2time($stop_date,"UTC");
+        @timearr = gmtime($timeunix);
+        $timestr_end = strftime("%F %T UTC",@timearr);
     }
 
     # institution
     @mytmp = grep /^# institution: /,@$txtref;
     unless ($#mytmp == -1) {
-	$institution = (split /:/,$mytmp[0])[1];
-	$institution =~ s/[\n\r]//g;
-	$institution =~ s/^\s//g;
+        $institution = (split /:/,$mytmp[0])[1];
+        $institution =~ s/[\n\r]//g;
+        $institution =~ s/^\s//g;
     }
 
     # url
     @mytmp = grep /^# url: /,@$txtref;
     unless ($#mytmp == -1) {
-	@tmparr = (split /:/,$mytmp[0]);
-	$myurl = $tmparr[1].":".$tmparr[2];
-	$myurl =~ s/[\n\r]//g;
-	$myurl =~ s/^\s//g;
+        @tmparr = (split /:/,$mytmp[0]);
+        $myurl = $tmparr[1].":".$tmparr[2];
+        $myurl =~ s/[\n\r]//g;
+        $myurl =~ s/^\s//g;
     }
 
     # PI_name
     @mytmp = grep /^# PI_name: /,@$txtref;
     unless ($#mytmp == -1) {
-	$PI_name = (split /:/,$mytmp[0])[1];
-	$PI_name =~ s/[\n\r]//g;
-	$PI_name =~ s/^\s//g;
+        $PI_name = (split /:/,$mytmp[0])[1];
+        $PI_name =~ s/[\n\r]//g;
+        $PI_name =~ s/^\s//g;
     }
 
     # contact
     @mytmp = grep /^# contact: /,@$txtref;
     unless ($#mytmp == -1) {
-	$contact = (split /:/,$mytmp[0])[1];
-	$contact =~ s/[\s]//g;
+        $contact = (split /:/,$mytmp[0])[1];
+        $contact =~ s/[\s]//g;
     }
 
     # distribution_statement
     @mytmp = grep /^# distribution_statement: /,@$txtref;
     unless ($#mytmp == -1) {
-	$distribution_statement = (split /:/,$mytmp[0])[1];
-	$distribution_statement =~ s/[\s]//g;
+        $distribution_statement = (split /:/,$mytmp[0])[1];
+        $distribution_statement =~ s/[\s]//g;
     }
 
     # project_name
     @mytmp = grep /^# project_name: /,@$txtref;
     unless ($#mytmp == -1) {
-	$project_name = (split /:/,$mytmp[0])[1];
-	$project_name =~ s/[\s]//g;
+        $project_name = (split /:/,$mytmp[0])[1];
+        $project_name =~ s/[\s]//g;
     }
 
     # quality statement
     @mytmp = grep /^# quality_statement: /,@$txtref;
     unless ($#mytmp == -1) {
-	$quality_statement = (split /:/,$mytmp[0])[1];
-	$quality_statement =~ s/^\s//g;
-	$quality_statement =~ s/[\n\r]//g;
+        $quality_statement = (split /:/,$mytmp[0])[1];
+        $quality_statement =~ s/^\s//g;
+        $quality_statement =~ s/[\n\r]//g;
     }
 
     # variables
     @mytmp = grep /^# variables: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myvariables = (split /:/,$mytmp[0])[1];
-	$myvariables =~ s/[\s]//g;
-	die "Incorrect variables for this format specification" unless ($myvariables eq "latitude,longitude,time,thickness,altitude");
+        $myvariables = (split /:/,$mytmp[0])[1];
+        $myvariables =~ s/[\s]//g;
+        die "Incorrect variables for this format specification" unless ($myvariables eq "latitude,longitude,time,thickness,altitude");
     }
 
     # units
     @mytmp = grep /^# units: /,@$txtref;
     unless ($#mytmp == -1) {
-	$myunits = (split /:/,$mytmp[0])[1];
-	$myunits =~ s/[\s]//g;
-	die "Incorrect unit specification for this format" unless ($myunits eq "degrees_North,degrees_East,hours,meter,meter");
+        $myunits = (split /:/,$mytmp[0])[1];
+        $myunits =~ s/[\s]//g;
+        die "Incorrect unit specification for this format" unless ($myunits eq "degrees_North,degrees_East,hours,meter,meter");
     }
 
     # Nvalues
     @mytmp = grep /^\# number of observations: /,@$txtref;
     unless ($#mytmp == -1) {
-	$nvalues = (split /:/,$mytmp[0])[1];
-	$nvalues =~ s/[\s\n\r]//g;
+        $nvalues = (split /:/,$mytmp[0])[1];
+        $nvalues =~ s/[\s\n\r]//g;
     }
 
     # Data records
@@ -1749,21 +1758,21 @@ sub create_trajectory_cdl_awiem {
     s/[\n\r]//g for (@mytmp);
     $norec = 0;
     foreach $line (@mytmp) {
-	next if (length($line) == 0);
-	@tmparr = split / /,$line;
-	$lat .= "$tmparr[0],";
-	$lon .= "$tmparr[1],";
-	$hours = $tmparr[2];
-	$hourref = int($hours) if ($norec == 0);
-	#$timeunix = int(($hours-$hourref)*3600);
-	$timeunix = int(($hours-$hourref)*3600*1000);
-	##print "$hours $hourref $timeunix ";
-	$timeunix += ($timeunixref*1000);
-	##print "$timeunix $timeunixref\n";
-	$timeofdata .= "$timeunix,"; 
-	$thickness .= "$tmparr[3],";
-	$altitude .= "$tmparr[4],";
-	$norec++;
+        next if (length($line) == 0);
+        @tmparr = split / /,$line;
+        $lat .= "$tmparr[0],";
+        $lon .= "$tmparr[1],";
+        $hours = $tmparr[2];
+        $hourref = int($hours) if ($norec == 0);
+        #$timeunix = int(($hours-$hourref)*3600);
+        $timeunix = int(($hours-$hourref)*3600*1000);
+        ##print "$hours $hourref $timeunix ";
+        $timeunix += ($timeunixref*1000);
+        ##print "$timeunix $timeunixref\n";
+        $timeofdata .= "$timeunix,"; 
+        $thickness .= "$tmparr[3],";
+        $altitude .= "$tmparr[4],";
+        $norec++;
     }
     warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec);
     $timeofdata =~ s/,$//;
@@ -1825,131 +1834,121 @@ sub create_timeseries_cdl_radflux {
     my($topiccategory,$keywords,$gcmdkeywords,$conventions,$history);
     my %stationinfo = 
     (
-	"Bj�rn�ya" => {
-	    "title" => "Downwelling surface radiative fluxes at Bj�rn�ya",
-	    "abstract" => "Downwelling surface radiative fluxes observed at
-        the meteorological station at Bj�rn�ya in the Barents Sea.
-        Measurements are made using Kipp and Zonen CMP21 and CGR4
-        pyranometers and pyrgeometers. Daily maintenance is performed by
-        the meteorological personnel at the station. Data are averaged
-        over the last minute and the time is set to UTC. This data set was
-        originally supported by the Norwegian Research Council but is now
-        continued by the Norwegian Meteorological Institute. The quality
-        control performed is by visual inspection and by comparison of
-        clear sky values against RTM simulations.", 
-	    "product_name" => "radiative fluxes",
-	    "history" => "2008-10-23 creation",
-	    "project_name" => "iAOOS-Norway/IPY-THORPEX",
-	    "area" => "Barents Sea",
-	    "lat" => 74.5166667,
-	    "lon" => 19.01666667,
-	    "institution" => "Norwegian Meteorological Institute",
-	    "PI_name" => "�ystein God�y",
-	    "url" => "http://www.met.no/",
-	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Free",
-	    "quality_statement" => "Quality controlled by visual inspection and RTM comparison",
-	    "quality_removals" => "6",
-	    "quality_keys" => {
-            "0" => {
-                "par" => "dli",
-                "start" => str2time("2008-01-01 00:00:00","UTC"), 
-                "end" => str2time("2008-04-08 12:22:00","UTC"),
-            },
-            "1" => {
-                "par" => "dli",
-                "start" => str2time("2008-11-15 11:04:00","UTC"), 
-                "end" => str2time("2008-11-18 10:24:00","UTC"),
-            },
-            "2" => {
-                "par" => "dli",
-                "start" => str2time("2008-11-21 09:36:00","UTC"), 
-                "end" => str2time("2008-11-21 09:38:00","UTC"),
-            },
-            "3" => {
-                "par" => "ssi",
-                "start" => str2time("2008-11-21 09:55:00","UTC"), 
-                "end" => str2time("2008-11-21 09:58:00","UTC"),
-            },
-            "4" => {
-                "par" => "dli",
-                "start" => str2time("2009-01-31 15:04:00","UTC"), 
-                "end" => str2time("2009-02-11 00:00:00","UTC"),
-            },
-            "5" => {
-                "par" => "dli",
-                "start" => str2time("2011-01-11 09:30:00","UTC"), 
-                "end" => str2time("2011-01-21 12:30:00","UTC"),
+        "Bjørnøya" => {
+            "title" => "Downwelling surface radiative fluxes at Bjørnøya",
+            "abstract" => "Downwehttp://www.skipsfarts-forum.net/read.php?TID=7478&page=70lling surface radiative fluxes observed at the meteorological station at Bjørnøya in the Barents Sea.  Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set was originally supported by the Norwegian Research Council but is now continued by the Norwegian Meteorological Institute. The quality control performed is by visual inspection and by comparison of clear sky values against RTM simulations.", 
+            "product_name" => "radiative fluxes",
+            "history" => "2008-10-23 creation",
+            "project_name" => "iAOOS-Norway/IPY-THORPEX",
+            "area" => "Barents Sea",
+            "lat" => 74.5166667,
+            "lon" => 19.01666667,
+            "institution" => "Norwegian Meteorological Institute",
+            "PI_name" => "Øystein Godøy",
+            "url" => "http://www.met.no/",
+            "contact" => "o.godoy\@met.no",
+            "distribution_statement" => "Free",
+            "quality_statement" => "Quality controlled by visual inspection and RTM comparison",
+            "quality_removals" => "6",
+            "quality_keys" => {
+                "0" => {
+                    "par" => "dli",
+                    "start" => str2time("2008-01-01 00:00:00","UTC"), 
+                    "end" => str2time("2008-04-08 12:22:00","UTC"),
+                },
+                "1" => {
+                    "par" => "dli",
+                    "start" => str2time("2008-11-15 11:04:00","UTC"), 
+                    "end" => str2time("2008-11-18 10:24:00","UTC"),
+                },
+                "2" => {
+                    "par" => "dli",
+                    "start" => str2time("2008-11-21 09:36:00","UTC"), 
+                    "end" => str2time("2008-11-21 09:38:00","UTC"),
+                },
+                "3" => {
+                    "par" => "ssi",
+                    "start" => str2time("2008-11-21 09:55:00","UTC"), 
+                    "end" => str2time("2008-11-21 09:58:00","UTC"),
+                },
+                "4" => {
+                    "par" => "dli",
+                    "start" => str2time("2009-01-31 15:04:00","UTC"), 
+                    "end" => str2time("2009-02-11 00:00:00","UTC"),
+                },
+                "5" => {
+                    "par" => "dli",
+                    "start" => str2time("2011-01-11 09:30:00","UTC"), 
+                    "end" => str2time("2011-01-21 12:30:00","UTC"),
+                },
             },
         },
-	},
-	"Jan Mayen" => {
-	    "title" => "Downwelling surface radiative fluxes at Jan Mayen",
-	    "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
-	    "product_name" => "radiative fluxes",
-	    "history" => "2008-11-23 creation",
-	    "project_name" => "iAOOS-Norway",
-	    "area" => "Greenland Sea",
-	    "lat" => 70.933333,
-	    "lon" => -8.6666667,
-	    "institution" => "Norwegian Meteorological Institute",
-	    "PI_name" => "�ystein God�y",
-	    "url" => "http://www.met.no/",
-	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Polar Information Commons (http://polarcommons.org/)/CCBY",
-	    "quality_statement" => "Quality controlled by visual inspection",
-	    "quality_removals" => "1",
-        "quality_keys" => {
-            "0" => {
-                "par" => "ssi&dli",
-                "start" => str2time("2008-11-01 00:00:00","UTC"), 
-                "end" => str2time("2008-12-03 18:00:00","UTC"),
+        "Jan Mayen" => {
+            "title" => "Downwelling surface radiative fluxes at Jan Mayen",
+            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
+            "product_name" => "radiative fluxes",
+            "history" => "2008-11-23 creation",
+            "project_name" => "iAOOS-Norway",
+            "area" => "Greenland Sea",
+            "lat" => 70.933333,
+            "lon" => -8.6666667,
+            "institution" => "Norwegian Meteorological Institute",
+            "PI_name" => "Øystein Godøy",
+            "url" => "http://www.met.no/",
+            "contact" => "o.godoy\@met.no",
+            "distribution_statement" => "Polar Information Commons (http://polarcommons.org/)/CCBY",
+            "quality_statement" => "Quality controlled by visual inspection",
+            "quality_removals" => "1",
+            "quality_keys" => {
+                "0" => {
+                    "par" => "ssi&dli",
+                    "start" => str2time("2008-11-01 00:00:00","UTC"), 
+                    "end" => str2time("2008-12-03 18:00:00","UTC"),
+                },
             },
         },
-	},
-	"Hopen" => {
-	    "title" => "Downwelling surface radiative fluxes at Hopen",
-	    "abstract" => "Downwelling surface radiative fluxes observed
-	    at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
-	    "product_name" => "radiative fluxes",
-	    "history" => "2009-11-03 creation",
-	    "project_name" => "iAOOS-Norway",
-	    "area" => "Barents Sea",
-	    "lat" => 76.5,
-	    "lon" => 25.07,
-	    "institution" => "Norwegian Meteorological Institute",
-	    "PI_name" => "�ystein God�y",
-	    "url" => "http://www.met.no/",
-	    "contact" => "o.godoy\@met.no",
-	    "distribution_statement" => "Restricted to iAOOS-Norway",
-	    "quality_statement" => "Quality controlled by visual inspection",
-	    "quality_removals" => "1",
-        "quality_keys" => {
-            "0" => {
-                "par" => "ssi&dli",
-                "start" => str2time("2009-07-21 00:00:00","UTC"), 
-                "end" => str2time("2009-11-01 00:00:00","UTC"),
+        "Hopen" => {
+            "title" => "Downwelling surface radiative fluxes at Hopen",
+            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
+            "product_name" => "radiative fluxes",
+            "history" => "2009-11-03 creation",
+            "project_name" => "iAOOS-Norway",
+            "area" => "Barents Sea",
+            "lat" => 76.5,
+            "lon" => 25.07,
+            "institution" => "Norwegian Meteorological Institute",
+            "PI_name" => "Øystein Godøy",
+            "url" => "http://www.met.no/",
+            "contact" => "o.godoy\@met.no",
+            "distribution_statement" => "Restricted to iAOOS-Norway",
+            "quality_statement" => "Quality controlled by visual inspection",
+            "quality_removals" => "1",
+            "quality_keys" => {
+                "0" => {
+                    "par" => "ssi&dli",
+                    "start" => str2time("2009-07-21 00:00:00","UTC"), 
+                    "end" => str2time("2009-11-01 00:00:00","UTC"),
+                },
             },
-	    },
-	},
-	"unknown" => {
-	    "title" => "",
-	    "abstract" => "",
-	    "product_name" => "",
-	    "history" => "",
-	    "project_name" => "",
-	    "area" => "",
-	    "lat" => -999.,
-	    "lon" => -999.,
-	    "institution" => "",
-	    "PI_name" => "",
-	    "url" => "",
-	    "contact" => "",
-	    "distribution_statement" => "",
-	    "quality_statement" => "",
-	    "quality_removals" => "0",
-	    "quality_keys" => "",
-	},
+        },
+        "unknown" => {
+            "title" => "",
+            "abstract" => "",
+            "product_name" => "",
+            "history" => "",
+            "project_name" => "",
+            "area" => "",
+            "lat" => -999.,
+            "lon" => -999.,
+            "institution" => "",
+            "PI_name" => "",
+            "url" => "",
+            "contact" => "",
+            "distribution_statement" => "",
+            "quality_statement" => "",
+            "quality_removals" => "0",
+            "quality_keys" => "",
+        },
     );
     # ########################################################### 
     # Corrections to be made to raw data due to wrong mounting or
@@ -1966,8 +1965,8 @@ sub create_timeseries_cdl_radflux {
     $topiccategory = "ClimatologyMeteorologyAtmosphere";
     $keywords = "Radiative Flux";
     $gcmdkeywords = 
-	"Atmosphere > Atmospheric Radiation > Shortwave Radiation\n".
-	"Atmosphere > Atmospheric Radiation > Longwave Radiation";
+    "Atmosphere > Atmospheric Radiation > Shortwave Radiation\n".
+    "Atmosphere > Atmospheric Radiation > Longwave Radiation";
     $activitytype = "Land station";
 
     ###########################################################
@@ -1979,33 +1978,34 @@ sub create_timeseries_cdl_radflux {
     #
     $norec = 0;
     foreach $line (@$txtref) {
-	$line =~ s/["\n\r]//g;
-	if ($norec == 0) {
-	    @tmparr = split /,/,$line;
-	    $stationname = $tmparr[1];
-	    $stationname =~ s/ StrÃ¥lingsstasjon//;
-	    $stationname =~ s/_StrÃ¥lingsmÃ¥ler//;
-	    $datalogger = $tmparr[2];
-	}
-	if ($norec==1) {
-	    $variables = $line; 
-	    die "Variable names\n\t$variables\ndo not match\n\t$varnames" if ($variables ne $varnames);
-	}
-	if ($norec==3) {
-	    $procmeth = $line; 
-	    die "Variable processing do not match" if ($procmeth ne $varmeth);
-	}
-	$norec++;
-	last if ($norec == 4);
+        $line =~ s/["\n\r]//g;
+        if ($norec == 0) {
+            @tmparr = split /,/,$line;
+            $stationname = $tmparr[1];
+            $stationname =~ s/ Strålingsstasjon//;
+            $stationname =~ s/_Strålingsmåler//;
+            $datalogger = $tmparr[2];
+        }
+        if ($norec==1) {
+            $variables = $line; 
+            die "Variable names\n\t$variables\ndo not match\n\t$varnames" if ($variables ne $varnames);
+        }
+        if ($norec==3) {
+            $procmeth = $line; 
+            die "Variable processing do not match" if ($procmeth ne $varmeth);
+        }
+        $norec++;
+        last if ($norec == 4);
     }
+    print "$stationname\n";
 
     ###########################################################
     # History update
     #
     if (length($stationinfo{$stationname}{history}) > 0) {
-	$history = $stationinfo{$stationname}{history}."\n".sprintf "%s revision",strftime("%F",gmtime(time));
+        $history = $stationinfo{$stationname}{history}."\n".sprintf "%s revision",strftime("%F",gmtime(time));
     } else {
-	$history = sprintf "%s creation",strftime("%F",gmtime(time));
+        $history = sprintf "%s creation",strftime("%F",gmtime(time));
     }
 
     ########################################################### 
@@ -2013,66 +2013,66 @@ sub create_timeseries_cdl_radflux {
     #
     $norec = 0;
     foreach $line (@$txtref) {
-	$line =~ s/["\n\r]//g;
-	$norec++;
-	next if ($norec < 5);
-	$line =~ s/["\n\r]//g;
-	@tmparr = split /,/,$line;
-	$unixtime = str2time($tmparr[0],"UTC");
-	# Corrections at Jan Mayen
-	if (($stationname eq "Jan Mayen") && $norec < 137980 
-	    && ($unixtime >= $corrclockjmstart && 
-		$unixtime <= $corrclockjmend)) {
-	    $unixtime -= 3600*2;
-	}
-	$obstime .= $unixtime.",";
-	$timestr_start = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime)) if ($norec==5);
-	$timestr_end = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime));
-	$nvalues = $tmparr[1];
-	# Corrections at BjÃ¸rnÃ¸ya
-	if ($stationname eq "BjÃ¸rnÃ¸ya") {
-	    if ($unixtime >= $invertbidlistart && $unixtime <= $invertbidliend && $tmparr[4] ne $misvalin) {
-		$tmparr[4] *= -1;
-	    }
-	}
-	$qchit  = 0;
-	for ($i =0; $i < $stationinfo{$stationname}{"quality_removals"};$i++) {
-	    if (($unixtime >
-		$stationinfo{$stationname}{"quality_keys"}{$i}{"start"}) && 
-		($unixtime <
-		$stationinfo{$stationname}{"quality_keys"}{$i}{"end"})) {
-		$qchit = 1;
-		#print "$norec $i [".strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime))."] $tmparr[2] - $tmparr[4] - $stationinfo{$stationname}{\"quality_keys\"}{$i}{\"par\"} - ";
-		if ($stationinfo{$stationname}{"quality_keys"}{$i}{"par"} eq "ssi") {
-		    $ssi .= $misvalout.",";
-		    $ssitemp .= $tmparr[3].",";
-		    $dli .= $tmparr[4].",";
-		    $dlitemp .= $tmparr[5].",";
-		    $battmin .= $tmparr[6].",";
-		    last;
-		} elsif ($stationinfo{$stationname}{"quality_keys"}{$i}{"par"} eq "dli") {
-		    $ssi .= $tmparr[2].",";
-		    $ssitemp .= $tmparr[3].",";
-		    $dli .= $misvalout.",";
-		    $dlitemp .= $tmparr[5].",";
-		    $battmin .= $tmparr[6].",";
-		    last;
-		} else {
-		    $ssi .= $misvalout.",";
-		    $ssitemp .= $tmparr[3].",";
-		    $dli .= $misvalout.",";
-		    $dlitemp .= $tmparr[5].",";
-		    $battmin .= $tmparr[6].",";
-		    last;
-		}
-	    }
-	}
-	next if ($qchit);
-	$ssi .= $tmparr[2].",";
-	$ssitemp .= $tmparr[3].",";
-	$dli .= $tmparr[4].",";
-	$dlitemp .= $tmparr[5].",";
-	$battmin .= $tmparr[6].",";
+        $line =~ s/["\n\r]//g;
+        $norec++;
+        next if ($norec < 5);
+        $line =~ s/["\n\r]//g;
+        @tmparr = split /,/,$line;
+        $unixtime = str2time($tmparr[0],"UTC");
+        # Corrections at Jan Mayen
+        if (($stationname eq "Jan Mayen") && $norec < 137980 
+            && ($unixtime >= $corrclockjmstart && 
+                $unixtime <= $corrclockjmend)) {
+            $unixtime -= 3600*2;
+        }
+        $obstime .= $unixtime.",";
+        $timestr_start = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime)) if ($norec==5);
+        $timestr_end = strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime));
+        $nvalues = $tmparr[1];
+        # Corrections at Bjørnøya
+        if ($stationname eq "Bjørnøya") {
+            if ($unixtime >= $invertbidlistart && $unixtime <= $invertbidliend && $tmparr[4] ne $misvalin) {
+                $tmparr[4] *= -1;
+            }
+        }
+        $qchit  = 0;
+        for ($i =0; $i < $stationinfo{$stationname}{"quality_removals"};$i++) {
+            if (($unixtime >
+                    $stationinfo{$stationname}{"quality_keys"}{$i}{"start"}) && 
+                ($unixtime <
+                    $stationinfo{$stationname}{"quality_keys"}{$i}{"end"})) {
+                $qchit = 1;
+                #print "$norec $i [".strftime("%Y-%m-%d %H:%M UTC",gmtime($unixtime))."] $tmparr[2] - $tmparr[4] - $stationinfo{$stationname}{\"quality_keys\"}{$i}{\"par\"} - ";
+                if ($stationinfo{$stationname}{"quality_keys"}{$i}{"par"} eq "ssi") {
+                    $ssi .= $misvalout.",";
+                    $ssitemp .= $tmparr[3].",";
+                    $dli .= $tmparr[4].",";
+                    $dlitemp .= $tmparr[5].",";
+                    $battmin .= $tmparr[6].",";
+                    last;
+                } elsif ($stationinfo{$stationname}{"quality_keys"}{$i}{"par"} eq "dli") {
+                    $ssi .= $tmparr[2].",";
+                    $ssitemp .= $tmparr[3].",";
+                    $dli .= $misvalout.",";
+                    $dlitemp .= $tmparr[5].",";
+                    $battmin .= $tmparr[6].",";
+                    last;
+                } else {
+                    $ssi .= $misvalout.",";
+                    $ssitemp .= $tmparr[3].",";
+                    $dli .= $misvalout.",";
+                    $dlitemp .= $tmparr[5].",";
+                    $battmin .= $tmparr[6].",";
+                    last;
+                }
+            }
+        }
+        next if ($qchit);
+        $ssi .= $tmparr[2].",";
+        $ssitemp .= $tmparr[3].",";
+        $dli .= $tmparr[4].",";
+        $dlitemp .= $tmparr[5].",";
+        $battmin .= $tmparr[6].",";
     }
     ##warn "Data records: nvalues ($nvalues) and norec ($norec) differ\n" if ($nvalues != $norec-4);
 
@@ -2149,7 +2149,7 @@ sub create_cdl_nfhbiosed {
     my($ndepths,$nstations,$match);
     #my $nfhbiovar = "latitude, longitude, time, date, sampling_depth, chl-a, phaeopigment, POC, PON";
     my $nfhbiovar = "date, time, latitude, longitude, sampling_depth, POC, stdev_POC, PON, stdev_PON, FPC, Chla, stdev_Chla, Phaeo, stdev_Phaeo";
-    #my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, Âµg_chl-a_l-1, Âµg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
+    #my $nfhbiounits = "degrees_north, degrees_west, hours(hh:mm UTC), year_month_day, meter, ÃÂµg_chl-a_l-1, ÃÂµg_phaeo_l-1, mg_POC_m-3, mg_PON_m-3";
     my $nfhbiounits = "year_month_day, hours(hh:mm UTC), degrees_north, degrees_east, meter, mg_POC_m-2_d-1,  mg_POC_m-2_d-1,  mg_PON_m-2_d-1, mg_PON_m-2_d-1, mg_FPC_m-2_d-1, mg_Chla_m-2_d-1, mg_Chla_m-2_d-1, mg_Phaeo_m-2_d-1, mg_Phaeo_m-2_d-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
@@ -2232,59 +2232,59 @@ sub create_cdl_nfhbiosed {
 
     # Check that the file follows the expected outline
     unless ($variables eq $nfhbiovar){
-	print ">>>$variables<<<\n";
-	print ">>>$nfhbiovar<<<\n";
-	die "Variables names does not match the expected" 
+        print ">>>$variables<<<\n";
+        print ">>>$nfhbiovar<<<\n";
+        die "Variables names does not match the expected" 
     }
     unless ($units eq $nfhbiounits){
-	print ">>>$units<<<\n";
-	print ">>>$nfhbiounits<<<\n";
-	die "Units names does not match the expected" 
+        print ">>>$units<<<\n";
+        print ">>>$nfhbiounits<<<\n";
+        die "Units names does not match the expected" 
     }
 
     ########################################################### 
     # Then the actual data records are decoded and prepared for future use
     #
     foreach (@source) {
-	next if m/^#/;
-	##next if ($_ =~ m/^\t\s+\n$/); 
-	$_ =~ s/^\t//;
-	$_ =~ s/\s+/ /g;
-	#print "$_\n";
-	$_ =~ s/$misvalin/$misvalout/g;
-	@mytmp = split /\s+/,$_;
-	$mydate = $mytmp[0]." ".$mytmp[1]." UTC";
-	$tz = Date_TimeZone;
-	unless ($tz eq "UTC") {
-	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
-	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	} else {
-	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	}
-	unless (grep /$mydate/,@mytimes) {
-	    push @mytimes, $mydate; 
-	    $sc = 0;
-	}
-	$ll = $mytmp[2]." ".$mytmp[3];
-	push @mydepths, $mytmp[4] unless grep /^$mytmp[4]$/,@mydepths;
-	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
+        next if m/^#/;
+        ##next if ($_ =~ m/^\t\s+\n$/); 
+        $_ =~ s/^\t//;
+        $_ =~ s/\s+/ /g;
+        #print "$_\n";
+        $_ =~ s/$misvalin/$misvalout/g;
+        @mytmp = split /\s+/,$_;
+        $mydate = $mytmp[0]." ".$mytmp[1]." UTC";
+        $tz = Date_TimeZone;
+        unless ($tz eq "UTC") {
+            $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+            $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        } else {
+            $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        }
+        unless (grep /$mydate/,@mytimes) {
+            push @mytimes, $mydate; 
+            $sc = 0;
+        }
+        $ll = $mytmp[2]." ".$mytmp[3];
+        push @mydepths, $mytmp[4] unless grep /^$mytmp[4]$/,@mydepths;
+        push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
-	$mydata{$mydate}{"lat"} = $mytmp[2];
-	$mydata{$mydate}{"lon"} = $mytmp[3];
-	$mydata{$mydate}{"z"}[$sc] = $mytmp[4];
-	$mydata{$mydate}{"POC"}[$sc] = $mytmp[5];
-	$mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[6];
-	$mydata{$mydate}{"PON"}[$sc] = $mytmp[7];
-	$mydata{$mydate}{"PON_stdev"}[$sc] = $mytmp[8];
-	$mydata{$mydate}{"FPC"}[$sc] = $mytmp[9];
-	$mydata{$mydate}{"chl-a"}[$sc] = $mytmp[10];
-	$mydata{$mydate}{"chl-a_stdev"}[$sc] = $mytmp[11];
-	$mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[12];
-	$mydata{$mydate}{"phaoepigment_stdev"}[$sc] = $mytmp[13];
-	$mydata{$mydate}{"noobs"} = ($sc+1);
-	$sc++;
+        $mydata{$mydate}{"lat"} = $mytmp[2];
+        $mydata{$mydate}{"lon"} = $mytmp[3];
+        $mydata{$mydate}{"z"}[$sc] = $mytmp[4];
+        $mydata{$mydate}{"POC"}[$sc] = $mytmp[5];
+        $mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[6];
+        $mydata{$mydate}{"PON"}[$sc] = $mytmp[7];
+        $mydata{$mydate}{"PON_stdev"}[$sc] = $mytmp[8];
+        $mydata{$mydate}{"FPC"}[$sc] = $mytmp[9];
+        $mydata{$mydate}{"chl-a"}[$sc] = $mytmp[10];
+        $mydata{$mydate}{"chl-a_stdev"}[$sc] = $mytmp[11];
+        $mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[12];
+        $mydata{$mydate}{"phaoepigment_stdev"}[$sc] = $mytmp[13];
+        $mydata{$mydate}{"noobs"} = ($sc+1);
+        $sc++;
     }
-    
+
     ########################################################### 
     # Dump data into CDL template
     # Global attributes
@@ -2317,33 +2317,33 @@ sub create_cdl_nfhbiosed {
 
     # Multi-dimensional array...
     foreach (sort(keys(%mydata))) {
-	$timeunix .= UnixDate($_,"%s").",";
-	$lat .= $mydata{$_}{lat}.",";
-	$lon .= $mydata{$_}{lon}.",";
-	foreach $z (sort {$a <=> $b} @mydepths) {
-	    $match = 0;
-	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
-		if ($mydata{$_}{z}[$sc]==$z) {
-		    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
-		    $chl_stdev .= $mydata{$_}{'chl-a_stdev'}[$sc].",";
-		    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
-		    $pigm_stdev .= $mydata{$_}{phaoepigment_stdev}[$sc].",";
-		    $pon .= $mydata{$_}{PON}[$sc].",";
-		    $pon_stdev .= $mydata{$_}{PON_stdev}[$sc].",";
-		    $poc .= $mydata{$_}{POC}[$sc].",";
-		    $poc_stdev .= $mydata{$_}{POC_stdev}[$sc].",";
-		    $fpc .= $mydata{$_}{FPC}[$sc].",";
-		    $match = 1;
-		    last;
-		}
-	    }
-	    unless ($match) {
-		$chl .= "$misvalout,";
-		$pigm .= "$misvalout,";
-		$pon .= "$misvalout,";
-		$poc .= "$misvalout,";
-	    }
-	}
+        $timeunix .= UnixDate($_,"%s").",";
+        $lat .= $mydata{$_}{lat}.",";
+        $lon .= $mydata{$_}{lon}.",";
+        foreach $z (sort {$a <=> $b} @mydepths) {
+            $match = 0;
+            for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
+                if ($mydata{$_}{z}[$sc]==$z) {
+                    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
+                    $chl_stdev .= $mydata{$_}{'chl-a_stdev'}[$sc].",";
+                    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
+                    $pigm_stdev .= $mydata{$_}{phaoepigment_stdev}[$sc].",";
+                    $pon .= $mydata{$_}{PON}[$sc].",";
+                    $pon_stdev .= $mydata{$_}{PON_stdev}[$sc].",";
+                    $poc .= $mydata{$_}{POC}[$sc].",";
+                    $poc_stdev .= $mydata{$_}{POC_stdev}[$sc].",";
+                    $fpc .= $mydata{$_}{FPC}[$sc].",";
+                    $match = 1;
+                    last;
+                }
+            }
+            unless ($match) {
+                $chl .= "$misvalout,";
+                $pigm .= "$misvalout,";
+                $pon .= "$misvalout,";
+                $poc .= "$misvalout,";
+            }
+        }
     }
     $z = join ",",sort({$a <=> $b} @mydepths);
 
@@ -2404,7 +2404,7 @@ sub create_cdl_nfhbio{
     my($pon, $pon_stdev, $poc, $poc_stdev);
     my($ndepths,$nstations,$match);
     my $nfhbiovar = "CTD ID, date, time, latitude, longitude, sampling_depth, NO3+NO2, stdev_NO3+NO2, PO4, stdev_PO4, Si(OH)4, stdev_Si(OH)4, Chla, stdev_chla, Phaeo, stdev_Phaeo, POC, stdev_POC, PON, stdev_PON";
-    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_east, meter, Âµmol_L-1, Âµmol_L-1, Âµmol_L-1, Âµmol_L-1, Âµmol_L-1, Âµmol_L-1, Âµg_Chla_L-1, Âµg_Chla_L-1, Âµg_Phaeo_L-1, Âµg_Phaeo_L-1, Âµg_POC_L-1, Âµg_POC_L-1, Âµg_PON_L-1, Âµg_PON_L-1";
+    my $nfhbiounits = "text, year_month_day, hours (hh:mm UTC), degrees_north, degrees_east, meter, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µmol_L-1, µg_Chla_L-1, µg_Chla_L-1, µg_Phaeo_L-1, µg_Phaeo_L-1, µg_POC_L-1, µg_POC_L-1, µg_PON_L-1, µg_PON_L-1";
     my $misvalin = -999;
     my $misvalout = 9999.;
     my $gcmdkeyw = "Oceans > Ocean Chemistry > Pigments\nOceans > Ocean Chemistry > Pigments > Chlorophyll\nOceans > Ocean Chemistry > Carbon\nOceans > Ocean Chemistry > Nitrate\nOceans > Ocean Chemistry > Nitrite\nOceans > Ocean Chemistry > Phosphate\nOceans > Ocean Chemistry > Silicate\nOceans > Ocean Chemistry > Organic Carbon\nOceans > Ocean Chemistry > Organic Matter";
@@ -2486,65 +2486,65 @@ sub create_cdl_nfhbio{
 
     # Check that the file follows the expected outline
     unless ($variables eq $nfhbiovar){
-	print ">>>$variables<<<\n";
-	print ">>>$nfhbiovar<<<\n";
-	die "Variables names does not match the expected" 
+        print ">>>$variables<<<\n";
+        print ">>>$nfhbiovar<<<\n";
+        die "Variables names does not match the expected" 
     }
     unless ($units eq $nfhbiounits){
-	print ">>>$units<<<\n";
-	print ">>>$nfhbiounits<<<\n";
-	die "Units names does not match the expected" 
+        print ">>>$units<<<\n";
+        print ">>>$nfhbiounits<<<\n";
+        die "Units names does not match the expected" 
     }
 
     ########################################################### 
     # Then the actual data records are decoded and prepared for future use
     #
     foreach (@source) {
-	next if m/^#/;
-	##next if ($_ =~ m/^\t\s+\n$/); 
-	$_ =~ s/^\t//;
-	$_ =~ s/\s+/ /g;
-	#print "$_\n";
-	$_ =~ s/$misvalin/$misvalout/g;
-	@mytmp = split /\s+/,$_;
-	$mydate = $mytmp[1]." ".$mytmp[2]." UTC";
-	$tz = Date_TimeZone;
-	unless ($tz eq "UTC") {
-	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
-	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	} else {
-	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	}
-	unless (grep /$mydate/,@mytimes) {
-	    push @mytimes, $mydate; 
-	    $sc = 0;
-	}
-	$ll = $mytmp[3]." ".$mytmp[4];
-	push @mydepths, $mytmp[5] unless grep /^$mytmp[5]$/,@mydepths;
-	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
+        next if m/^#/;
+        ##next if ($_ =~ m/^\t\s+\n$/); 
+        $_ =~ s/^\t//;
+        $_ =~ s/\s+/ /g;
+        #print "$_\n";
+        $_ =~ s/$misvalin/$misvalout/g;
+        @mytmp = split /\s+/,$_;
+        $mydate = $mytmp[1]." ".$mytmp[2]." UTC";
+        $tz = Date_TimeZone;
+        unless ($tz eq "UTC") {
+            $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+            $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        } else {
+            $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        }
+        unless (grep /$mydate/,@mytimes) {
+            push @mytimes, $mydate; 
+            $sc = 0;
+        }
+        $ll = $mytmp[3]." ".$mytmp[4];
+        push @mydepths, $mytmp[5] unless grep /^$mytmp[5]$/,@mydepths;
+        push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
-	$mydata{$mydate}{"stid"} = $mytmp[0];
-	$mydata{$mydate}{"lat"} = $mytmp[3];
-	$mydata{$mydate}{"lon"} = $mytmp[4];
-	$mydata{$mydate}{"z"}[$sc] = $mytmp[5];
-	$mydata{$mydate}{"no3no2"}[$sc] = $mytmp[6];
-	$mydata{$mydate}{"no3no2_stdev"}[$sc] = $mytmp[7];
-	$mydata{$mydate}{"PO4"}[$sc] = $mytmp[8];
-	$mydata{$mydate}{"PO4_stdev"}[$sc] = $mytmp[9];
-	$mydata{$mydate}{"sioh4"}[$sc] = $mytmp[10];
-	$mydata{$mydate}{"sioh4_stdev"}[$sc] = $mytmp[11];
-	$mydata{$mydate}{"chl-a"}[$sc] = $mytmp[12];
-	$mydata{$mydate}{"chl-a_stdev"}[$sc] = $mytmp[13];
-	$mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[14];
-	$mydata{$mydate}{"phaoepigment_stdev"}[$sc] = $mytmp[15];
-	$mydata{$mydate}{"POC"}[$sc] = $mytmp[16];
-	$mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[17];
-	$mydata{$mydate}{"PON"}[$sc] = $mytmp[18];
-	$mydata{$mydate}{"PON_stdev"}[$sc] = $mytmp[19];
-	$mydata{$mydate}{"noobs"} = ($sc+1);
-	$sc++;
+        $mydata{$mydate}{"stid"} = $mytmp[0];
+        $mydata{$mydate}{"lat"} = $mytmp[3];
+        $mydata{$mydate}{"lon"} = $mytmp[4];
+        $mydata{$mydate}{"z"}[$sc] = $mytmp[5];
+        $mydata{$mydate}{"no3no2"}[$sc] = $mytmp[6];
+        $mydata{$mydate}{"no3no2_stdev"}[$sc] = $mytmp[7];
+        $mydata{$mydate}{"PO4"}[$sc] = $mytmp[8];
+        $mydata{$mydate}{"PO4_stdev"}[$sc] = $mytmp[9];
+        $mydata{$mydate}{"sioh4"}[$sc] = $mytmp[10];
+        $mydata{$mydate}{"sioh4_stdev"}[$sc] = $mytmp[11];
+        $mydata{$mydate}{"chl-a"}[$sc] = $mytmp[12];
+        $mydata{$mydate}{"chl-a_stdev"}[$sc] = $mytmp[13];
+        $mydata{$mydate}{"phaoepigment"}[$sc] = $mytmp[14];
+        $mydata{$mydate}{"phaoepigment_stdev"}[$sc] = $mytmp[15];
+        $mydata{$mydate}{"POC"}[$sc] = $mytmp[16];
+        $mydata{$mydate}{"POC_stdev"}[$sc] = $mytmp[17];
+        $mydata{$mydate}{"PON"}[$sc] = $mytmp[18];
+        $mydata{$mydate}{"PON_stdev"}[$sc] = $mytmp[19];
+        $mydata{$mydate}{"noobs"} = ($sc+1);
+        $sc++;
     }
-    
+
     ########################################################### 
     # Dump data into CDL template
     # Global attributes
@@ -2578,49 +2578,49 @@ sub create_cdl_nfhbio{
 
     # Multi-dimensional array...
     foreach (sort(keys(%mydata))) {
-	$timeunix .= UnixDate($_,"%s").",";
-	$lat .= $mydata{$_}{lat}.",";
-	$lon .= $mydata{$_}{lon}.",";
-	$stid .= "\"".$mydata{$_}{stid}."\"".",";
-	foreach $z (sort {$a <=> $b} @mydepths) {
-	    $match = 0;
-	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
-		if ($mydata{$_}{z}[$sc]==$z) {
-		    $no3no2 .= $mydata{$_}{'no3no2'}[$sc].",";
-		    $no3no2_stdev .= $mydata{$_}{'no3no2_stdev'}[$sc].",";
-		    $po4 .= $mydata{$_}{'PO4'}[$sc].",";
-		    $po4_stdev .= $mydata{$_}{'PO4_stdev'}[$sc].",";
-		    $sioh4 .= $mydata{$_}{'sioh4'}[$sc].",";
-		    $sioh4_stdev .= $mydata{$_}{'sioh4_stdev'}[$sc].",";
-		    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
-		    $chl_stdev .= $mydata{$_}{'chl-a_stdev'}[$sc].",";
-		    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
-		    $pigm_stdev .= $mydata{$_}{phaoepigment_stdev}[$sc].",";
-		    $pon .= $mydata{$_}{PON}[$sc].",";
-		    $pon_stdev .= $mydata{$_}{PON_stdev}[$sc].",";
-		    $poc .= $mydata{$_}{POC}[$sc].",";
-		    $poc_stdev .= $mydata{$_}{POC_stdev}[$sc].",";
-		    $match = 1;
-		    last;
-		}
-	    }
-	    unless ($match) {
-		$no3no2 .= "$misvalout,";
-		$no3no2_stdev .= "$misvalout,";
-		$po4 .= "$misvalout,";
-		$po4_stdev .= "$misvalout,";
-		$sioh4 .= "$misvalout,";
-		$sioh4_stdev .= "$misvalout,";
-		$chl .= "$misvalout,";
-		$chl_stdev .= "$misvalout,";
-		$pigm .= "$misvalout,";
-		$pigm_stdev .= "$misvalout,";
-		$pon .= "$misvalout,";
-		$pon_stdev .= "$misvalout,";
-		$poc .= "$misvalout,";
-		$poc_stdev .= "$misvalout,";
-	    }
-	}
+        $timeunix .= UnixDate($_,"%s").",";
+        $lat .= $mydata{$_}{lat}.",";
+        $lon .= $mydata{$_}{lon}.",";
+        $stid .= "\"".$mydata{$_}{stid}."\"".",";
+        foreach $z (sort {$a <=> $b} @mydepths) {
+            $match = 0;
+            for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
+                if ($mydata{$_}{z}[$sc]==$z) {
+                    $no3no2 .= $mydata{$_}{'no3no2'}[$sc].",";
+                    $no3no2_stdev .= $mydata{$_}{'no3no2_stdev'}[$sc].",";
+                    $po4 .= $mydata{$_}{'PO4'}[$sc].",";
+                    $po4_stdev .= $mydata{$_}{'PO4_stdev'}[$sc].",";
+                    $sioh4 .= $mydata{$_}{'sioh4'}[$sc].",";
+                    $sioh4_stdev .= $mydata{$_}{'sioh4_stdev'}[$sc].",";
+                    $chl .= $mydata{$_}{'chl-a'}[$sc].",";
+                    $chl_stdev .= $mydata{$_}{'chl-a_stdev'}[$sc].",";
+                    $pigm .= $mydata{$_}{phaoepigment}[$sc].",";
+                    $pigm_stdev .= $mydata{$_}{phaoepigment_stdev}[$sc].",";
+                    $pon .= $mydata{$_}{PON}[$sc].",";
+                    $pon_stdev .= $mydata{$_}{PON_stdev}[$sc].",";
+                    $poc .= $mydata{$_}{POC}[$sc].",";
+                    $poc_stdev .= $mydata{$_}{POC_stdev}[$sc].",";
+                    $match = 1;
+                    last;
+                }
+            }
+            unless ($match) {
+                $no3no2 .= "$misvalout,";
+                $no3no2_stdev .= "$misvalout,";
+                $po4 .= "$misvalout,";
+                $po4_stdev .= "$misvalout,";
+                $sioh4 .= "$misvalout,";
+                $sioh4_stdev .= "$misvalout,";
+                $chl .= "$misvalout,";
+                $chl_stdev .= "$misvalout,";
+                $pigm .= "$misvalout,";
+                $pigm_stdev .= "$misvalout,";
+                $pon .= "$misvalout,";
+                $pon_stdev .= "$misvalout,";
+                $poc .= "$misvalout,";
+                $poc_stdev .= "$misvalout,";
+            }
+        }
     }
     $z = join ",",sort({$a <=> $b} @mydepths);
 
@@ -2775,52 +2775,52 @@ sub create_cdl_nfhbiomass{
 
     # Check that the file follows the expected outline
     unless ($variables eq $nfhbiovar){
-	print ">>>$variables<<<\n";
-	print ">>>$nfhbiovar<<<\n";
-	die "Variables names does not match the expected" 
+        print ">>>$variables<<<\n";
+        print ">>>$nfhbiovar<<<\n";
+        die "Variables names does not match the expected" 
     }
     unless ($units eq $nfhbiounits){
-	print ">>>$units<<<\n";
-	print ">>>$nfhbiounits<<<\n";
-	die "Units names does not match the expected" 
+        print ">>>$units<<<\n";
+        print ">>>$nfhbiounits<<<\n";
+        die "Units names does not match the expected" 
     }
 
     ########################################################### 
     # Then the actual data records are decoded and prepared for future use
     #
     foreach (@source) {
-	next if m/^#/;
-	##next if ($_ =~ m/^\t\s+\n$/); 
-	$_ =~ s/^\t//;
-	$_ =~ s/\s+/ /g;
-	#print "$_\n";
-	$_ =~ s/$misvalin/$misvalout/g;
-	@mytmp = split /\s+/,$_;
-	$mydate = $mytmp[1]." ".$mytmp[2]." UTC";
-	$tz = Date_TimeZone;
-	unless ($tz eq "UTC") {
-	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
-	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	} else {
-	    $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	}
-	unless (grep /$mydate/,@mytimes) {
-	    push @mytimes, $mydate; 
-	    $sc = 0;
-	}
-	$ll = $mytmp[3]." ".$mytmp[4];
-	push @mydepths, $mytmp[5] unless grep /^$mytmp[5]$/,@mydepths;
-	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
+        next if m/^#/;
+        ##next if ($_ =~ m/^\t\s+\n$/); 
+        $_ =~ s/^\t//;
+        $_ =~ s/\s+/ /g;
+        #print "$_\n";
+        $_ =~ s/$misvalin/$misvalout/g;
+        @mytmp = split /\s+/,$_;
+        $mydate = $mytmp[1]." ".$mytmp[2]." UTC";
+        $tz = Date_TimeZone;
+        unless ($tz eq "UTC") {
+            $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+            $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        } else {
+            $mydate = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        }
+        unless (grep /$mydate/,@mytimes) {
+            push @mytimes, $mydate; 
+            $sc = 0;
+        }
+        $ll = $mytmp[3]." ".$mytmp[4];
+        push @mydepths, $mytmp[5] unless grep /^$mytmp[5]$/,@mydepths;
+        push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
 
-	$mydata{$mydate}{"stid"} = $mytmp[0];
-	$mydata{$mydate}{"lat"} = $mytmp[3];
-	$mydata{$mydate}{"lon"} = $mytmp[4];
-	$mydata{$mydate}{"z"} = $mytmp[5];
-	$mydata{$mydate}{"biomass"} = $mytmp[6];
-	$mydata{$mydate}{"noobs"} = ($sc+1);
-	$sc++;
+        $mydata{$mydate}{"stid"} = $mytmp[0];
+        $mydata{$mydate}{"lat"} = $mytmp[3];
+        $mydata{$mydate}{"lon"} = $mytmp[4];
+        $mydata{$mydate}{"z"} = $mytmp[5];
+        $mydata{$mydate}{"biomass"} = $mytmp[6];
+        $mydata{$mydate}{"noobs"} = ($sc+1);
+        $sc++;
     }
-    
+
     ########################################################### 
     # Dump data into CDL template
     # Global attributes
@@ -2854,11 +2854,11 @@ sub create_cdl_nfhbiomass{
 
     # Multi-dimensional array...
     foreach (sort(keys(%mydata))) {
-	$timeunix .= UnixDate($_,"%s").",";
-	$lat .= $mydata{$_}{lat}.",";
-	$lon .= $mydata{$_}{lon}.",";
-	$z .= $mydata{$_}{z}.",";
-	$stid .= "\"".$mydata{$_}{stid}."\"".",";
+        $timeunix .= UnixDate($_,"%s").",";
+        $lat .= $mydata{$_}{lat}.",";
+        $lon .= $mydata{$_}{lon}.",";
+        $z .= $mydata{$_}{z}.",";
+        $stid .= "\"".$mydata{$_}{stid}."\"".",";
         $biomass .= $mydata{$_}{'biomass'}.",";
     }
 
@@ -3002,27 +3002,27 @@ sub create_cdl_ugotctd {
 
     # Check that the file follows the expected outline
     if ($variables eq $ugotvars1){
-	$filetype = "ISSS08";
+        $filetype = "ISSS08";
     } elsif ($variables eq $ugotvars2) {
-	$filetype = "LOMROG07";
-	foreach (@cdlout) {
-	    push @mytmp, $_ unless m/(turb)|(turb_qf)|(bdepth)/;
-	}
-	@cdlout = @mytmp;
-	undef @mytmp;
+        $filetype = "LOMROG07";
+        foreach (@cdlout) {
+            push @mytmp, $_ unless m/(turb)|(turb_qf)|(bdepth)/;
+        }
+        @cdlout = @mytmp;
+        undef @mytmp;
     } else {
-	print "\n";
-	print "Incorrect variables...\n";
-	print "Found: $variables\n";
-	print "Supported: $ugotvars1\n";
-	print "Supported: $ugotvars2\n";
-	die "Variables names does not match the expected" 
+        print "\n";
+        print "Incorrect variables...\n";
+        print "Found: $variables\n";
+        print "Supported: $ugotvars1\n";
+        print "Supported: $ugotvars2\n";
+        die "Variables names does not match the expected" 
     }
     unless ($units eq $ugotunits1 || $units eq $ugotunits2) {
-	print "Found: $units\n";
-	print "Supported: $ugotunits1\n";
-	print "Supported: $ugotunits2\n";
-	die "Units does not match the expected" 
+        print "Found: $units\n";
+        print "Supported: $ugotunits1\n";
+        print "Supported: $ugotunits2\n";
+        die "Units does not match the expected" 
     }
 
     ########################################################### 
@@ -3033,65 +3033,65 @@ sub create_cdl_ugotctd {
     $nrecords = 0;
     undef @mytimes;
     foreach (@source) {
-	$line = decode_utf8($_);
-	next if ($line =~ m/^#/);
-	next if ($line =~ m/^\s+$/);
-	$line =~ s/^\s//;
-	$line =~ s/\s+/ /g;
-	$line =~ s/$misvalin/$misvalout/g;
-	@mytmp = split /\s+/,$line;
-	if ($filetype eq "ISSS08") {
-	    $mydate = $mytmp[3]." ".$mytmp[4]." UTC";
-	} else {
-	    $mydate = $mytmp[2]." ".$mytmp[3]." UTC";
-	}
-	if ($tz eq "UTC") {
-	    $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	} else {
-	    $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
-	    $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
-	}
-	unless (grep /$timeunix/,@mytimes) {
-	    push @mytimes, $timeunix; 
-	    $sc = 0;
-	}
-	if ($filetype eq "ISSS08") {
-	    $ll = $mytmp[6]." ".$mytmp[5];
-	    $mydata{$mydate}{"lat"} = $mytmp[6];
-	    $mydata{$mydate}{"lon"} = $mytmp[5];
-	    push @mypres, $mytmp[8] unless grep /^$mytmp[8]$/,@mypres;
-	    $mydata{$mydate}{"z"} = $mytmp[7];
-	    $mydata{$mydate}{"p"}[$sc] = $mytmp[8];
-	    $mydata{$mydate}{"p_qf"}[$sc] = $mytmp[9];
-	    $mydata{$mydate}{"t"}[$sc] = $mytmp[10];
-	    $mydata{$mydate}{"t_qf"}[$sc] = $mytmp[11];
-	    $mydata{$mydate}{"wl"}[$sc] = $mytmp[12];
-	    $mydata{$mydate}{"wl_qf"}[$sc] = $mytmp[13];
-	    $mydata{$mydate}{"s"}[$sc] = $mytmp[14];
-	    $mydata{$mydate}{"s_qf"}[$sc] = $mytmp[15];
-	} else {
-	    $ll = $mytmp[5]." ".$mytmp[4];
-	    $mydata{$mydate}{"lat"} = $mytmp[5];
-	    $mydata{$mydate}{"lon"} = $mytmp[4];
-	    push @mypres, $mytmp[6] unless grep /^$mytmp[6]$/,@mypres;
-	    $mydata{$mydate}{"p"}[$sc] = $mytmp[6];
-	    $mydata{$mydate}{"p_qf"}[$sc] = $mytmp[7];
-	    $mydata{$mydate}{"t"}[$sc] = $mytmp[8];
-	    $mydata{$mydate}{"t_qf"}[$sc] = $mytmp[9];
-	    $mydata{$mydate}{"s"}[$sc] = $mytmp[10];
-	    $mydata{$mydate}{"s_qf"}[$sc] = $mytmp[11];
-	}
-	push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
-	push @mystations, $mytmp[1] unless grep /^$mytmp[1]$/,@mystations;
+        $line = decode_utf8($_);
+        next if ($line =~ m/^#/);
+        next if ($line =~ m/^\s+$/);
+        $line =~ s/^\s//;
+        $line =~ s/\s+/ /g;
+        $line =~ s/$misvalin/$misvalout/g;
+        @mytmp = split /\s+/,$line;
+        if ($filetype eq "ISSS08") {
+            $mydate = $mytmp[3]." ".$mytmp[4]." UTC";
+        } else {
+            $mydate = $mytmp[2]." ".$mytmp[3]." UTC";
+        }
+        if ($tz eq "UTC") {
+            $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        } else {
+            $mydate = Date_ConvTZ(ParseDate($mydate),"$tz","UTC");
+            $timeunix = UnixDate($mydate,"%Y-%m-%d %H:%M UTC");
+        }
+        unless (grep /$timeunix/,@mytimes) {
+            push @mytimes, $timeunix; 
+            $sc = 0;
+        }
+        if ($filetype eq "ISSS08") {
+            $ll = $mytmp[6]." ".$mytmp[5];
+            $mydata{$mydate}{"lat"} = $mytmp[6];
+            $mydata{$mydate}{"lon"} = $mytmp[5];
+            push @mypres, $mytmp[8] unless grep /^$mytmp[8]$/,@mypres;
+            $mydata{$mydate}{"z"} = $mytmp[7];
+            $mydata{$mydate}{"p"}[$sc] = $mytmp[8];
+            $mydata{$mydate}{"p_qf"}[$sc] = $mytmp[9];
+            $mydata{$mydate}{"t"}[$sc] = $mytmp[10];
+            $mydata{$mydate}{"t_qf"}[$sc] = $mytmp[11];
+            $mydata{$mydate}{"wl"}[$sc] = $mytmp[12];
+            $mydata{$mydate}{"wl_qf"}[$sc] = $mytmp[13];
+            $mydata{$mydate}{"s"}[$sc] = $mytmp[14];
+            $mydata{$mydate}{"s_qf"}[$sc] = $mytmp[15];
+        } else {
+            $ll = $mytmp[5]." ".$mytmp[4];
+            $mydata{$mydate}{"lat"} = $mytmp[5];
+            $mydata{$mydate}{"lon"} = $mytmp[4];
+            push @mypres, $mytmp[6] unless grep /^$mytmp[6]$/,@mypres;
+            $mydata{$mydate}{"p"}[$sc] = $mytmp[6];
+            $mydata{$mydate}{"p_qf"}[$sc] = $mytmp[7];
+            $mydata{$mydate}{"t"}[$sc] = $mytmp[8];
+            $mydata{$mydate}{"t_qf"}[$sc] = $mytmp[9];
+            $mydata{$mydate}{"s"}[$sc] = $mytmp[10];
+            $mydata{$mydate}{"s_qf"}[$sc] = $mytmp[11];
+        }
+        push @mylatlonpair, $ll unless grep /$ll/,@mylatlonpair;
+        push @mystations, $mytmp[1] unless grep /^$mytmp[1]$/,@mystations;
 
-	$mydata{$mydate}{"noobs"} = ($sc+1);
-	$sc++;
-	$nrecords++;
+        $mydata{$mydate}{"noobs"} = ($sc+1);
+        $sc++;
+        $nrecords++;
     }
     $nrecords += 1;
     print " $nrecords data records processed...\n";
     undef $timeunix;
-    
+
     ########################################################### 
     # Dump data into CDL template
     # Global attributes
@@ -3127,39 +3127,39 @@ sub create_cdl_ugotctd {
     # The search performed below is not efficient, but it works for the
     # datasets processed so far, especially since they are not too large.
     foreach (sort(keys(%mydata))) {
-	$timeunix .= UnixDate($_,"%s").",";
-	$lat .= $mydata{$_}{lat}.",";
-	$lon .= $mydata{$_}{lon}.",";
-	if ($filetype eq "ISSS08") {
-	    $z .= $mydata{$_}{z}.",";
-	}
-	foreach $pres (sort {$a <=> $b} @mypres) {
-	    $match = 0;
-	    for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
-		if ($mydata{$_}{p}[$sc]==$pres) {
-		    $temp .= $mydata{$_}{'t'}[$sc].",";
-		    $temp_qf .= $mydata{$_}{'t_qf'}[$sc].",";
-		    if ($filetype eq "ISSS08") {
-			$turb .= $mydata{$_}{'wl'}[$sc].",";
-			$turb_qf .= $mydata{$_}{'wl_qf'}[$sc].",";
-		    }
-		    $psal .= $mydata{$_}{'s'}[$sc].",";
-		    $psal_qf .= $mydata{$_}{'s_qf'}[$sc].",";
-		    $match = 1;
-		    last;
-		}
-	    }
-	    unless ($match) {
-		$temp .= "$misvalout,";
-		$temp_qf .= "$misvalout,";
-		if ($filetype eq "ISSS08") {
-		    $turb .= "$misvalout,";
-		    $turb_qf .= "$misvalout,";
-		}
-		$psal .= "$misvalout,";
-		$psal_qf .= "$misvalout,";
-	    }
-	}
+        $timeunix .= UnixDate($_,"%s").",";
+        $lat .= $mydata{$_}{lat}.",";
+        $lon .= $mydata{$_}{lon}.",";
+        if ($filetype eq "ISSS08") {
+            $z .= $mydata{$_}{z}.",";
+        }
+        foreach $pres (sort {$a <=> $b} @mypres) {
+            $match = 0;
+            for ($sc=0;$sc<$mydata{$_}{noobs};$sc++){ 
+                if ($mydata{$_}{p}[$sc]==$pres) {
+                    $temp .= $mydata{$_}{'t'}[$sc].",";
+                    $temp_qf .= $mydata{$_}{'t_qf'}[$sc].",";
+                    if ($filetype eq "ISSS08") {
+                        $turb .= $mydata{$_}{'wl'}[$sc].",";
+                        $turb_qf .= $mydata{$_}{'wl_qf'}[$sc].",";
+                    }
+                    $psal .= $mydata{$_}{'s'}[$sc].",";
+                    $psal_qf .= $mydata{$_}{'s_qf'}[$sc].",";
+                    $match = 1;
+                    last;
+                }
+            }
+            unless ($match) {
+                $temp .= "$misvalout,";
+                $temp_qf .= "$misvalout,";
+                if ($filetype eq "ISSS08") {
+                    $turb .= "$misvalout,";
+                    $turb_qf .= "$misvalout,";
+                }
+                $psal .= "$misvalout,";
+                $psal_qf .= "$misvalout,";
+            }
+        }
     }
     undef $pres;
     $pres = join ",",sort({$a <=> $b} @mypres);
@@ -3171,7 +3171,7 @@ sub create_cdl_ugotctd {
     $timeunix =~ s/,$//;
     $stid =~ s/,$//;
     if ($filetype eq "ISSS08") {
-	$z =~ s/,$//;
+        $z =~ s/,$//;
     }
     $pres =~ s/,$//;
     $lat =~ s/,$//;
@@ -3179,8 +3179,8 @@ sub create_cdl_ugotctd {
     $temp =~ s/,$//;
     $temp_qf =~ s/,$//;
     if ($filetype eq "ISSS08") {
-	$turb =~ s/,$//;
-	$turb_qf =~ s/,$//;
+        $turb =~ s/,$//;
+        $turb_qf =~ s/,$//;
     }
     $psal =~ s/,$//;
     $psal_qf =~ s/,$//;
@@ -3191,14 +3191,14 @@ sub create_cdl_ugotctd {
     s/\+lat/$lat/ for (@cdlout);
     s/\+lon/$lon/ for (@cdlout);
     if ($filetype eq "ISSS08") {
-	s/\+bdepth/$z/ for (@cdlout);
+        s/\+bdepth/$z/ for (@cdlout);
     }
     s/\+pres/$pres/ for (@cdlout);
     s/\+temp_qf/$temp_qf/ for (@cdlout);
     s/\+temp/$temp/ for (@cdlout);
     if ($filetype eq "ISSS08") {
-	s/\+turb_qf/$turb_qf/ for (@cdlout);
-	s/\+turb/$turb/ for (@cdlout);
+        s/\+turb_qf/$turb_qf/ for (@cdlout);
+        s/\+turb/$turb/ for (@cdlout);
     }
     s/\+psal_qf/$psal_qf/ for (@cdlout);
     s/\+psal/$psal/ for (@cdlout);
