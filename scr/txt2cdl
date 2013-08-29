@@ -81,9 +81,11 @@
 # Øystein Godøy, METNO/FOU, 2013-06-20: Modification for radiative fluxes.
 # Øystein Godøy, METNO/FOU, 2013-08-28: Added support for change in
 # character encoding.
+# Øystein Godøy, METNO/FOU, 2013-08-29: Added quality statements for
+# radiative fluxes in 2013.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.63 2013-08-29 10:01:58 steingod Exp $
+# $Id: txt2cdl,v 1.64 2013-08-29 14:05:49 steingod Exp $
 #  
 
 ########################################################### 
@@ -1835,7 +1837,7 @@ sub create_timeseries_cdl_radflux {
     (
         "Bjørnøya" => {
             "title" => "Downwelling surface radiative fluxes at Bjørnøya",
-            "abstract" => "Downwehttp://www.skipsfarts-forum.net/read.php?TID=7478&page=70lling surface radiative fluxes observed at the meteorological station at Bjørnøya in the Barents Sea.  Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set was originally supported by the Norwegian Research Council but is now continued by the Norwegian Meteorological Institute. The quality control performed is by visual inspection and by comparison of clear sky values against RTM simulations.", 
+            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bjørnøya in the Barents Sea.  Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set was originally supported by the Norwegian Research Council but is now continued by the Norwegian Meteorological Institute. The quality control performed is by visual inspection and by comparison of clear sky values against RTM simulations. Originally this station was started as an IPY station funded through iAOOS-Norway and IPY-THORPEX, currently it is continued by METNO.", 
             "product_name" => "radiative fluxes",
             "history" => "2008-10-23 creation",
             "project_name" => "iAOOS-Norway/IPY-THORPEX",
@@ -1846,7 +1848,7 @@ sub create_timeseries_cdl_radflux {
             "PI_name" => "Øystein Godøy",
             "url" => "http://www.met.no/",
             "contact" => "o.godoy\@met.no",
-            "distribution_statement" => "Free",
+            "distribution_statement" => "Polar Information Commons (http://polarcommons.org/)/CCBY",
             "quality_statement" => "Quality controlled by visual inspection and RTM comparison",
             "quality_removals" => "6",
             "quality_keys" => {
@@ -1884,7 +1886,7 @@ sub create_timeseries_cdl_radflux {
         },
         "Jan Mayen" => {
             "title" => "Downwelling surface radiative fluxes at Jan Mayen",
-            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
+            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Jan Mayen Island in the Greenland Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is by visual inspection and by comparison of clear sky values against RTM simulations. Originally this station was started as an IPY station funded through iAOOS-Norway and IPY-THORPEX, currently it is continued by METNO.",
             "product_name" => "radiative fluxes",
             "history" => "2008-11-23 creation",
             "project_name" => "iAOOS-Norway",
@@ -1896,19 +1898,24 @@ sub create_timeseries_cdl_radflux {
             "url" => "http://www.met.no/",
             "contact" => "o.godoy\@met.no",
             "distribution_statement" => "Polar Information Commons (http://polarcommons.org/)/CCBY",
-            "quality_statement" => "Quality controlled by visual inspection",
-            "quality_removals" => "1",
+            "quality_statement" => "Quality controlled by visual inspection and RTM comparison",
+            "quality_removals" => "2",
             "quality_keys" => {
                 "0" => {
                     "par" => "ssi&dli",
                     "start" => str2time("2008-11-01 00:00:00","UTC"), 
                     "end" => str2time("2008-12-03 18:00:00","UTC"),
                 },
+                "1" => {
+                    "par" => "dli",
+                    "start" => str2time("2013-02-13 12:57:00","UTC"), 
+                    "end" => str2time("2013-07-23 21:23:00","UTC"),
+                },
             },
         },
         "Hopen" => {
             "title" => "Downwelling surface radiative fluxes at Hopen",
-            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is rudimentary and the dataset will be updated.",
+            "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Hopen Island in the Barents Sea. Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set has been collected with support from the Norwegian Research Council. The quality control performed is by visual inspection and by comparison of clear sky values against RTM simulations. Originally this station was started as an IPY station funded through iAOOS-Norway and IPY-THORPEX, currently it is continued by METNO.",
             "product_name" => "radiative fluxes",
             "history" => "2009-11-03 creation",
             "project_name" => "iAOOS-Norway",
@@ -1920,13 +1927,18 @@ sub create_timeseries_cdl_radflux {
             "url" => "http://www.met.no/",
             "contact" => "o.godoy\@met.no",
             "distribution_statement" => "Restricted to iAOOS-Norway",
-            "quality_statement" => "Quality controlled by visual inspection",
-            "quality_removals" => "1",
+            "quality_statement" => "Quality controlled by visual inspection and RTM comparison",
+            "quality_removals" => "2",
             "quality_keys" => {
                 "0" => {
                     "par" => "ssi&dli",
                     "start" => str2time("2009-07-21 00:00:00","UTC"), 
                     "end" => str2time("2009-11-01 00:00:00","UTC"),
+                },
+                "1" => {
+                    "par" => "ssi&dli",
+                    "start" => str2time("2013-03-24 12:51:00","UTC"), 
+                    "end" => str2time("2013-04-09 12:50:00","UTC"),
                 },
             },
         },
