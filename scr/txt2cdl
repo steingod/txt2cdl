@@ -83,7 +83,7 @@
 # character encoding.
 #
 # CVS_ID:
-# $Id: txt2cdl,v 1.62 2013-08-28 15:03:47 steingod Exp $
+# $Id: txt2cdl,v 1.63 2013-08-29 10:01:58 steingod Exp $
 #  
 
 ########################################################### 
@@ -268,7 +268,6 @@ if ($fileformat eq "seabirdctd") {
 } else {
     die "Fileformat ($fileformat) is not supported\n";
 }
-print "So far so good...\n";
 
 ########################################################### 
 # Add header information
