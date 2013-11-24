@@ -1,7 +1,7 @@
 netcdf template_radflux {
 
 // Template created by Øystein Godøy, METNO/FOU, 07.05.2007 
-// $Id: template_radflux.cdl,v 1.13 2013-06-20 12:24:47 steingod Exp $
+// $Id: template_radflux.cdl,v 1.14 2013-11-24 11:38:37 steingod Exp $
 
 dimensions:
     time = unlimited;
@@ -88,7 +88,7 @@ variables:
 	:northernmost_latitude = +lat;
 	:westernmost_longitude = +lon;
 	:easternmost_longitude = +lon;
-	:quality_statement = "+radflux_bjornoya.ncqual";
+	:quality_statement = "+qual";
     :featureType = "timeSeries";
 
 data:
