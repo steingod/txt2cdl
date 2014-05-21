@@ -83,6 +83,9 @@
 # character encoding.
 # Øystein Godøy, METNO/FOU, 2013-08-29: Added quality statements for
 # radiative fluxes in 2013.
+# Øystein Godøy, METNO/FOU, 2014-05-21: Minor modification to handle new
+# ITPs. Biosuite is not converted, only the geophysical parameters. Need
+# to rerun on old data if this is needed.
 #
 # CVS_ID:
 # $Id: txt2cdl,v 1.64 2013-08-29 14:05:49 steingod Exp $
@@ -409,10 +412,11 @@ sub read_file($) {
     @text = <FH>;
     close FH;
 
-    $enc = Encode::Detect::Detector::detect(join('',@text));
-    print "File has encoding: $enc\n";
+    #$enc = Encode::Detect::Detector::detect(join('',@text));
+    #print "File has encoding: $enc\n";
 
-    open FH, "<encoding($enc)","$filename" or die " Could not open file $filename\n";
+    #open FH, "<encoding($enc)","$filename" or die " Could not open file $filename\n";
+    open FH, "<$filename" or die " Could not open file $filename\n";
     @text = <FH>;
     close FH;
 
@@ -985,6 +989,18 @@ sub create_itp_cdl {
         "64" => "Beaufort Gyre Observing System (BGOS)",
         "65" => "Beaufort Gyre Observing System (BGOS)",
         "66" => "Beaufort Gyre Observing System (BGOS)",
+        "68" => "Beaufort Gyre Observing System (BGOS)",
+        "69" => "Beaufort Gyre Observing System (BGOS)",
+        "70" => "Beaufort Gyre Observing System (BGOS)",
+        "71" => "Beaufort Gyre Observing System (BGOS)",
+        "72" => " Nansen and Amundsen Basins Observational System (NABOS)",
+        "73" => " Nansen and Amundsen Basins Observational System (NABOS)",
+        "74" => " Nansen and Amundsen Basins Observational System (NABOS)",
+        "75" => " Nansen and Amundsen Basins Observational System (NABOS)",
+        "76" => "North Pole Environmental Observatory (NPEO)",
+        "77" => "ONR Marginal Ice Zone (MIZ)",
+        "78" => "ONR Marginal Ice Zone (MIZ)",
+        "79" => "ONR Marginal Ice Zone (MIZ)",
     );
     #@witho2 = (6,13,23,29);
 
@@ -997,11 +1013,14 @@ sub create_itp_cdl {
     s/\ +/ /g for (@mytmp);
     s/^\ |\ $// for (@mytmp);
     s/[\n\r]//g for (@mytmp);
+
+    # Check type of file. Newer ITPs have a Biosuite integrated. This is
+    # not converted currently. Øystein Godøy, METNO/FOU, 2014-05-21 
     if ($variables1 eq $mytmp[2]) {
         $ftype = "level 2";
     } elsif ($variables2 eq $mytmp[2]) {
         $ftype = "level 3";
-    } elsif ($variables3 eq $mytmp[2]) {
+    } elsif (index($mytmp[2],$variables3) == 0) {
         $ftype = "level 4";
     } else {
         die "Could not recognise file type.";

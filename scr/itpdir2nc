@@ -43,6 +43,7 @@
 
 use strict;
 use Getopt::Std;
+#use Archive::Tar;
 
 use vars qw($opt_i $opt_o);
 
@@ -56,7 +57,8 @@ my $template2 = "../etc/template_ctd_oxygen.cdl";
 my $format = "itp";
 my $ncgen = "/usr/bin/ncgen -b";
 my $tarcmd = "/bin/tar";
-my @witho2 = ("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54","itp57","itp58","itp60","itp64","itp65");
+my @witho2 =
+("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54","itp57","itp58","itp60","itp64","itp65","itp68","itp69","itp72");
 
 usage if !getopts('i:o:');
 usage if ((! $opt_i));
