@@ -36,6 +36,7 @@
 # Øystein Godøy, METNO/FOU, 09.05.2012: Added ITPs measuring oxygen.
 # Øystein Godøy, METNO/FOU, 2012-11-06: Added new ITPs measuring oxygen.
 # Modified behaviour according to ncgen behaviour.
+# Øystein Godøy, METNO/FOU, 2014-05-21: Added new ITPs.
 #
 # CVS_ID:
 # $Id: itpdir2nc,v 1.7 2013-06-20 12:24:47 steingod Exp $
@@ -57,8 +58,7 @@ my $template2 = "../etc/template_ctd_oxygen.cdl";
 my $format = "itp";
 my $ncgen = "/usr/bin/ncgen -b";
 my $tarcmd = "/bin/tar";
-my @witho2 =
-("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54","itp57","itp58","itp60","itp64","itp65","itp68","itp69","itp72");
+my @witho2 = ("itp06","itp13","itp23","itp29","itp43","itp48","itp49","itp51","itp52","itp54","itp57","itp58","itp60","itp64","itp65","itp68","itp69","itp72");
 
 usage if !getopts('i:o:');
 usage if ((! $opt_i));
