@@ -412,11 +412,11 @@ sub read_file($) {
     @text = <FH>;
     close FH;
 
-    #$enc = Encode::Detect::Detector::detect(join('',@text));
-    #print "File has encoding: $enc\n";
+    $enc = Encode::Detect::Detector::detect(join('',@text));
+    print "File has encoding: $enc\n";
 
-    #open FH, "<encoding($enc)","$filename" or die " Could not open file $filename\n";
-    open FH, "<$filename" or die " Could not open file $filename\n";
+    open FH, "<encoding($enc)","$filename" or die " Could not open file $filename\n";
+    #open FH, "<$filename" or die " Could not open file $filename\n";
     @text = <FH>;
     close FH;
 
@@ -1854,6 +1854,24 @@ sub create_timeseries_cdl_radflux {
     my($topiccategory,$keywords,$gcmdkeywords,$conventions,$history);
     my %stationinfo = 
     (
+        "Blindern" => {
+            "title" => "Downwelling surface radiative fluxes at Blindern",
+            "abstract" => "Surface solar irradiance is observed in the Blindern area in Oslo. Measurements are made using a Kipp and Zonen CMP 21. The site is located within 500 m from the synoptic station at Blindern.",
+            "product_name" => "radiative fluxes",
+            "history" => "2014-06-21 creation",
+            "project_name" => "",
+            "area" => "",
+            "lat" => -999.,
+            "lon" => -999.,
+            "institution" => "",
+            "PI_name" => "",
+            "url" => "",
+            "contact" => "",
+            "distribution_statement" => "",
+            "quality_statement" => "",
+            "quality_removals" => "0",
+            "quality_keys" => "",
+        },
         "Bjørnøya" => {
             "title" => "Downwelling surface radiative fluxes at Bjørnøya",
             "abstract" => "Downwelling surface radiative fluxes observed at the meteorological station at Bjørnøya in the Barents Sea.  Measurements are made using Kipp and Zonen CMP21 and CGR4 pyranometers and pyrgeometers. Daily maintenance is performed by the meteorological personnel at the station. Data are averaged over the last minute and the time is set to UTC. This data set was originally supported by the Norwegian Research Council but is now continued by the Norwegian Meteorological Institute. The quality control performed is by visual inspection and by comparison of clear sky values against RTM simulations. Originally this station was started as an IPY station funded through iAOOS-Norway and IPY-THORPEX, currently it is continued by METNO.", 
@@ -2011,6 +2029,7 @@ sub create_timeseries_cdl_radflux {
         $line =~ s/["\n\r]//g;
         if ($norec == 0) {
             @tmparr = split /,/,$line;
+
             $stationname = $tmparr[1];
             $stationname =~ s/ Strålingsstasjon//;
             $stationname =~ s/_Strålingsmåler//;
